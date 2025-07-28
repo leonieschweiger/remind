@@ -113,6 +113,7 @@ Positive Variables
   vm_costMatPrc(tall,all_regi)                                              "Cost of external material inputs such as iron ore in process-based industry [trn $2017/a]"
   v37_matShareChange(tall,all_regi,all_te,opmoPrc,all_enty)                 "Change of share of processes with rectricted relative share change"
   v37_chemflow(tall,all_regi,all_enty)                                      "TODO"
+  v37_carbonaciousSeFeShare(tall,all_regi,all_enty,all_enty)                "Share of SE/FE combinations among all carbonacious fuels input to the "
 
 ;
 
@@ -160,6 +161,7 @@ $endif.no_calibration
   q37_mat2ue(tall,all_regi,mat,all_in)                                              "Connect materials production to ue ces tree nodes"
   q37_restrictMatShareChange(tall,all_regi,all_te,opmoPrc,all_enty)                 "Low Constraining the share of chemical fossil fuel technologies based on historical data"
   q37_chemflow(tall,all_regi,all_enty)                                              "TODO"
+  q37_carbonaciousSeFeShares(tall,all_regi,all_enty,all_enty)                       "Share of SE/FE combinations among all carbonacious fuels input to the industry"
 
   q37_limitCapMat(tall,all_regi,all_te)                                             "Material-flow conversion is limited by capacities"
   q37_limitCapMatHist(tall,all_regi,all_te)                                         "Material-flow conversion is limited by capacities"

@@ -259,6 +259,22 @@ q37_feedstocksShares(t,regi,entySe,entyFe,emiMkt)$(
     )
 ;
 
+*' Shares of SE/FE combinations among all chemicals carbonaceous fuels
+*' is needed to split feedstocks carbon into SE and FE
+*' We use vm_demFeNonEnergySector instead of vm_demFeSector_afterTax
+*' since it is already restricted to chemicals carbonacious fuels,
+*' and equals vm_demFeSector_afterTax multiplied by a scalar factor,
+*' which cancels out in the division.
+q37_carbonaciousSeFeShares(t,regi,entySe,entyFe)$(
+                         sum(te, se2fe(entySe,entyFe,te))
+                     AND entyFE2sector2emiMkt_NonEn(entyFe,"indst","ETS") ) ..
+  v37_carbonaciousSeFeShare(t,regi,entySe,entyFe)
+  * sum(se2fe(entySe2,entyFe2,te),
+      vm_demFeNonEnergySector(t,regi,entySe2,entyFe2,"indst","ETS"))
+  =e=
+  vm_demFeNonEnergySector(t,regi,entySe,entyFe,"indst","ETS")
+;
+
 *' Calculate mass of carbon contained in chemical feedstocks
 *' (not including carbon that gets lost as chemical process emissions)
 q37_FeedstocksCarbon(t,regi,sefe(entySe,entyFe),emiMkt)$(
@@ -273,6 +289,7 @@ $else.cm_subsec_model_chemicals
     v37_matFlow(t,regi,mat)
     * p37_matCarbonContent(mat)
   )
+  * v37_carbonaciousSeFeShare(t,regi,entySe,entyFe)
 $endif.cm_subsec_model_chemicals
 ;
 
@@ -288,6 +305,7 @@ $else.cm_subsec_model_chemicals
     v37_matFlow(t,regi,"hvc")
   * p37_matCarbonContent("hvc")
   * p37_plascticsShareInHVC(t,regi)
+  * v37_carbonaciousSeFeShare(t,regi,entySe,entyFe)
 $endif.cm_subsec_model_chemicals
 ;
 
