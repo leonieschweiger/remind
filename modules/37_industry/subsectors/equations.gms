@@ -372,12 +372,13 @@ q37_emiNonFosNonIncineratedPlastics(t,regi,emi,emiMkt)..
 
 *' calculate non-fossil carbon in non-plastic waste that does not get emitted to the atmosphere (i.e. is stored permanently)
 q37_nonFosNonPlasticNonEmitted(t,regi)..
- vm_nonFosNonPlasticNonEmitted(t,regi)
- =e=
-   sum((entyFE2sector2emiMkt_NonEn(entyFe,"indst",emiMkt),
+  vm_nonFosNonPlasticNonEmitted(t,regi)
+  =e=
+  sum((entyFE2sector2emiMkt_NonEn(entyFe,"indst",emiMkt),
           se2fe(entySe,entyFe,te))$( entySeBio(entySe) OR entySeSyn(entySe) ),
-       v37_feedstocksCarbon(t,regi,entySe,entyFe,emiMkt) * (1 - s37_plasticsShare) * (1 - cm_nonPlasticFeedstockEmiShare) )
-
+    (v37_feedstocksCarbon(t,regi,entySe,entyFe,emiMkt)
+    - v37_plasticsCarbon(t,regi,entySe,entyFe,emiMkt))
+    * (1 - cm_nonPlasticFeedstockEmiShare))
 ;
 
 *' calculate net emissions from non-plastic waste
@@ -390,7 +391,9 @@ q37_emiNonPlasticWaste(t,regi,emi,emiMkt)..
   (  sum((entyFE2sector2emiMkt_NonEn(entyFe,"indst",emiMkt2),
          se2fe(entySe,entyFe,te))$(entySeFos(entySe)),
 *' fossil carbon in non-plastic waste that gets emitted to the atmosphere
-      v37_feedstocksCarbon(t,regi,entySe,entyFe,emiMkt2)  * (1 - s37_plasticsShare) * cm_nonPlasticFeedstockEmiShare)
+    (v37_feedstocksCarbon(t,regi,entySe,entyFe,emiMkt2)
+    - v37_plasticsCarbon(t,regi,entySe,entyFe,emiMkt2))
+    * cm_nonPlasticFeedstockEmiShare)
 *' non-fossil carbon in non-plastic waste that does not get emitted to the atmosphere (i.e. is stored permanently)
   - vm_nonFosNonPlasticNonEmitted(t,regi)
   )$( sameas(emi,"co2") AND sameas(emiMkt,"ES") )

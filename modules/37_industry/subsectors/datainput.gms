@@ -702,8 +702,8 @@ p37_specMatDem("plasticWaste","mechRe","standard")        = 1/0.79; !! Source: T
 p37_specMatDem("plasticWaste","meSyChemRe","standard")        = 1/0.68; !! Source: Shaik Afzal 2023 Table S9.
 p37_specMatDem("plasticWaste","stCrChemRe","standard")        = 1/0.62; !! Source: Geetanjali Yadav 2023 Table 3.
 
-p37_specMatDem("co2fdummy","fertProdH2","standard")        = 0.43; !!12/28 for NH₂CONH₂
-p37_specMatDem("co2fdummy","meSyH2","standard")        = 0.375; !! 12/32 for CH₃OH
+p37_specMatDem("co2f","fertProdH2","standard")        = 0.43; !!12/28 for NH₂CONH₂
+p37_specMatDem("co2f","meSyH2","standard")        = 0.375; !! 12/32 for CH₃OH
 $endif.cm_subsec_model_chemicals
 $ifthen.cm_subsec_model_steel "%cm_subsec_model_steel%" == "processes"
 p37_specMatDem("dripell","idr","ng")        = 1.44;                                           !! Source: POSTED / Average of Devlin2022, Otto2017, Volg2018, Rechberge2020
@@ -879,12 +879,6 @@ p37_priceMat(ttot,all_regi,all_enty) = 0.;
 $ifthen.cm_subsec_model_chemicals "%cm_subsec_model_chemicals%" == "processes"
 !!Execute_Loadpoint "input" pm_FEPrice = pm_FEPrice;
 
-loop(t$(t.val > 2020),
-  loop(all_regi,
-!!   p37_priceMat(t,all_regi,"naphtha") = -0.4 * pm_FEPrice(t,all_regi,"fehos","indst","ETS");
-    p37_priceMat(t,all_regi,"co2fdummy") = 3 * 44/12 * 0.3048 * (t.val-2024) ** (-0.623) ; !! Mahdi Fasihi 2024
-  );
-);
 !! Source: Geetanjali Yadav 2023 Table S12 → 0.6 $/kg
 !! Source: Taylor Uekert 2023 Table Table S23 → 0.2-0.4 $/kg
 !! Source: Shaik Afzal 2023 Table Table S6 → 0.4-0.8 $/kg
@@ -908,8 +902,9 @@ $endif.cm_subsec_model_steel
 $ifthen.cm_subsec_model_chemicals "%cm_subsec_model_chemicals%" == "processes"
 p37_matCarbonContent("hvc") = 0.85;
 p37_matCarbonContent("methFinal") = 0.375;
-p37_matCarbonContent("ammoFinal") = 0.;
 p37_matCarbonContent("fertilizer") = 0.3; !! 12/28=0.43 in urea, but there is also some non-urea fertilizer?
+p37_matCarbonContent("ammoFinal") = 0.;
+p37_matCarbonContent("otherChem") = 0.;
 
 p37_plascticsShareInHVC(t,regi) = 0.7;
 $endif.cm_subsec_model_chemicals
