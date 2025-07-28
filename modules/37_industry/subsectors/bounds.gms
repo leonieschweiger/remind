@@ -189,7 +189,7 @@ $endif.PlasticMFA
 v37_matFlow.up(t,regi,"plasticWaste") = 0.; !! Due to the limitations of the collection
 
 $ifthen.PlasticMFA "%cm_PlasticMFA%" == "on"
-v37_matFlow.up(t,regi,"plasticWaste") = p37_plastcWaste(t,regi); 
+v37_matFlow.up(t,regi,"plasticWaste") = p37_plastcWaste(t,regi);
 v37_matFlow.up(t,"SSA","plasticWaste") = p37_plastcWaste(t,"SSA") * 0.2;
 $endif.PlasticMFA
 
