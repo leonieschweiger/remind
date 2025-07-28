@@ -265,8 +265,16 @@ q37_FeedstocksCarbon(t,regi,sefe(entySe,entyFe),emiMkt)$(
                          entyFE2sector2emiMkt_NonEn(entyFe,"indst",emiMkt) ) ..
   v37_feedstocksCarbon(t,regi,entySe,entyFe,emiMkt)
   =e=
+$ifthen.cm_subsec_model_chemicals "%cm_subsec_model_chemicals%" == "ces"
     vm_demFeNonEnergySector(t,regi,entySe,entyFe,"indst",emiMkt)
   * p37_FeedstockCarbonContent(t,regi,entyFe)
+$else.cm_subsec_model_chemicals
+  sum(mat2ue(mat,"ue_chemicals"),
+    v37_matFlow(t,regi,mat)
+    * p37_matCarbonContent(mat)
+  )
+  * p37_carbonaceousSeFeShare(t,regi,entySe,entyFe)
+$endif.cm_subsec_model_chemicals
 ;
 
 *' Calculate carbon contained in plastics as a share of carbon in feedstock [GtC]
@@ -274,8 +282,15 @@ q37_plasticsCarbon(t,regi,sefe(entySe,entyFe),emiMkt)$(
                          entyFE2sector2emiMkt_NonEn(entyFe,"indst",emiMkt) ) ..
   v37_plasticsCarbon(t,regi,entySe,entyFe,emiMkt)
   =e=
+$ifthen.cm_subsec_model_chemicals "%cm_subsec_model_chemicals%" == "ces"
     v37_feedstocksCarbon(t,regi,entySe,entyFe,emiMkt)
   * s37_plasticsShare
+$else.cm_subsec_model_chemicals
+    v37_matFlow(t,regi,"hvc")
+  * p37_matCarbonContent("hvc")
+  * p37_plascticsShareInHVC(t,regi)
+  * p37_carbonaceousSeFeShare(t,regi,entySe,entyFe)
+$endif.cm_subsec_model_chemicals
 ;
 
 *' calculate plastic waste generation, shifted by mean lifetime of plastic
@@ -357,12 +372,13 @@ q37_emiNonFosNonIncineratedPlastics(t,regi,emi,emiMkt)..
 
 *' calculate non-fossil carbon in non-plastic waste that does not get emitted to the atmosphere (i.e. is stored permanently)
 q37_nonFosNonPlasticNonEmitted(t,regi)..
- vm_nonFosNonPlasticNonEmitted(t,regi)
- =e=
-   sum((entyFE2sector2emiMkt_NonEn(entyFe,"indst",emiMkt),
+  vm_nonFosNonPlasticNonEmitted(t,regi)
+  =e=
+  sum((entyFE2sector2emiMkt_NonEn(entyFe,"indst",emiMkt),
           se2fe(entySe,entyFe,te))$( entySeBio(entySe) OR entySeSyn(entySe) ),
-       v37_feedstocksCarbon(t,regi,entySe,entyFe,emiMkt) * (1 - s37_plasticsShare) * (1 - cm_nonPlasticFeedstockEmiShare) )
-
+    (v37_feedstocksCarbon(t,regi,entySe,entyFe,emiMkt)
+    - v37_plasticsCarbon(t,regi,entySe,entyFe,emiMkt))
+    * (1 - cm_nonPlasticFeedstockEmiShare))
 ;
 
 *' calculate net emissions from non-plastic waste
@@ -375,7 +391,9 @@ q37_emiNonPlasticWaste(t,regi,emi,emiMkt)..
   (  sum((entyFE2sector2emiMkt_NonEn(entyFe,"indst",emiMkt2),
          se2fe(entySe,entyFe,te))$(entySeFos(entySe)),
 *' fossil carbon in non-plastic waste that gets emitted to the atmosphere
-      v37_feedstocksCarbon(t,regi,entySe,entyFe,emiMkt2)  * (1 - s37_plasticsShare) * cm_nonPlasticFeedstockEmiShare)
+    (v37_feedstocksCarbon(t,regi,entySe,entyFe,emiMkt2)
+    - v37_plasticsCarbon(t,regi,entySe,entyFe,emiMkt2))
+    * cm_nonPlasticFeedstockEmiShare)
 *' non-fossil carbon in non-plastic waste that does not get emitted to the atmosphere (i.e. is stored permanently)
   - vm_nonFosNonPlasticNonEmitted(t,regi)
   )$( sameas(emi,"co2") AND sameas(emiMkt,"ES") )
@@ -467,18 +485,18 @@ q37_prodMat(t,regi,mat)$( matOut(mat) ) ..
 *'    change.low = -max_change and change.up = max_change
 *' 2. multiply both sides with sum_i a_i(t) * sum_i a_i(t-1)
 ***------------------------------------------------------
-q37_chemflow(t,regi,mat)$(sum((tePrc,opmoPrc), tePrcStiffShare(tePrc,opmoPrc,mat)))  .. 
+q37_chemflow(t,regi,mat)$(sum((tePrc,opmoPrc), tePrcStiffShare(tePrc,opmoPrc,mat)))  ..
   v37_chemflow(t,regi,mat)
-=e= 
+=e=
   sum((tePrc, opmoPrc)$(tePrcStiffShare(tePrc, opmoPrc, mat)), vm_outflowPrc(t,regi,tePrc,opmoPrc))
 ;
 
 q37_restrictMatShareChange(t,regi,tePrc,opmoPrc,mat)$(t.val gt 2020
                                                          AND tePrcStiffShare(tePrc,opmoPrc,mat)) ..
-  vm_outflowPrc(t,regi,tePrc,opmoPrc) 
+  vm_outflowPrc(t,regi,tePrc,opmoPrc)
 =e=
   (p37_teMatShareHist(regi,tePrc,opmoPrc,mat)+ v37_matShareChange(t,regi,tePrc,opmoPrc,mat))
-  * v37_chemflow(t,regi,mat) !! Try to use different opmoPrc 
+  * v37_chemflow(t,regi,mat) !! Try to use different opmoPrc
 ;
 
 ***------------------------------------------------------
@@ -510,7 +528,7 @@ q37_limitCapMatHist(t,regi,tePrc)$(t.val le 2020) ..
      * vm_cap(t,regi,tePrc,rlf)
      )
  ;
- 
+
  q37_limitCapMat(t,regi,tePrc)$(t.val gt 2020) ..
      sum(tePrc2opmoPrc(tePrc,opmoPrc),
        vm_outflowPrc(t,regi,tePrc,opmoPrc)

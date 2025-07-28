@@ -5,7 +5,7 @@
 *** |  REMIND License Exception, version 1.0 (see LICENSE file).
 *** |  Contact: remind@pik-potsdam.de
 *** SOF ./main.gms
-*' @title REMIND - REgional Model of INvestments and 
+*' @title REMIND - REgional Model of INvestments and
 *'
 *' @description REMIND is a global multi-regional model incorporating the economy, the climate system
 *' and a detailed representation of the energy sector. It solves for an intertemporal Pareto optimum
@@ -378,7 +378,7 @@ $setglobal emicapregi  none           !! def = none
 *' *    [Global anchor trajectory]: The realization uses a global anchor trajectory based on which the regional carbon price trajectories are defined.
 *' *                                The functional form (linear/exponential) of the global anchor trajectory is chosen via cm_taxCO2_functionalForm [default = linear].
 *' *                                The (initial) carbon price in cm_startyear is chosen via cm_taxCO2_startyear. This value is endogenously adjusted to meet CO2 budget targets if cm_iterative_target_adj is set to 5, 7, or 9.
-*' *                                (linear):      The linear curve is determined by the two points (cm_taxCO2_historicalYr, cm_taxCO2_historical) and either (cm_startyear, cm_taxCO2_startyear) or (cm_peakBudgYr, cm_taxCO2_peakBudgYr) - see describtions of switches for more details. 
+*' *                                (linear):      The linear curve is determined by the two points (cm_taxCO2_historicalYr, cm_taxCO2_historical) and either (cm_startyear, cm_taxCO2_startyear) or (cm_peakBudgYr, cm_taxCO2_peakBudgYr) - see describtions of switches for more details.
 *' *                                               By default, cm_taxCO2_historicalYr is the last timestep before cm_startyear, and cm_taxCO2_historical is the carbon price in that timestep in the reference run (path_gdx_ref) - computed as the maximum of pm_taxCO2eq over all regions.
 *' *                                (exponential): The exponential curve is determined by exponential growth rate (cm_taxCO2_expGrowth).
 *' *    [Post-peak behaviour]:      The global anchor trajectory can be adjusted after reaching the peak of global CO2 emissions in cm_peakBudgYr. See cm_iterative_target_adj and 45_carbonprice/functionalForm/realization.gms for details.
@@ -547,7 +547,7 @@ parameter
   cm_budgetCO2_absDevTol  "convergence criterion for global CO2 budget set via cm_budgetCO2from2020. It is formulated as an absolute deviation from the target budget [GtCO2]"
 ;
   cm_budgetCO2_absDevTol      = 2;   !! def = 2 !! regexp = is.nonnegative
-*' 
+*'
 
 parameter
   cm_peakBudgYr       "time of global net-zero CO2 emissions (peak budget)"
@@ -569,7 +569,7 @@ parameter
   cm_taxCO2_regiDiff "switch for choosing the regional carbon price differentiation scheme in 45_carbonprice/functionalForm"
 ;
   cm_taxCO2_regiDiff = 1; !! def = 1 !! regexp = 0|1|2|3|5|6|7|8|10
-*' Switch can either be set to a specific scenario (e.g. "ScenarioMIP2070") or to "manual". If specific scenario is chosen, settings can be adjusted via cm_taxCO2_regiDiff_convergence and cm_taxCO2_regiDiff_startyearValue. If set to manual, settings must be provided via cm_taxCO2_regiDiff_convergence and cm_taxCO2_regiDiff_startyearValue. 
+*' Switch can either be set to a specific scenario (e.g. "ScenarioMIP2070") or to "manual". If specific scenario is chosen, settings can be adjusted via cm_taxCO2_regiDiff_convergence and cm_taxCO2_regiDiff_startyearValue. If set to manual, settings must be provided via cm_taxCO2_regiDiff_convergence and cm_taxCO2_regiDiff_startyearValue.
 *' * (0): none             - No regional differentiation, i.e. globally uniform carbon pricing
 *' * (1): initialSpread10  - Maximal initial spread of carbon prices in 2030 between OECD regions and poorest region is equal to 10. Initial spread for each region determined based on GDP per capita (PPP) in 2030. By default, carbon prices converge using quadratic phase-in until 2050. Convergence scheme can be adjusted with cm_taxCO2_regiDiff_convergence.
 *' * (2): initialSpread20  - Maximal initial spread of carbon prices in 2030 between OECD regions and poorest region is equal to 20. Initial spread for each region determined based on GDP per capita (PPP) in 2030. By default, carbon prices converge using quadratic phase-in until 2070. Convergence scheme can be adjusted with cm_taxCO2_regiDiff_convergence.
@@ -586,7 +586,7 @@ parameter
 *' * (0): no interpolation, i.e. (b) is used from cm_startyear onward. This must be chosen if regional carbon prices are manually set via cm_taxCO2_regiDiff_startyearValue.
 *' * (1): one step interpolation, i.e. linear interpolation within 10 years between (a) and (b). For example, if cm_startyear = 2030, it uses (a) until 2025, the average of (a) and (b) in 2030, and (b) from 2035.
 *' * (2): two steps interpolation, i.e. linear interpolation within 15 years between (a) and (b). For example, if cm_startyear = 2030, it uses (a) until 2025, weighted averages of (a) and (b) in 2030 and 2035, and (b) from 2040.
-parameter 
+parameter
   cm_taxCO2_lowerBound_path_gdx_ref "switch for choosing if carbon price trajectories from path_gdx_ref are used as lower bound"
 ;
   cm_taxCO2_lowerBound_path_gdx_ref = 1; !! def = 1 !! regexp = 0|1
@@ -934,11 +934,11 @@ parameter
 *' a lot of OAE. In this case, use a quantity target to limit OAE by adding something like:
 *' (2070,2080,2090,2100).GLO.tax.t.oae.all 5000 to cm_implicitQttyTarget in your config file,
 *' starting from the year in which OAE is deployed above 5000 MtCO2 / yr. This will limit the global
-*' deployment to 5000 Mt CO2 / yr in timesteps 2070-2100. 
-*' As an alternative to this cost-efficient allocation, a global limit can be set via cm_33_OAE_limit_EEZ which 
+*' deployment to 5000 Mt CO2 / yr in timesteps 2070-2100.
+*' As an alternative to this cost-efficient allocation, a global limit can be set via cm_33_OAE_limit_EEZ which
 *' distributes it between regions based on the size of the exclusive economic zones. This approach should only be
 *' chosen when the tax approach inhibits convergence. See q33_OAE_EEZ_limit for further reasoning.
-*' Both limitation approaches affect ocean uptake, i.e. gross OAE. 
+*' Both limitation approaches affect ocean uptake, i.e. gross OAE.
 *' * (1): ocean alkalinity enhancement is included
 *' * (0): not included
 *'
@@ -966,10 +966,10 @@ parameter
 ;
   cm_33_OAE_limit_EEZ            = 0; !! def = 0 !! regexp = is.nonnegative
 *' * (0): no global limit that is distributed based on regions' EEZ size
-*' * (5000): global 5 Gt CO2 uptake maximum is distributed as upper bound to regions. 
+*' * (5000): global 5 Gt CO2 uptake maximum is distributed as upper bound to regions.
 *'           5 Gt CO2/yr uptake limit corresponds roughly to CaO being distributed in the upper 2m of the entire (!) EEZ
-*'           up to the precipitation avoiding concentration limit, assuming average uptake efficiency. 
-*' 
+*'           up to the precipitation avoiding concentration limit, assuming average uptake efficiency.
+*'
 parameter
   cm_gs_ew                  "grain size (for enhanced weathering, CDR module) [micrometre]"
 ;
@@ -984,7 +984,7 @@ parameter
   cm_33_EW_upScalingRateLimit    "Annual growth rate limit on upscaling of mining & spreading rocks on fields"
 ;
   cm_33_EW_upScalingRateLimit = 0.2;  !! def = 20% !! regexp = is.nonnegative
-*' 
+*'
 parameter
   cm_33_EW_shortTermLimit         "Limit on 2030 potential for enhanced weathering, defined as % of land on which EW is applied. Default 0.5% of land"
 ;
@@ -994,7 +994,7 @@ parameter
   cm_33_maxFeShare                "max share of the CDR sectors' FE demand in the region's total FE demand, by FE type. Default is 10%"
 ;
   cm_33_maxFeShare = 0.1; !!  def = 0.1 !! regexp = is.nonnegative
-*' 
+*'
 parameter
   cm_postTargetIncrease     "carbon price increase per year after regipol emission target is reached (euro per tCO2)"
 ;
@@ -1681,7 +1681,7 @@ $setglobal cm_inco0RegiFactor  off  !! def = off
 ***   or number (ex. 0.66), multiply by 0.66 the CSS cost markup
 $setglobal cm_ccsinjeCost med !! def = med !! regexp = med|low|high
 *' switch from standard to low and high CO2 transport & storage cost.
-*' Warning: it applies absolute values; only use it in combination with default c_techAssumptScen SSP2. 
+*' Warning: it applies absolute values; only use it in combination with default c_techAssumptScen SSP2.
 *'  * (low): old estimate before 03/2024; ~7.5 USD/tCO2 in 2035. Also applies tech_stat=2 and constrTme=0
 *'  * (med): new main estimate; 12 USD/tCO2 at all times (similar to ~11.4 USD/tCO2 average of saline formations, on- and offshore DOG fields in Budinis et al 2017)
 *'  * (high): upper estimate; ~20USD/tCO2 (constant), assuming upper end of storage cost and long transport distances
@@ -1776,7 +1776,7 @@ $setglobal cm_taxCO2_historicalYr     last    !! def = "last"  !! regexp = last|
 *** Regional convergence year defines the year by which the global anchor carbon price (RATIO = 1) is reached
 *** (scenario):        Regional convergence speed according to scenario defined in cm_taxCO2_regiDiff
 *** Alternatively, manual setting of cm_taxCO2_regiDiff_convergence to GLO.2050 2, EUR.2040 1 means that carbon prices for all regions converge quadratically until 2050, except for EUR converging linearly until 2040
-$setglobal cm_taxCO2_regiDiff_convergence   scenario    !! def = scenario 
+$setglobal cm_taxCO2_regiDiff_convergence   scenario    !! def = scenario
 *** cm_taxCO2_regiDiff_startyearValue  "switch for manually setting regional carbon prices in cm_startyear"
 *** (endogenous): regional carbon price in cm_startyear is endogenously determined, i.e.
 ***                - if cm_taxCO2_regiDiff equals (none), (initialSpread10), (initialSpread20), or (gdpSpread), it is determined by the region-specific spread in the start year
@@ -1940,7 +1940,7 @@ $setGlobal cm_APssp  FROMGDPSSP          !! def = FROMGDPSSP !! regexp = SSP1|SS
 *' (MFR): Maximum Feasible Reductions
 *' (SMIPbySSP): ScenarioMIP defaults, varies with SSP narratives
 *' (SMIPVLLO): ScenarioMIP special trajectories for VLLO, varies slightly between SSP1 and SSP2
-$setGlobal cm_APscen  SMIPbySSP          !! def = SMIPbySSP !! regexp = SSP2|SSP5|CLE|SLE|VLE|MFR|SMIPbySSP|SMIPVLLO 
+$setGlobal cm_APscen  SMIPbySSP          !! def = SMIPbySSP !! regexp = SSP2|SSP5|CLE|SLE|VLE|MFR|SMIPbySSP|SMIPVLLO
 $setglobal cm_CES_configuration  indu_subsectors-buil_simple-tran_edge_esm-GDPpop_SSP2-En_SSP2-Kap_debt_limit-Reg_62eff8f7   !! this will be changed by start_run()
 $setglobal c_CES_calibration_iterations  10     !!  def  =  10
 $setglobal c_CES_calibration_industry_FE_target  1
@@ -1963,7 +1963,7 @@ $setGlobal cm_chaCoalBounds off    !! def = off
 *' *  (on):  also non-optimal regions are solved again, up to cm_solver_try_max
 $setglobal cm_repeatNonOpt off      !! def = off  !! regexp = off|on
 
-$setglobal cm_PlasticMFA      !! def = off  !! regexp = ^(off|on)$
+$setglobal cm_PlasticMFA  off    !! def = off  !! regexp = ^(off|on)$
 *' @stop
 
 *-------------------------------------------------------------------------------------

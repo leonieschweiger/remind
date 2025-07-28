@@ -40,6 +40,9 @@ Parameters
   p37_captureRate(all_te)                                                      "Capture rate of CCS technology"
   p37_selfCaptureRate(all_te)                                                  "Share of emissions from fossil fuels used for a CCS process which are captured by the CCS process itself"
   p37_priceMat(tall,all_regi,all_enty)                                                  "Prices of external material input [US$/kg] = [trn$US/Gt]"
+  p37_matCarbonContent(mat)                                                    "Carbon content of final materials [GtC/Gt]"
+  p37_plascticsShareInHVC(tall,all_regi)                                       "Share of plastics in high value chemicals. To be multiplied by carbon content, so this is share of total mass / all elements [0-1]"
+  p37_carbonaceousSeFeShare(tall,all_regi,all_enty,all_enty)                   "Share of SE/FE combinations among all carbonaceous fuels input to the "
 
   p37_chemicals_feedstock_share(ttot,all_regi)               "minimum share of feso/feli/fega in total chemicals FE input [0-1]"
   p37_FeedstockCarbonContent(ttot,all_regi,all_enty)         "carbon content of feedstocks [GtC/TWa]"
@@ -111,7 +114,6 @@ Positive Variables
   vm_costMatPrc(tall,all_regi)                                              "Cost of external material inputs such as iron ore in process-based industry [trn $2017/a]"
   v37_matShareChange(tall,all_regi,all_te,opmoPrc,all_enty)                 "Change of share of processes with rectricted relative share change"
   v37_chemflow(tall,all_regi,all_enty)                                      "TODO"
-  
 ;
 
 Variables
