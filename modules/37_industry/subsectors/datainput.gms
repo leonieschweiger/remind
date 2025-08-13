@@ -936,7 +936,7 @@ Parameter
   pm_outflowPrcHist(tall,all_regi,all_te,opmoPrc) "material flows per production route in 2020 [Gt or GtN for fertilizer]"
   /
 $ondelim
-$include "./modules/37_industry/subsectors/input/p37_AllChem_Routes_Value_2020noCCS.cs4r";
+$include "./modules/37_industry/subsectors/input/pm_outflowPrcHist_chemicals.cs4r";
 $offdelim
   /
 ;
@@ -950,7 +950,7 @@ Parameter
   p37_mat2ue(tall,all_regi,all_enty,all_in) "conversion factors [2017$/kg or 2017$/kgN] for 2020-2050 to convert material [Gt or GtN] into UE [trn$2017]"
   /
 $ondelim
-$include "./modules/37_industry/subsectors/input/p37_AllChemical_Mat2Ue.cs4r";
+$include "./modules/37_industry/subsectors/input/p37_mat2ue_chemicals.cs4r";
 $offdelim
   /
 ;
@@ -1097,7 +1097,7 @@ Parameter
   p37_demFePrcHist(tall,all_regi,all_te,opmoPrc,all_enty) "total FE demand [EJ] per process in 2005-2020 (calculated from specific FE demand and production volume)"
   /
 $ondelim
-$include "./modules/37_industry/subsectors/input/p37_AllChem_Energy_Value_2005_2020noCCS.cs4r";
+$include "./modules/37_industry/subsectors/input/p37_demFePrcHist_chemicals.cs4r";
 $offdelim
   /
 ;
