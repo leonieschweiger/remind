@@ -698,8 +698,6 @@ p37_specMatDem("ammoniaH2","amToFinal","greenh2")        = 1;
 p37_specMatDem("methanol","meToFinal","standard")        = 1;
 p37_specMatDem("methanolH2","meToFinal","greenh2")        = 1;
 
-!! p37_specMatDem("naphtha","stCrLiq","standard")        =  18.3 / (sm_TWa_2_MWh/sm_giga_2_non); !! should not be needed any more
-
 p37_specMatDem("plasticWaste","mechRe","standard")        = 1/0.79; !! Source: Taylor Uekert 2023 Table S1-S4.
 p37_specMatDem("plasticWaste","meSyChemRe","standard")        = 1/1.47; !! Source: Shaik Afzal 2023 Table 3. 
 p37_specMatDem("plasticWaste","stCrChemRe","standard")        = 1/0.62; !! Source: Geetanjali Yadav 2023 Table S9.
@@ -895,7 +893,6 @@ $ifthen.cm_subsec_model_chemicals "%cm_subsec_model_chemicals%" == "processes"
 
 loop(t$(t.val > 2020),
   loop(all_regi,
-!!   p37_priceMat(t,all_regi,"naphtha") = -0.4 * pm_FEPrice(t,all_regi,"fehos","indst","ETS");
     p37_priceMat(t,all_regi,"co2fdummy") = 3 * 44/12 * 0.3048 * (t.val-2024) ** (-0.623) ; !! Mahdi Fasihi 2024
   );
 );

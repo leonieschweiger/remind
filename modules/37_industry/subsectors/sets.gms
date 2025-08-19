@@ -474,7 +474,6 @@ $ifthen.cm_subsec_model_chemicals "%cm_subsec_model_chemicals%" == "processes"
     co2f
     co2fdummy 
 
-    naphtha       "Naphtha"
     plasticWaste  "Plastic waste, mixed"
 $endif.cm_subsec_model_chemicals
 $ifthen.cm_subsec_model_steel "%cm_subsec_model_steel%" == "processes"
@@ -499,7 +498,6 @@ $ifthen.cm_subsec_model_chemicals "%cm_subsec_model_chemicals%" == "processes"
     co2f
     co2fdummy
 
-    naphtha
     plasticWaste
 $endif.cm_subsec_model_chemicals
 $ifthen.cm_subsec_model_steel "%cm_subsec_model_steel%" == "processes"
@@ -718,7 +716,6 @@ $ifthen.cm_subsec_model_chemicals "%cm_subsec_model_chemicals%" == "processes"
 
     meSyH2 . standard  . co2fdummy
     fertProdH2 . standard  . co2fdummy
-    stCrLiq . standard  . naphtha
 
     mechRe . standard  . plasticWaste
     stCrChemRe . standard  . plasticWaste

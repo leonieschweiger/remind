@@ -491,7 +491,6 @@ all_enty             "all types of quantities"
     ammoniaH2
     methFinal
     ammoFinal
-    naphtha
     plasticWaste
 
 *** steel
