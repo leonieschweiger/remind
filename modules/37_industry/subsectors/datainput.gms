@@ -1227,11 +1227,12 @@ $ifthen.cm_subsec_model_chemicals "%cm_subsec_model_chemicals%" == "processes"
         );
 
         !! Calc feels for chemElec
-        !! all non-feedstock non-electricity energy of ChemOld with 15% efficiency improvement
-        !! source: Danish Energy Agency https://ens.dk/en/analyses-and-statistics/technology-data-industrial-process-heat
+        !! all non-feedstock non-electricity energy of ChemOld with 8% efficiency improvement
+        !! source: Danish Energy Agency https://ens.dk/en/analyses-and-statistics/technology-data-industrial-process-heat: 
+        !! 311.1a Steam boilder Coal avg eff 89-91%, 311.1c Steam boiler Gas avg eff 92-94%, 310.1b Electric boiler steam avg eff 99%
         pm_specFeDem(t, regi, "feels", "chemElec", "standard") =
                   pm_specFeDem("2020", regi, "feels", "chemOld", "standard")
-                  + 0.85 * ( sum(entyFe2$(NOT sameas(entyFe2, "feels")), pm_specFeDem("2020", regi, entyFe2, "chemOld", "standard"))
+                  + 0.92 * ( sum(entyFe2$(NOT sameas(entyFe2, "feels")), pm_specFeDem("2020", regi, entyFe2, "chemOld", "standard"))
                           - sum(entyFe2$(NOT sameas(entyFe2, "feels")), pm_specFeDem(t, regi, entyFe2, "chemElec", "standard")) );
 
         !! Calc chemH2 
