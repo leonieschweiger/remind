@@ -182,7 +182,6 @@ all_te          "all energy technologies, including from modules"
     biodiesel       "oil biomass to biodiesel"
     biopyronly      "biomass pyrolysis to biochar, no energy co-product (established industrial)"
     biopyrhe        "biomass pyrolysis to biochar plus heat (established industrial)"
-    biopyrel        "biomass pyrolysis to biochar plus power (established industrial)"
     biopyrchp       "biomass pyrolysis to biochar plus heat and power (established industrial)"   
     biopyrliq       "biomass pyrolysis to biochar plus liquids (combined with Fischer-Tropsch plant, advanced industrial)"
     biocharuse      "use of biochar, e.g. for soil or for building materials"
@@ -2940,7 +2939,6 @@ emiMac2mac(all_enty,all_enty)            "mapping of emission sources to MACs - 
     co2luc.co2luc
     co2cement_process. co2cement   "process emissions are captured by kiln CCS too"
     co2cement    . co2cement
-    co2chemicals . co2chemicals
 $ifthen.cm_subsec_model_chemicals "%cm_subsec_model_chemicals%" == "ces"
     co2chemicals . co2chemicals
 $endif.cm_subsec_model_chemicals
