@@ -1275,6 +1275,11 @@ parameter
   c_edgetReportAfter2010			"switch that turns on overwriting of EDGE-T results for 2005 and 2010 by NAs when set to 1"
 ;
   c_edgetReportAfter2010 = 0;   !! def = 0 full reporting  !! regexp = 1|0
+
+parameter
+  c_CO2FeedstockPrice			"switch that turns on overwriting of EDGE-T results for 2005 and 2010 by NAs when set to 1"
+;
+  c_CO2FeedstockPrice = 1;   !! def = 1
 *'
 *'
 *'
