@@ -701,11 +701,11 @@ p37_specMatDem("methanolH2","meToFinal","greenh2")        = 1;
 !! p37_specMatDem("naphtha","stCrLiq","standard")        =  18.3 / (sm_TWa_2_MWh/sm_giga_2_non); !! should not be needed any more
 
 p37_specMatDem("plasticWaste","mechRe","standard")        = 1/0.79; !! Source: Taylor Uekert 2023 Table S1-S4.
-p37_specMatDem("plasticWaste","meSyChemRe","standard")        = 1/1.47; !! Source: Shaik Afzal 2023 Table 3. 
+p37_specMatDem("plasticWaste","meSyChemRe","standard")        = 1/1.47; !! Source: Shaik Afzal 2023 Table 3.
 p37_specMatDem("plasticWaste","stCrChemRe","standard")        = 1/0.62; !! Source: Geetanjali Yadav 2023 Table S9.
 
-p37_specMatDem("co2fdummy","fertProdH2","standard")        = 0.43; !!12/28 for NH₂CONH₂ (urea)
-p37_specMatDem("co2fdummy","meSyH2","standard")        = 0.375; !! 12/32 for CH₃OH
+p37_specMatDem("co2f","fertProdH2","standard")        = 0.43; !!12/28 for NH₂CONH₂ (urea)
+p37_specMatDem("co2f","meSyH2","standard")        = 0.375; !! 12/32 for CH₃OH
 $endif.cm_subsec_model_chemicals
 $ifthen.cm_subsec_model_steel "%cm_subsec_model_steel%" == "processes"
 p37_specMatDem("dripell","idr","ng")        = 1.44;                                           !! Source: POSTED / Average of Devlin2022, Otto2017, Volg2018, Rechberge2020
@@ -744,8 +744,8 @@ $ifthen.cm_subsec_model_chemicals "%cm_subsec_model_chemicals%" == "processes"
 !!p37_specFeDemTarget("fesos","chemH2","standard")  = 1.2 / (sm_TWa_2_MWh/sm_giga_2_non);
 !!p37_specFeDemTarget("fegas","chemH2","standard")  = 2.7 / (sm_TWa_2_MWh/sm_giga_2_non);
 !!p37_specFeDemTarget("fehos","chemH2","standard")  = 3.3 / (sm_TWa_2_MWh/sm_giga_2_non);
-!!p37_specFeDemTarget("feh2s","chemH2","standard")  = 2.1 / (sm_TWa_2_MWh/sm_giga_2_non);   
-!!p37_specFeDemTarget("feels","chemH2","standard")  = 1.8 / (sm_TWa_2_MWh/sm_giga_2_non); 
+!!p37_specFeDemTarget("feh2s","chemH2","standard")  = 2.1 / (sm_TWa_2_MWh/sm_giga_2_non);
+!!p37_specFeDemTarget("feels","chemH2","standard")  = 1.8 / (sm_TWa_2_MWh/sm_giga_2_non);
 
 p37_specFeDemTarget("fehos","stCrNg","standard")  = 15.8 / (sm_TWa_2_MWh/sm_giga_2_non);  !! Source: Yang, M., & You, F. (2017). Table1 NGL input/(Ethylene + By Products)
 !!p37_specFeDemTarget("fegas","stCrNg","standard")  = 2.8 / (sm_TWa_2_MWh/sm_giga_2_non);   !! Source: Yang, M., & You, F. (2017). Table1 External Energy input/(Ethylene + By Products)
@@ -854,7 +854,7 @@ $endif.cm_subsec_model_steel
 
 p37_captureRate(all_te) = 0.;
 p37_selfCaptureRate(all_te) = 0.;
-$ifthen.cm_subsec_model_chemicals "%cm_subsec_model_chemicals%" == "processes" 
+$ifthen.cm_subsec_model_chemicals "%cm_subsec_model_chemicals%" == "processes"
 !! 95 % for everything
 !!Source: IEA, The Future of Hydrogen. Seizing today’s opportunities, Assumptions Annex, Paris, 2019. PAGE | 5
 
@@ -865,8 +865,8 @@ $ifthen.cm_subsec_model_chemicals "%cm_subsec_model_chemicals%" == "processes"
 !! carbon content of methanol: 12/32 = 0.375 tC/tMeOH
 !! ==> feedstock share is 0.375/1.29 = 0.29 ==> energy share is 0.71
 
-p37_captureRate("meSySol_cc")  = 0.95 * 0.71; 
-p37_captureRate("meSyNg_cc") = 0.95 * 0.22; 
+p37_captureRate("meSySol_cc")  = 0.95 * 0.71;
+p37_captureRate("meSyNg_cc") = 0.95 * 0.22;
 p37_captureRate("meSyLiq_cc")  = 0.95 * 0.5;
 p37_selfCaptureRate("meSySol_cc")  = 0.95;
 p37_selfCaptureRate("meSyNg_cc") = 0.95;
@@ -893,16 +893,10 @@ p37_priceMat(ttot,all_regi,all_enty) = 0.;
 $ifthen.cm_subsec_model_chemicals "%cm_subsec_model_chemicals%" == "processes"
 !!Execute_Loadpoint "input" pm_FEPrice = pm_FEPrice;
 
-loop(t$(t.val > 2020),
-  loop(all_regi,
-!!   p37_priceMat(t,all_regi,"naphtha") = -0.4 * pm_FEPrice(t,all_regi,"fehos","indst","ETS");
-    p37_priceMat(t,all_regi,"co2fdummy") = 3 * 44/12 * 0.3048 * (t.val-2024) ** (-0.623) ; !! Mahdi Fasihi 2024
-  );
-);
 !! Source: Geetanjali Yadav 2023 Table S12 → 0.6 $/kg
 !! Source: Taylor Uekert 2023 Table Table S23 → 0.2-0.4 $/kg
 !! Source: Shaik Afzal 2023 Table Table S6 → 0.4-0.8 $/kg
-p37_priceMat(t,all_regi,"plasticWaste") = 0.1; 
+p37_priceMat(t,all_regi,"plasticWaste") = 0.1;
 
 $endif.cm_subsec_model_chemicals
 
@@ -919,6 +913,15 @@ loop(t$(t.val ge 2005),
 );
 $endif.cm_subsec_model_steel
 
+$ifthen.cm_subsec_model_chemicals "%cm_subsec_model_chemicals%" == "processes"
+p37_matCarbonContent("hvc") = 0.85;
+p37_matCarbonContent("methFinal") = 0.375;
+p37_matCarbonContent("fertilizer") = 0.3; !! 12/28=0.43 in urea, but there is also some non-urea fertilizer?
+p37_matCarbonContent("ammoFinal") = 0.;
+p37_matCarbonContent("otherChem") = 0.;
+
+p37_plascticsShareInHVC(t,regi) = 0.7;
+$endif.cm_subsec_model_chemicals
 
 
 
@@ -1061,8 +1064,8 @@ $ifthen.cm_subsec_model_chemicals "%cm_subsec_model_chemicals%" == "processes"
 loop(all_regi(regi),
   loop(tePrc2matOut(tePrc, opmoPrc, mat),
         if (p37_matFlowHist("2020", regi, mat) gt 0,
-          p37_teMatShareHist(regi, tePrc, opmoPrc, mat) = 
-            pm_outflowPrcHist("2020", regi, tePrc, opmoPrc) 
+          p37_teMatShareHist(regi, tePrc, opmoPrc, mat) =
+            pm_outflowPrcHist("2020", regi, tePrc, opmoPrc)
             / p37_matFlowHist("2020", regi, mat);
         else
           p37_teMatShareHist(regi, tePrc, opmoPrc, mat) = 0;
@@ -1217,7 +1220,7 @@ $ifthen.cm_subsec_model_chemicals "%cm_subsec_model_chemicals%" == "processes"
 
         !! Calc chemOld
         !! stays constant after 2020
-        pm_specFeDem(t,regi,all_enty,"chemOld","standard") = 
+        pm_specFeDem(t,regi,all_enty,"chemOld","standard") =
         pm_specFeDem("2020",regi,all_enty,"chemOld","standard");
 
         !! Calc chemElec
@@ -1237,7 +1240,7 @@ $ifthen.cm_subsec_model_chemicals "%cm_subsec_model_chemicals%" == "processes"
                   + 0.85 * ( sum(entyFe2$(NOT sameas(entyFe2, "feels")), pm_specFeDem("2020", regi, entyFe2, "chemOld", "standard"))
                           - sum(entyFe2$(NOT sameas(entyFe2, "feels")), pm_specFeDem(t, regi, entyFe2, "chemElec", "standard")) );
 
-        !! Calc chemH2 
+        !! Calc chemH2
         !! see above
         loop(entyFe$(NOT sameas(entyFe, "feels")),
           pm_specFeDem(t, regi, entyFe, "chemH2", "standard") =
@@ -1249,7 +1252,7 @@ $ifthen.cm_subsec_model_chemicals "%cm_subsec_model_chemicals%" == "processes"
         !! see above
         pm_specFeDem(t, regi, "feels", "chemH2", "standard") =
             pm_specFeDem("2020", regi, "feels", "chemOld", "standard");
- 
+
         !! Calc feh2s for chemH2
         !! see above but without efficiency improvement, assumption: hydrogen and gas have the same efficiency
         pm_specFeDem(t, regi, "feh2s", "chemH2", "standard") =
@@ -1258,7 +1261,7 @@ $ifthen.cm_subsec_model_chemicals "%cm_subsec_model_chemicals%" == "processes"
 
       );
     );
-    
+
 $endif.cm_subsec_model_chemicals
 
 );

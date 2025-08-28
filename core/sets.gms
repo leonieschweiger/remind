@@ -182,7 +182,7 @@ all_te          "all energy technologies, including from modules"
     biodiesel       "oil biomass to biodiesel"
     biopyronly      "biomass pyrolysis to biochar, no energy co-product (established industrial)"
     biopyrhe        "biomass pyrolysis to biochar plus heat (established industrial)"
-    biopyrchp       "biomass pyrolysis to biochar plus heat and power (established industrial)"   
+    biopyrchp       "biomass pyrolysis to biochar plus heat and power (established industrial)"
     biopyrliq       "biomass pyrolysis to biochar plus liquids (combined with Fischer-Tropsch plant, advanced industrial)"
     biocharuse      "use of biochar, e.g. for soil or for building materials"
     geohdr          "geothermal electric hot dry rock"
@@ -481,7 +481,6 @@ all_enty             "all types of quantities"
 *** materials, feedstock, and industrial goods
 
     co2f         "feedstock CO2"
-    co2fdummy         "feedstock CO2 deummy"
 
 *** chemicals
     otherChem
@@ -1290,7 +1289,7 @@ te(all_te)              "energy technologies"
     biodiesel       "oil biomass to biodiesel"
     biopyronly      "biomass pyrolysis to biochar, no energy co-product (established industrial)"
     biopyrhe        "biomass pyrolysis to biochar plus heat (established industrial)"
-    biopyrchp       "biomass pyrolysis to biochar plus heat and power (established industrial)"   
+    biopyrchp       "biomass pyrolysis to biochar plus heat and power (established industrial)"
     biopyrliq       "biomass pyrolysis to biochar plus liquids (combined with Fischer-Tropsch plant, advanced industrial)"
     biocharuse      "use of biochar, e.g. for soil or for building materials"
     geohdr          "geothermal electric hot dry rock"
@@ -1362,8 +1361,8 @@ $ifthen.cm_subsec_model_chemicals "%cm_subsec_model_chemicals%" == "processes"
     stCrChemRe
 
     mechRe
-    
-    meSySol 
+
+    meSySol
     meSyNg
     meSyLiq
     meSySol_cc
@@ -1372,7 +1371,7 @@ $ifthen.cm_subsec_model_chemicals "%cm_subsec_model_chemicals%" == "processes"
     meSyH2
     meSyChemRe
 
-    amSyCoal 
+    amSyCoal
     amSyNG
     amSyLiq
     amSyCoal_cc
@@ -1437,7 +1436,7 @@ teAdj(all_te)           "technologies with adjustment costs on capacity addition
     biodiesel       "oil biomass to biodiesel"
     biopyronly      "biomass pyrolysis to biochar, no energy co-product (established industrial)"
     biopyrhe        "biomass pyrolysis to biochar plus heat (established industrial)"
-    biopyrchp       "biomass pyrolysis to biochar plus heat and power (established industrial)"   
+    biopyrchp       "biomass pyrolysis to biochar plus heat and power (established industrial)"
     biopyrliq       "biomass pyrolysis to biochar plus liquids (combined with Fischer-Tropsch plant, advanced industrial)"
     geohdr          "geothermal electric hot dry rock"
     geohe           "geothermal heat"
@@ -1471,18 +1470,18 @@ teAdj(all_te)           "technologies with adjustment costs on capacity addition
 $ifthen.cm_subsec_model_chemicals "%cm_subsec_model_chemicals%" == "processes"
     chemElec        "Other chemicals by Electricity"
     chemH2          "Other chemicals by Hydrogen"
-    meSySol         "Methanol by Soilds" 
+    meSySol         "Methanol by Soilds"
     meSyNg          "Methanol by Gas"
     meSyLiq         "Methanol by Liquids"
-    meSySol_cc      "Methanol by Soilds CCS" 
+    meSySol_cc      "Methanol by Soilds CCS"
     meSyNg_cc       "Methanol by Gas CCS"
     meSyLiq_cc      "Methanol by Liquids CCS"
     meSyH2          "Methanol by Hydrogen"
     meSyChemRe      "Methanol by Chemical Recycling"
-    amSyCoal        "Ammonia by Coal" 
+    amSyCoal        "Ammonia by Coal"
     amSyNG          "Ammonia by Gas"
     amSyLiq         "Ammonia by Liquids"
-    amSyCoal_cc     "Ammonia by Coal CCS" 
+    amSyCoal_cc     "Ammonia by Coal CCS"
     amSyNG_cc       "Ammonia by Gas CCS"
     amSyLiq_cc      "Ammonia by Liquids CCS"
     amSyH2          "Ammonia by Hydrogen"
@@ -1519,7 +1518,7 @@ teLearn(all_te)     "Learning technologies (for which investment costs are reduc
 $ifthen.c_BCLearning not "%c_BCLearning%" == 0
     biopyronly      "biomass pyrolysis to biochar, no energy co-product (established industrial)"
     biopyrhe        "biomass pyrolysis to biochar plus heat (established industrial)"
-    biopyrchp       "biomass pyrolysis to biochar plus heat and power (established industrial)"  
+    biopyrchp       "biomass pyrolysis to biochar plus heat and power (established industrial)"
 $endif.c_BCLearning
 /
 
@@ -1592,7 +1591,7 @@ teBio(all_te)      "biomass energy systems technologies"
     biodiesel   "oil biomass to biodiesel"
     biopyronly  "biomass pyrolysis to biochar, no energy co-product (established industrial)"
     biopyrhe    "biomass pyrolysis to biochar plus heat (established industrial)"
-    biopyrchp   "biomass pyrolysis to biochar plus heat and power (established industrial)"   
+    biopyrchp   "biomass pyrolysis to biochar plus heat and power (established industrial)"
     biopyrliq   "biomass pyrolysis to biochar plus liquids (combined with Fischer-Tropsch plant, advanced industrial)"
 /
 teRe(all_te)     "renewable technologies including biomass"
@@ -1614,7 +1613,7 @@ teRe(all_te)     "renewable technologies including biomass"
     biodiesel   "oil biomass to biodiesel"
     biopyronly  "biomass pyrolysis to biochar, no energy co-product (established industrial)"
     biopyrhe    "biomass pyrolysis to biochar plus heat (established industrial)"
-    biopyrchp   "biomass pyrolysis to biochar plus heat and power (established industrial)"   
+    biopyrchp   "biomass pyrolysis to biochar plus heat and power (established industrial)"
     biopyrliq   "biomass pyrolysis to biochar plus liquids (combined with Fischer-Tropsch plant, advanced industrial)"
     geohdr      "geothermal electric hot dry rock"
     geohe       "geothermal heat"
@@ -1717,7 +1716,7 @@ teFischerTropsch(all_te) "technologies with fischer-tropsch recycle converting v
     coalftrec   "coal based fischer-tropsch recycle"
     coalftcrec  "coal based fischer-tropsch with carbon capture recycle"
     bioftrec    "biomass based fischer-tropsch recycle"
-    bioftcrec   "biomass based fischer-tropsch with carbon capture recycle"   
+    bioftcrec   "biomass based fischer-tropsch with carbon capture recycle"
     biopyrliq   "biomass pyrolysis to biochar plus liquids (combined with Fischer-Tropsch plant, advanced industrial)"
 /
 teBioPebiolc(all_te)      "biomass technologies using pebiolc"
@@ -1737,7 +1736,7 @@ teBioPebiolc(all_te)      "biomass technologies using pebiolc"
     bioethl     "biomass to ethanol"
     biopyronly      "biomass pyrolysis to biochar, no energy co-product (established industrial)"
     biopyrhe        "biomass pyrolysis to biochar plus heat (established industrial)"
-    biopyrchp       "biomass pyrolysis to biochar plus heat and power (established industrial)"   
+    biopyrchp       "biomass pyrolysis to biochar plus heat and power (established industrial)"
     biopyrliq       "biomass pyrolysis to biochar plus liquids (combined with Fischer-Tropsch plant, advanced industrial)"
 /
 

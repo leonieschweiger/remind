@@ -211,6 +211,7 @@ q37_costCESmarkup(t,regi,in)$(ppfen_industry_dyn37(in))..
 *'  emitted, and some is emitted as non-energy emissions
 ***--------------------------------------------------------------------------
 
+$ifthen.cm_subsec_model_chemicals "%cm_subsec_model_chemicals%" == "ces"
 *' Since all feedstocks come from feso/feli/fega,
 *' the share of feso+feli+fega in chemicals FE demand has to be larger than
 *' the feedstocks share.
@@ -417,6 +418,60 @@ q37_wasteIncinerationEmiBalance(t,regi,emiTe(enty),emiMkt) ..
     !! get incinerated with carbon capture
   - vm_nonFosPlastic_incinCC(t,regi,emiMkt)$( sameas(enty,"co2") )
 ;
+$endif.cm_subsec_model_chemicals
+
+$ifthen.cm_subsec_model_chemicals "%cm_subsec_model_chemicals%" == "processes"
+
+*' Calculate mass of carbon contained in chemical feedstocks
+*' (not including carbon that gets lost as chemical process emissions)
+q37_FeedstocksCarbon(t,regi) ..
+  v37_feedstocksCarbon(t,regi)
+  =e=
+  sum(mat2ue(mat,"ue_chemicals"),
+    v37_matFlow(t,regi,mat)
+    * p37_matCarbonContent(mat)
+  )
+;
+
+*' Calculate carbon contained in plastics as a share of carbon in feedstock [GtC]
+q37_plasticsCarbon(t,regi) ..
+  v37_plasticsCarbon(t,regi)
+  =e=
+  v37_matFlow(t,regi,"hvc")
+  * p37_matCarbonContent("hvc")
+  * p37_plascticsShareInHVC(t,regi)
+;
+
+q37_plasticWaste(t,regi) ..
+  v37_plasticWaste(t,regi)
+  =e=
+  v37_plasticsCarbon(t,regi)
+;
+
+*' carbon contained in incinerated plastics
+*' this is used in emissions accounting
+q37_incineratedPlastics(t,regi) ..
+  v37_incineratedPlastics(t,regi)
+  =e=
+    v37_plasticWaste(t,regi)
+  * pm_incinerationRate(t,regi)
+;
+
+q37_incinerationCCS(t,regi) ..
+  vm_incinerationCCS(t,regi)
+  =e=
+    v37_incineratedPlastics(t,regi)
+  * v37_regionalWasteIncinerationCCSshare(t,regi)
+;
+
+q37_emiNonPlasticWaste(t,regi) ..
+  v37_emiNonPlasticWaste(t,regi)
+  =e=
+  v37_feedstocksCarbon(t,regi)
+  * (1 - s37_plasticsShare)
+  * cm_nonPlasticFeedstockEmiShare
+;
+$endif.cm_subsec_model_chemicals
 
 *** ---------------------------------------------------------------------------
 ***        2. Process-Based
@@ -469,18 +524,18 @@ q37_prodMat(t,regi,mat)$( matOut(mat) ) ..
 *'    change.low = -max_change and change.up = max_change
 *' 2. multiply both sides with sum_i a_i(t) * sum_i a_i(t-1)
 ***------------------------------------------------------
-q37_chemFlow(t,regi,mat)$(sum((tePrc,opmoPrc), tePrcStiffShare(tePrc,opmoPrc,mat)))  .. 
+q37_chemFlow(t,regi,mat)$(sum((tePrc,opmoPrc), tePrcStiffShare(tePrc,opmoPrc,mat)))  ..
   v37_chemFlow(t,regi,mat)
-=e= 
+=e=
   sum((tePrc, opmoPrc)$(tePrcStiffShare(tePrc, opmoPrc, mat)), vm_outflowPrc(t,regi,tePrc,opmoPrc))
 ;
 
 q37_restrictMatShareChange(t,regi,tePrc,opmoPrc,mat)$(t.val gt 2020
                                                          AND tePrcStiffShare(tePrc,opmoPrc,mat)) ..
-  vm_outflowPrc(t,regi,tePrc,opmoPrc) 
+  vm_outflowPrc(t,regi,tePrc,opmoPrc)
 =e=
   (p37_teMatShareHist(regi,tePrc,opmoPrc,mat)+ v37_matShareChange(t,regi,tePrc,opmoPrc,mat))
-  * v37_chemFlow(t,regi,mat) !! Try to use different opmoPrc 
+  * v37_chemFlow(t,regi,mat) !! Try to use different opmoPrc
 ;
 
 ***------------------------------------------------------
@@ -512,7 +567,7 @@ q37_limitCapMatHist(t,regi,tePrc)$(t.val le 2020) ..
      * vm_cap(t,regi,tePrc,rlf)
      )
  ;
- 
+
  q37_limitCapMat(t,regi,tePrc)$(t.val gt 2020) ..
      sum(tePrc2opmoPrc(tePrc,opmoPrc),
        vm_outflowPrc(t,regi,tePrc,opmoPrc)
