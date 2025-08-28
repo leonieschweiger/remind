@@ -16,7 +16,7 @@
 *' Industry final energy balance
 ***------------------------------------------------------
 q37_demFeIndst(t,regi,entyFe,emiMkt)$( entyFe2Sector(entyFe,"indst") ) ..
-  sum(se2fe(entySe,entyFe,te),
+  sum(sefe(entySe,entyFe),
     vm_demFeSector_afterTax(t,regi,entySe,entyFe,"indst",emiMkt)
   )
   =e=
@@ -223,7 +223,7 @@ q37_chemicals_feedstocks_limit(t,regi) ..
 
 *' Balance for total feedstock demand per FE, summed over SE
 q37_demFeFeedstockChemIndst(t,regi,entyFe,emiMkt) ..
-  sum(se2fe(entySe,entyFe,te),
+  sum(sefe(entySe,entyFe),
     vm_demFeNonEnergySector(t,regi,entySe,entyFe,"indst",emiMkt)
   )
   =e=
@@ -246,24 +246,41 @@ q37_demFeFeedstockChemIndst(t,regi,entyFe,emiMkt) ..
 
 *' Feedstocks have identical fossil/biomass/synfuel shares as industry FE
 q37_feedstocksShares(t,regi,entySe,entyFe,emiMkt)$(
-                         sum(te, se2fe(entySe,entyFe,te))
+                         sefe(entySe,entyFe)
                      AND entyFE2sector2emiMkt_NonEn(entyFe,"indst",emiMkt) ) ..
     vm_demFeSector_afterTax(t,regi,entySe,entyFe,"indst",emiMkt)
-  * sum(se2fe(entySe2,entyFe,te),
+  * sum(sefe(entySe2,entyFe),
       vm_demFeNonEnergySector(t,regi,entySe2,entyFe,"indst",emiMkt)
     )
   =e=
     vm_demFeNonEnergySector(t,regi,entySe,entyFe,"indst",emiMkt)
-  * sum(se2fe2(entySe2,entyFe,te),
+  * sum(sefe(entySe2,entyFe),
       vm_demFeSector_afterTax(t,regi,entySe2,entyFe,"indst",emiMkt)
     )
 ;
 
+*' Shares of SE/FE combinations among all chemicals carbonaceous fuels
+*' is needed to split feedstocks carbon into SE and FE
+*' We use vm_demFeNonEnergySector instead of vm_demFeSector_afterTax
+*' since it is already restricted to chemicals carbonaceous fuels,
+*' and equals vm_demFeSector_afterTax multiplied by a scalar factor,
+*' which cancels out in the division.
+q37_chemicalFeFosShare(t,regi)  ..
+  v37_chemicalFeFosShare(t,regi)
+  * sum((entySe,entyFe)$(sefe(entySe,entyFe)
+                       AND entyFE2sector2emiMkt_NonEn(entyFe,"indst","ETS")),
+    vm_demFeNonEnergySector(t,regi,entySe,entyFe,"indst","ETS"))
+  =e=
+  sum((entySe,entyFe)$(sefe(entySe,entyFe)
+                       AND entySeFos(entySe)
+                       AND entyFE2sector2emiMkt_NonEn(entyFe,"indst","ETS")),
+    vm_demFeNonEnergySector(t,regi,entySe,entyFe,"indst","ETS"))
+;
+
 *' Calculate mass of carbon contained in chemical feedstocks
 *' (not including carbon that gets lost as chemical process emissions)
-q37_FeedstocksCarbon(t,regi,sefe(entySe,entyFe),emiMkt)$(
-                         entyFE2sector2emiMkt_NonEn(entyFe,"indst",emiMkt) ) ..
-  v37_feedstocksCarbon(t,regi,entySe,entyFe,emiMkt)
+q37_FeedstocksCarbon(t,regi) ..
+  v37_feedstocksCarbon(t,regi)
   =e=
 $ifthen.cm_subsec_model_chemicals "%cm_subsec_model_chemicals%" == "ces"
     vm_demFeNonEnergySector(t,regi,entySe,entyFe,"indst",emiMkt)
@@ -273,23 +290,20 @@ $else.cm_subsec_model_chemicals
     v37_matFlow(t,regi,mat)
     * p37_matCarbonContent(mat)
   )
-  * p37_carbonaceousSeFeShare(t,regi,entySe,entyFe)
 $endif.cm_subsec_model_chemicals
 ;
 
 *' Calculate carbon contained in plastics as a share of carbon in feedstock [GtC]
-q37_plasticsCarbon(t,regi,sefe(entySe,entyFe),emiMkt)$(
-                         entyFE2sector2emiMkt_NonEn(entyFe,"indst",emiMkt) ) ..
-  v37_plasticsCarbon(t,regi,entySe,entyFe,emiMkt)
+q37_plasticsCarbon(t,regi) ..
+  v37_plasticsCarbon(t,regi)
   =e=
 $ifthen.cm_subsec_model_chemicals "%cm_subsec_model_chemicals%" == "ces"
-    v37_feedstocksCarbon(t,regi,entySe,entyFe,emiMkt)
+    v37_feedstocksCarbon(t,regi)
   * s37_plasticsShare
 $else.cm_subsec_model_chemicals
     v37_matFlow(t,regi,"hvc")
   * p37_matCarbonContent("hvc")
   * p37_plascticsShareInHVC(t,regi)
-  * p37_carbonaceousSeFeShare(t,regi,entySe,entyFe)
 $endif.cm_subsec_model_chemicals
 ;
 
@@ -298,113 +312,108 @@ $endif.cm_subsec_model_chemicals
 *' 10-year steps allocate averge of 2055 and 2060 to 2070, unless `cm_wastelag`
 *' is 0, in which case waste is incurred in the same period plastics are
 *' produced
-q37_plasticWaste(ttot,regi,sefe(entySe,entyFe),emiMkt)$(
-                         entyFE2sector2emiMkt_NonEn(entyFe,"indst",emiMkt)
-                     AND ttot.val ge max(2005, cm_startyear)               ) ..
-  v37_plasticWaste(ttot,regi,entySe,entyFe,emiMkt)
+q37_plasticWaste(ttot,regi)$( ttot.val ge 2005 ) ..
+  v37_plasticWaste(ttot,regi)
   =e=
     !! prompt waste (for wastelag = off or timesteps 2005 and 2010 as there is no plastics carbon produced before)
-    v37_plasticsCarbon(ttot,regi,entySe,entyFe,emiMkt)$(cm_wastelag eq 0 OR ttot.val lt 2015)
+    v37_plasticsCarbon(ttot,regi)$(cm_wastelag eq 0 OR ttot.val lt 2015)
     !! lagged waste
-  + ( v37_plasticsCarbon(ttot-2,regi,entySe,entyFe,emiMkt)$( ttot.val lt 2070 )
-    + ( ( v37_plasticsCarbon(ttot-2,regi,entySe,entyFe,emiMkt)
-        + v37_plasticsCarbon(ttot-1,regi,entySe,entyFe,emiMkt)
+  + ( v37_plasticsCarbon(ttot-2,regi)$( ttot.val lt 2070 )
+    + ( ( v37_plasticsCarbon(ttot-2,regi)
+        + v37_plasticsCarbon(ttot-1,regi)
         )
       / 2
       )$( ttot.val eq 2070 )
-    + v37_plasticsCarbon(ttot-1,regi,entySe,entyFe,emiMkt)$( ttot.val gt 2070 )
+    + v37_plasticsCarbon(ttot-1,regi)$( ttot.val gt 2070 )
     )$( cm_wastelag gt 0 AND ttot.val ge 2015)
 ;
 
 *' calculate carbon contained in incinerated plastics
 *' this is used in emissions accounting
-q37_incineratedPlastics(t,regi,sefe(entySe,entyFe),emiMkt)$(
-                         entyFE2sector2emiMkt_NonEn(entyFe,"indst",emiMkt) ) ..
-  v37_incineratedPlastics(t,regi,entySe,entyFe,emiMkt)
+q37_incineratedPlastics(t,regi) ..
+  v37_incineratedPlastics(t,regi)
   =e=
-    v37_plasticWaste(t,regi,entySe,entyFe,emiMkt)
+    v37_plasticWaste(t,regi)
   * pm_incinerationRate(t,regi)
   ;
 
 *' emissions from plastics incineration as a share of total plastic waste,
 *' calculated as carbon in incinerated plastics discounted by captured amount
-q37_incinerationEmi(t,regi,sefe(entySe,entyFe),emiMkt)$(
-                         entyFE2sector2emiMkt_NonEn(entyFe,"indst",emiMkt) ) ..
-  v37_incinerationEmi(t,regi,entySe,entyFe,emiMkt)
+*' account in ETS, as we assume that incineration is done with energy recovery
+*' and therefore emissions are accounted in the energy sector (IPCC sector 1)
+q37_incinerationEmi(t,regi,emiMkt) ..
+  v37_incinerationEmi(t,regi,emiMkt)
   =e=
-    v37_incineratedPlastics(t,regi,entySe,entyFe,emiMkt)
-  * (1 - v37_regionalWasteIncinerationCCSshare(t,regi))
+    (v37_incineratedPlastics(t,regi)
+    * (1 - v37_regionalWasteIncinerationCCSshare(t,regi))
+    )$(sameas(emiMkt,"ETS"))
 ;
 
-q37_incinerationCCS(t,regi,sefe(entySe,entyFe),emiMkt)$(
-                         entyFE2sector2emiMkt_NonEn(entyFe,"indst",emiMkt) ) ..
-  vm_incinerationCCS(t,regi,entySe,entyFe,emiMkt)
+q37_incinerationCCS(t,regi) ..
+  vm_incinerationCCS(t,regi)
   =e=
-    v37_incineratedPlastics(t,regi,entySe,entyFe,emiMkt)
+    v37_incineratedPlastics(t,regi)
   * v37_regionalWasteIncinerationCCSshare(t,regi)
 ;
 
 *' sum non-fossil carbon from plastics that get incinerated with carbon capture
-q37_nonFosPlastic_incinCC(t,regi,emiMkt)..
+q37_nonFosPlastic_incinCC(t,regi,emiMkt) ..
   vm_nonFosPlastic_incinCC(t,regi,emiMkt)
   =e=
-  sum((entyFE2sector2emiMkt_NonEn(entyFe,"indst",emiMkt),
-         se2fe(entySe,entyFe,te))$( entySeBio(entySe) OR entySeSyn(entySe) ),
-      vm_incinerationCCS(t,regi,entySe,entyFe,emiMkt)
-    )
+    (vm_incinerationCCS(t,regi)
+    * (1 - v37_chemicalFeFosShare(t,regi))
+    )$(sameas(emiMkt,"ES"))
 ;
 
 *' calculate negative emissions from non-fossil carbon in plastics
 *' that do not get incinerated ("plastic removals")
 *' attribute to ES market as we account these emissions in the waste sector (IPCC sector 5)
-q37_emiNonFosNonIncineratedPlastics(t,regi,emi,emiMkt)..
+q37_emiNonFosNonIncineratedPlastics(t,regi,emi,emiMkt) ..
   vm_emiNonFosNonIncineratedPlastics(t,regi,emi,emiMkt)
   =e=
-  sum((entyFE2sector2emiMkt_NonEn(entyFe,"indst",emiMkt2),
-         se2fe(entySe,entyFe,te))$( entySeBio(entySe) OR entySeSyn(entySe) ),
 *' substract all non-fossil plastics carbon
-    - v37_plasticsCarbon(t,regi,entySe,entyFe,emiMkt2)
+    ((- v37_plasticsCarbon(t,regi)
 *' add non-fossil incinerated plastics carbon
-    + v37_plasticWaste(t,regi,entySe,entyFe,emiMkt2)
-      * pm_incinerationRate(t,regi)
+    + v37_plasticWaste(t,regi)
+      * pm_incinerationRate(t,regi))
+    * (1 - v37_chemicalFeFosShare(t,regi))
   )$( sameas(emi,"co2") AND sameas(emiMkt,"ES") )
 ;
 
 *' calculate non-fossil carbon in non-plastic waste that does not get emitted to the atmosphere (i.e. is stored permanently)
-q37_nonFosNonPlasticNonEmitted(t,regi)..
+q37_nonFosNonPlasticNonEmitted(t,regi) ..
   vm_nonFosNonPlasticNonEmitted(t,regi)
   =e=
-  sum((entyFE2sector2emiMkt_NonEn(entyFe,"indst",emiMkt),
-          se2fe(entySe,entyFe,te))$( entySeBio(entySe) OR entySeSyn(entySe) ),
-    (v37_feedstocksCarbon(t,regi,entySe,entyFe,emiMkt)
-    - v37_plasticsCarbon(t,regi,entySe,entyFe,emiMkt))
-    * (1 - cm_nonPlasticFeedstockEmiShare))
+  (v37_feedstocksCarbon(t,regi)
+  - v37_plasticsCarbon(t,regi))
+  * (1 - v37_chemicalFeFosShare(t,regi))
+  * (1 - cm_nonPlasticFeedstockEmiShare)
 ;
 
 *' calculate net emissions from non-plastic waste
 *' attribute to ES market as we assume open burning without energy recovery or landfilling
 *' (depending on cm_nonPlasticFeedstockEmiShare) and therefore account these emissions
 *' in the waste sector (IPCC sector 5)
-q37_emiNonPlasticWaste(t,regi,emi,emiMkt)..
+q37_emiNonPlasticWaste(t,regi,emi,emiMkt) ..
   v37_emiNonPlasticWaste(t,regi,emi,emiMkt)
   =e=
-  (  sum((entyFE2sector2emiMkt_NonEn(entyFe,"indst",emiMkt2),
-         se2fe(entySe,entyFe,te))$(entySeFos(entySe)),
 *' fossil carbon in non-plastic waste that gets emitted to the atmosphere
-    (v37_feedstocksCarbon(t,regi,entySe,entyFe,emiMkt2)
-    - v37_plasticsCarbon(t,regi,entySe,entyFe,emiMkt2))
-    * cm_nonPlasticFeedstockEmiShare)
+    ((v37_feedstocksCarbon(t,regi)
+    - v37_plasticsCarbon(t,regi))
+    * v37_chemicalFeFosShare(t,regi)
+    * cm_nonPlasticFeedstockEmiShare
 *' non-fossil carbon in non-plastic waste that does not get emitted to the atmosphere (i.e. is stored permanently)
   - vm_nonFosNonPlasticNonEmitted(t,regi)
   )$( sameas(emi,"co2") AND sameas(emiMkt,"ES") )
 ;
 
 *' calculate chemical process emissions as carbon that does not end up in product but is emitted during conversion processes
-q37_emiChemicalsProcess(t,regi,emi,emiMkt)..
+*' can become negative as vm_demFeNonEnergySector and v37_feedstocksCarbon are calculated independently and may be inconsistent
+q37_emiChemicalsProcess(t,regi,emi,emiMkt) ..
   v37_emiChemicalsProcess(t,regi,emi,emiMkt)
   =e=
   sum((entyFE2sector2emiMkt_NonEn(entyFe,sector,emiMkt),
-         se2fe(entySe,entyFe,te)),
+         sefe(entySe,entyFe)),
   vm_demFeNonEnergySector(t,regi,entySe,entyFe,sector,emiMkt)
   * pm_emifacNonEnergy(t,regi,entySe,entyFe,sector,emi)
   )
@@ -412,7 +421,7 @@ q37_emiChemicalsProcess(t,regi,emi,emiMkt)..
 
 *' sum all emissions from feedstocks that are not accounted as energy-related emissions
 *' (i.e. no combustion or combustion without energy recovery)
-q37_emiFeedstockNoEnergy(t,regi,emi,emiMkt)..
+q37_emiFeedstockNoEnergy(t,regi,emi,emiMkt) ..
   vm_emiFeedstockNoEnergy(t,regi,emi,emiMkt)
   =e=
    v37_emiChemicalsProcess(t,regi,emi,emiMkt)
@@ -425,13 +434,11 @@ q37_wasteIncinerationEmiBalance(t,regi,emiTe(enty),emiMkt) ..
   vm_wasteIncinerationEmiBalance(t,regi,enty,emiMkt)
   =e=
     !! add fossil emissions from plastics incineration without carbon capture.
-  + sum((entyFE2sector2emiMkt_NonEn(entyFe,"indst",emiMkt),
-         se2fe(entySe,entyFe,te))$( entySeFos(entySe) ),
-      v37_incinerationEmi(t,regi,entySe,entyFe,emiMkt)
-    )$( sameas(enty,"co2") )
+    (v37_incinerationEmi(t,regi,emiMkt)
+    * v37_chemicalFeFosShare(t,regi)
     !! substract carbon from non-fossil origin contained in plastics that
     !! get incinerated with carbon capture
-  - vm_nonFosPlastic_incinCC(t,regi,emiMkt)$( sameas(enty,"co2") )
+  - vm_nonFosPlastic_incinCC(t,regi,emiMkt))$( sameas(enty,"co2") )
 ;
 
 *** ---------------------------------------------------------------------------
@@ -485,7 +492,7 @@ q37_prodMat(t,regi,mat)$( matOut(mat) ) ..
 *'    change.low = -max_change and change.up = max_change
 *' 2. multiply both sides with sum_i a_i(t) * sum_i a_i(t-1)
 ***------------------------------------------------------
-q37_chemflow(t,regi,mat)$(sum((tePrc,opmoPrc), tePrcStiffShare(tePrc,opmoPrc,mat)))  ..
+q37_chemflow(t,regi,mat)$(sum((tePrc,opmoPrc), tePrcStiffShare(tePrc,opmoPrc,mat))) ..
   v37_chemflow(t,regi,mat)
 =e=
   sum((tePrc, opmoPrc)$(tePrcStiffShare(tePrc, opmoPrc, mat)), vm_outflowPrc(t,regi,tePrc,opmoPrc))

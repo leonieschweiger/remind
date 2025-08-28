@@ -160,9 +160,11 @@ $endif.cm_subsec_model_steel
 
   in_chemicals_feedstock_37(all_in)   "chemicals FE that can provide feedstocks"
   /
+$ifthen.cm_subsec_model_chemicals "%cm_subsec_model_chemicals%" == "ces"
     feso_chemicals
     feli_chemicals
     fega_chemicals
+$endif.cm_subsec_model_chemicals
   /
 
   ces_eff_target_dyn37(all_in,all_in)   "limits to specific total energy use"
