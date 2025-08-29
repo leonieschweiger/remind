@@ -412,11 +412,21 @@ q37_emiNonPlasticWaste(t,regi,emi,emiMkt) ..
 q37_emiChemicalsProcess(t,regi,emi,emiMkt) ..
   v37_emiChemicalsProcess(t,regi,emi,emiMkt)
   =e=
+$ifthen.cm_subsec_model_chemicals "%cm_subsec_model_chemicals%" == "ces"
   sum((entyFE2sector2emiMkt_NonEn(entyFe,sector,emiMkt),
          sefe(entySe,entyFe)),
   vm_demFeNonEnergySector(t,regi,entySe,entyFe,sector,emiMkt)
   * pm_emifacNonEnergy(t,regi,entySe,entyFe,sector,emi)
   )
+$else.cm_subsec_model_chemicals
+  sum((entyFE2sector2emiMkt_NonEn(entyFe,sector,emiMkt),
+         se2fe(entySe,entyFe,te)),
+  vm_demFeNonEnergySector(t,regi,entySe,entyFe,sector,emiMkt)
+  * pm_emifac(t,regi,entySe,entyFe,te,emi)
+  )
+  - (v37_feedstocksCarbon(t,regi)
+  * v37_chemicalFeFosShare(t,regi))$(sameas(emi,"co2") AND sameas(emiMkt,"ETS"))
+$endif.cm_subsec_model_chemicals
 ;
 
 *' sum all emissions from feedstocks that are not accounted as energy-related emissions
