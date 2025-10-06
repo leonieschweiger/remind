@@ -254,26 +254,123 @@ loop(regi$(sameAs(regi,"CHA")),
 *** 2024 capacity: 1175GW, added capactiy 30.5GW (https://globalenergymonitor.org/report/boom-and-bust-coal-2025/)
 *** deltacap is annual added capacity between year x-1 and x; 78:22 ratio is based on pypsa data; deltacap is annual so divide by 5
 *** expect 2025 capacity to be 1200GW, given 2020 capacity is 1100GW, deltacap in 2025 is derived to be 20GW/yr
-vm_deltaCap.lo("2025",regi,"pc","1") = 20 * 0.78 / 1e3;
-vm_deltaCap.lo("2025",regi,"coalchp","1") = 20 * 0.22 / 1e3;
+vm_deltaCap.fx("2025",regi,"pc","1") = 37 * 0.78 / 1e3;
+vm_deltaCap.fx("2025",regi,"coalchp","1") = 37 * 0.22 / 1e3;
 
 *** 2025 to 2030 bounds on addition and early retirement, splitting bounds for pc and coalchp with 78:22 ratio amonng 20GW/yr (2030 1300GW: expert guess, GEM above source shows under construction is 200GW, preconstruction is also 200GW, so together this implementation presumes all under construction will be built, but non approved will be built by 2030)
-vm_deltaCap.lo("2030",regi,"pc","1") = 20 * 0.78 / 1e3;
-vm_deltaCap.lo("2030",regi,"coalchp","1") = 20 * 0.22 / 1e3;
+vm_deltaCap.fx("2030",regi,"pc","1") = 8 * 0.78 / 1e3;
+vm_deltaCap.fx("2030",regi,"coalchp","1") = 8 * 0.22 / 1e3;
+vm_capEarlyReti.fx("2030",regi,"pc") = 0.0001;
+vm_capEarlyReti.fx("2030",regi,"coalchp") = 0.0001;
 
 *** lower capacity factor of coal power plants in China, to accomodate peaking with added capacities
 *** current utilization rate is likely  3840hrs/yrs https://cgs.umd.edu/research-impact/publications/implications-continued-coal-builds-14th-five-year-plan-china-eng, correspond to 43.8%
 *** by 2030 we expect the capacity factor to be 35% (expert guess)
-vm_capFac.fx("2020",regi,"pc") = 0.54;
-vm_capFac.fx("2025",regi,"pc") = 0.438;
-vm_capFac.fx("2030",regi,"pc") = 0.35;
+vm_capFac.lo("2020",regi,"pc") = 0.54;
+vm_capFac.lo("2025",regi,"pc") = 0.438;
+vm_capFac.up("2025",regi,"pc") = 0.52;
+vm_capFac.lo("2030",regi,"pc") = 0.35;
+vm_capFac.up("2030",regi,"pc") = 0.52;
 
-vm_capFac.fx("2020",regi,"coalchp") = 0.54;
-vm_capFac.fx("2025",regi,"coalchp") = 0.438;
-vm_capFac.fx("2030",regi,"coalchp") = 0.35;
+vm_capFac.lo("2020",regi,"coalchp") = 0.54;
+vm_capFac.lo("2025",regi,"coalchp") = 0.438;
+vm_capFac.up("2025",regi,"coalchp") = 0.52;
+vm_capFac.lo("2030",regi,"coalchp") = 0.35;
+vm_capFac.up("2030",regi,"coalchp") = 0.52;
 
 );
 $endif.chaCoalBounds
+
+$ifthen.chaPOpolicyMode "%cm_chaCoalPOSpeedMode%" == "vredelta"
+loop(regi$(sameAs(regi,"CHA")),
+  vm_deltaCap.up("2025",regi,"gaschp","1")= 0.005;
+  vm_deltaCap.up("2030",regi,"gaschp","1")= 0.0025;
+  vm_deltaCap.up("2035",regi,"gaschp","1")= 0.0025;
+);
+
+***$ontext
+** wind capacity addition speed is 16.9%, spv is 28.8% (2022 first 9 months)
+** wind capacity addition speed is 21%, spv is 55% (2023)
+$ifthen.chaPOpolicy "%cm_chaCoalPOSpeed%" == "base"
+loop(regi$(sameAs(regi,"CHA")),
+  vm_deltaCap.up("2025",regi,"wind","1")= 0.27*vm_capCum.l("2020",regi,"wind");
+  vm_deltaCap.up("2025",regi,"spv","1")= 0.55*vm_capCum.l("2020",regi,"spv");
+  vm_deltaCap.up("2030",regi,"wind","1")= 0.3*vm_capCum.l("2025",regi,"wind");
+  vm_deltaCap.up("2030",regi,"spv","1")= 0.65*vm_capCum.l("2025",regi,"spv");
+  vm_deltaCap.up("2035",regi,"wind","1")= 0.33*vm_capCum.l("2030",regi,"wind");
+  vm_deltaCap.up("2035",regi,"spv","1")= 0.75*vm_capCum.l("2030",regi,"spv");
+
+);
+$endif.chaPOpolicy
+
+$ifthen.chaPOpolicy "%cm_chaCoalPOSpeed%" == "plateau25"
+loop(regi$(sameAs(regi,"CHA")),
+  vm_deltaCap.up("2025",regi,"wind","1")= 0.3*vm_capCum.l("2020",regi,"wind");
+  vm_deltaCap.up("2025",regi,"spv","1")= 0.7*vm_capCum.l("2020",regi,"spv");
+  vm_deltaCap.up("2030",regi,"wind","1")= 0.4*vm_capCum.l("2025",regi,"wind");
+  vm_deltaCap.up("2030",regi,"spv","1")= 0.8*vm_capCum.l("2025",regi,"spv");
+  vm_deltaCap.up("2035",regi,"wind","1")= 0.5*vm_capCum.l("2030",regi,"wind");
+  vm_deltaCap.up("2035",regi,"spv","1")= 1*vm_capCum.l("2030",regi,"spv");
+);
+$endif.chaPOpolicy
+
+$ifthen.chaPOpolicy "%cm_chaCoalPOSpeed%" == "plateau30"
+loop(regi$(sameAs(regi,"CHA")),
+  vm_deltaCap.up("2025",regi,"wind","1")= 0.3*vm_capCum.l("2020",regi,"wind");
+  vm_deltaCap.up("2025",regi,"spv","1")= 0.65*vm_capCum.l("2020",regi,"spv");
+  vm_deltaCap.up("2030",regi,"wind","1")= 0.3*vm_capCum.l("2025",regi,"wind");
+  vm_deltaCap.up("2030",regi,"spv","1")= 0.65*vm_capCum.l("2025",regi,"spv");
+  vm_deltaCap.up("2035",regi,"wind","1")= 0.5*vm_capCum.l("2030",regi,"wind");
+  vm_deltaCap.up("2035",regi,"spv","1")= 1*vm_capCum.l("2030",regi,"spv");
+
+);
+$endif.chaPOpolicy
+
+
+$ifthen.chaPOpolicy "%cm_chaCoalPOSpeed%" == "fast"
+loop(regi$(sameAs(regi,"CHA")),
+  vm_deltaCap.up("2025",regi,"wind","1")= 0.3*vm_capCum.l("2020",regi,"wind");
+  vm_deltaCap.up("2025",regi,"spv","1")= 0.8*vm_capCum.l("2020",regi,"spv");
+  vm_deltaCap.up("2030",regi,"wind","1")= 0.5*vm_capCum.l("2025",regi,"wind");
+  vm_deltaCap.up("2030",regi,"spv","1")= 1*vm_capCum.l("2025",regi,"spv");
+  );
+$endif.chaPOpolicy
+***$offtext
+
+$endif.chaPOpolicyMode
+
+*** $ontext
+*** limit early retirement of coal power in China in 2020s to avoid extremly fast phase-out
+$ifthen.chaPOpolicy "%cm_chaCoalPOSpeed%" == "base"
+vm_capEarlyReti.up('2025','CHA','pc') = 0.03;
+vm_capEarlyReti.up('2030','CHA','pc') = 0.03;
+$endif.chaPOpolicy
+
+$ifthen.chaPOpolicy "%cm_chaCoalPOSpeed%" == "plateau30"
+vm_capEarlyReti.up('2025','CHA','pc') = 0.03;
+vm_capEarlyReti.up('2030','CHA','pc') = 0.1;
+$endif.chaPOpolicy
+
+$ifthen.chaPOpolicy "%cm_chaCoalPOSpeed%" == "plateau25"
+vm_capEarlyReti.up('2025','CHA','pc') = 0.03;
+vm_capEarlyReti.up('2030','CHA','pc') = 0.3;
+$endif.chaPOpolicy
+
+$ifthen.chaPOpolicy "%cm_chaCoalPOSpeed%" == "fast"
+vm_capEarlyReti.up('2025','CHA','pc') = 0.18;
+vm_capEarlyReti.up('2030','CHA','pc') = 0.5;
+$endif.chaPOpolicy
+
+$ifthen.chaPOpolicy "%cm_chaCoalPOSpeed%" == "medium"
+vm_capEarlyReti.up('2025','CHA','pc') = 0.12;
+vm_capEarlyReti.up('2030','CHA','pc') = 0.35;
+$endif.chaPOpolicy
+
+$ifthen.chaPOpolicy "%cm_chaCoalPOSpeed%" == "slow"
+vm_capEarlyReti.up('2025','CHA','pc') = 0.05;
+vm_capEarlyReti.up('2030','CHA','pc') = 0.2;
+$endif.chaPOpolicy
+*** $offtext
 
 *' @stop
 

@@ -1282,7 +1282,7 @@ parameter
   c_CO2FeedstockPrice = 1;   !! def = 1
 *'
 *'
-*'
+
 ***-----------------------------------------------------------------------------
 *' ####                     FLAGS
 ***-----------------------------------------------------------------------------
@@ -1995,8 +1995,27 @@ $setGlobal cm_chaCoalBounds off    !! def = off
 $setglobal cm_repeatNonOpt off      !! def = off  !! regexp = off|on
 
 $setglobal cm_PlasticMFA off      !! def = off  !! regexp = ^(off|on)$
-*' @stop
 
+*** cm_chaCoalPOSpeed
+*** plateau25: plateau until 2025, po around 2045
+*** plateau30: plateau until 2030, po around 2050
+*** fast: fast PO, po around 2035
+*** medium: medium PO, po around 2040
+*** slow: slow PO, po around 2050
+$setglobal cm_chaCoalPOSpeed none    !! def = none
+
+*** cm_chaCoalPOSpeedMode 
+*** vredelta: adjust via VRE's deltaCap
+*** noadjcost: adjust via adjustment cost
+$setglobal cm_chaCoalPOSpeedMode noadjcost !! def = vredelta
+
+*** "switch to turn on the coal power plant cost change for CHA"
+*** switch to turn on costs used in domestic models: 
+* (off) old values: 800/kW from 2015 till 2040
+* (on) new values: 500$/kW from 2015 till 2040
+$setglobal cm_chaPcCost off      !! def = off  !! regexp = off|on   
+
+*' @stop
 *-------------------------------------------------------------------------------------
 *** automated checks and settings
 *ag* set conopt version
