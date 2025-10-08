@@ -473,7 +473,6 @@ $ifthen.cm_subsec_model_chemicals "%cm_subsec_model_chemicals%" == "processes"
     !! REMINDER: once we co2f from the CCU module, make sure that it isn't subtracted twice (once by taking it from CCU, once by subtracting feedstock carbon)
     co2f
 
-    naphtha       "Naphtha"
     plasticWaste  "Plastic waste, mixed"
 $endif.cm_subsec_model_chemicals
 $ifthen.cm_subsec_model_steel "%cm_subsec_model_steel%" == "processes"
@@ -497,7 +496,6 @@ $ifthen.cm_subsec_model_chemicals "%cm_subsec_model_chemicals%" == "processes"
     ammoniaH2
     co2f
 
-    naphtha
     plasticWaste
 $endif.cm_subsec_model_chemicals
 $ifthen.cm_subsec_model_steel "%cm_subsec_model_steel%" == "processes"
@@ -716,7 +714,6 @@ $ifthen.cm_subsec_model_chemicals "%cm_subsec_model_chemicals%" == "processes"
 
     meSyH2 . standard  . co2f
     fertProdH2 . standard  . co2f
-    stCrLiq . standard  . naphtha
 
     mechRe . standard  . plasticWaste
     stCrChemRe . standard  . plasticWaste

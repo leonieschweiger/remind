@@ -698,8 +698,6 @@ p37_specMatDem("ammoniaH2","amToFinal","greenh2")        = 1;
 p37_specMatDem("methanol","meToFinal","standard")        = 1;
 p37_specMatDem("methanolH2","meToFinal","greenh2")        = 1;
 
-!! p37_specMatDem("naphtha","stCrLiq","standard")        =  18.3 / (sm_TWa_2_MWh/sm_giga_2_non); !! should not be needed any more
-
 p37_specMatDem("plasticWaste","mechRe","standard")        = 1/0.79; !! Source: Taylor Uekert 2023 Table S1-S4.
 p37_specMatDem("plasticWaste","meSyChemRe","standard")        = 1/1.47; !! Source: Shaik Afzal 2023 Table 3.
 p37_specMatDem("plasticWaste","stCrChemRe","standard")        = 1/0.62; !! Source: Geetanjali Yadav 2023 Table S9.
@@ -939,7 +937,7 @@ Parameter
   pm_outflowPrcHist(tall,all_regi,all_te,opmoPrc) "material flows per production route in 2020 [Gt or GtN for fertilizer]"
   /
 $ondelim
-$include "./modules/37_industry/subsectors/input/p37_AllChem_Routes_Value_2020noCCS.cs4r";
+$include "./modules/37_industry/subsectors/input/pm_outflowPrcHist_chemicals.cs4r";
 $offdelim
   /
 ;
@@ -953,7 +951,7 @@ Parameter
   p37_mat2ue(tall,all_regi,all_enty,all_in) "conversion factors [2017$/kg or 2017$/kgN] for 2020-2050 to convert material [Gt or GtN] into UE [trn$2017]"
   /
 $ondelim
-$include "./modules/37_industry/subsectors/input/p37_AllChemical_Mat2Ue.cs4r";
+$include "./modules/37_industry/subsectors/input/p37_mat2ue_chemicals.cs4r";
 $offdelim
   /
 ;
@@ -1100,7 +1098,7 @@ Parameter
   p37_demFePrcHist(tall,all_regi,all_te,opmoPrc,all_enty) "total FE demand [EJ] per process in 2005-2020 (calculated from specific FE demand and production volume)"
   /
 $ondelim
-$include "./modules/37_industry/subsectors/input/p37_AllChem_Energy_Value_2005_2020noCCS.cs4r";
+$include "./modules/37_industry/subsectors/input/p37_demFePrcHist_chemicals.cs4r";
 $offdelim
   /
 ;
@@ -1233,11 +1231,12 @@ $ifthen.cm_subsec_model_chemicals "%cm_subsec_model_chemicals%" == "processes"
         );
 
         !! Calc feels for chemElec
-        !! all non-feedstock non-electricity energy of ChemOld with 15% efficiency improvement
-        !! source: Danish Energy Agency https://ens.dk/en/analyses-and-statistics/technology-data-industrial-process-heat
+        !! all non-feedstock non-electricity energy of ChemOld with 8% efficiency improvement
+        !! source: Danish Energy Agency https://ens.dk/en/analyses-and-statistics/technology-data-industrial-process-heat: 
+        !! 311.1a Steam boilder Coal avg eff 89-91%, 311.1c Steam boiler Gas avg eff 92-94%, 310.1b Electric boiler steam avg eff 99%
         pm_specFeDem(t, regi, "feels", "chemElec", "standard") =
                   pm_specFeDem("2020", regi, "feels", "chemOld", "standard")
-                  + 0.85 * ( sum(entyFe2$(NOT sameas(entyFe2, "feels")), pm_specFeDem("2020", regi, entyFe2, "chemOld", "standard"))
+                  + 0.92 * ( sum(entyFe2$(NOT sameas(entyFe2, "feels")), pm_specFeDem("2020", regi, entyFe2, "chemOld", "standard"))
                           - sum(entyFe2$(NOT sameas(entyFe2, "feels")), pm_specFeDem(t, regi, entyFe2, "chemElec", "standard")) );
 
         !! Calc chemH2
