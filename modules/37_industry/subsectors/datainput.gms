@@ -982,17 +982,14 @@ p37_matFlowHist(tall,all_regi,mat) = 0.;
 $endif.cm_subsec_model_chemicals
 $ifthen.cm_subsec_model_chemicals "%cm_subsec_model_chemicals%" == "processes"
 
-!! 3. Calc MatflowHist
-Parameter
-  p37_matFlowHist(tall,all_regi,all_enty) "TODO"
-  /
-$ondelim
-$include "./modules/37_industry/subsectors/input/p37_AllChem_Flow_Value_2005_2020.cs4r";
-$offdelim
-  /
+!! Calc MatflowHist
+p37_matFlowHist(t,regi,mat) =
+sum(tePrc2matOut(tePrc,opmoPrc,mat),
+      pm_outflowPrcHist(t,regi,tePrc,opmoPrc)
+    )
 ;
 
-!! 4. Calc ue_share
+!! Calc ue_share
 !! can this be deleted?
 p37_ue_share(t,regi,mat,in)$(mat2ue(mat,in) AND sameas(in,"ue_chemicals") AND t.val le 2020) =
   (p37_mat2ue(t,regi,mat,in) * p37_matFlowHist(t,regi,mat))
