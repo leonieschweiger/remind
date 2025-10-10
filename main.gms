@@ -1277,6 +1277,11 @@ parameter
   c_edgetReportAfter2010			"switch that turns on overwriting of EDGE-T results for 2005 and 2010 by NAs when set to 1"
 ;
   c_edgetReportAfter2010 = 0;   !! def = 0 full reporting  !! regexp = 1|0
+
+parameter
+  c_CO2FeedstockPrice			"switch that turns on overwriting of EDGE-T results for 2005 and 2010 by NAs when set to 1"
+;
+  c_CO2FeedstockPrice = 1;   !! def = 1
 *'
 parameter
   cm_APsource                "data source for air pollution baseyear (2020) emissions"
@@ -1285,7 +1290,7 @@ parameter
 *' *  (1): CEDS2025 emissions (mapped to GAINS sectors) are used as baseyear (2020) emissions
 *' *  (2): GAINS2025 emissions (from baseline scenario) are used as baseyear (2020) emissions
 *'
-*'
+
 ***-----------------------------------------------------------------------------
 *' ####                     FLAGS
 ***-----------------------------------------------------------------------------
@@ -1999,8 +2004,27 @@ $setGlobal cm_chaCoalBounds off    !! def = off
 $setglobal cm_repeatNonOpt off      !! def = off  !! regexp = off|on
 
 $setglobal cm_PlasticMFA off      !! def = off  !! regexp = ^(off|on)$
-*' @stop
 
+*** cm_chaCoalPOSpeed
+*** plateau25: plateau until 2025, po around 2045
+*** plateau30: plateau until 2030, po around 2050
+*** fast: fast PO, po around 2035
+*** medium: medium PO, po around 2040
+*** slow: slow PO, po around 2050
+$setglobal cm_chaCoalPOSpeed none    !! def = none
+
+*** cm_chaCoalPOSpeedMode 
+*** vredelta: adjust via VRE's deltaCap
+*** noadjcost: adjust via adjustment cost
+$setglobal cm_chaCoalPOSpeedMode noadjcost !! def = vredelta
+
+*** "switch to turn on the coal power plant cost change for CHA"
+*** switch to turn on costs used in domestic models: 
+* (off) old values: 800/kW from 2015 till 2040
+* (on) new values: 500$/kW from 2015 till 2040
+$setglobal cm_chaPcCost off      !! def = off  !! regexp = off|on   
+
+*' @stop
 *-------------------------------------------------------------------------------------
 *** automated checks and settings
 *ag* set conopt version

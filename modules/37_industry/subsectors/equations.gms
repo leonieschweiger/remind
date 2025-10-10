@@ -480,7 +480,7 @@ q37_restrictMatShareChange(t,regi,tePrc,opmoPrc,mat)$(t.val gt 2020
   vm_outflowPrc(t,regi,tePrc,opmoPrc) 
 =e=
   (p37_teMatShareHist(regi,tePrc,opmoPrc,mat)+ v37_matShareChange(t,regi,tePrc,opmoPrc,mat))
-  * v37_chemFlow(t,regi,mat) !! Try to use different opmoPrc 
+  * v37_chemflow(t,regi,mat) !! Try to use different opmoPrc 
 ;
 
 ***------------------------------------------------------
