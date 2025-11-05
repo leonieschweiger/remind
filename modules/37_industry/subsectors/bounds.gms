@@ -194,4 +194,10 @@ $ifthen.PlasticMFA "%cm_PlasticMFA%" == "on"
 v37_matFlow.up(t,regi,"plasticWaste") = p37_plastcWaste(t,regi); 
 $endif.PlasticMFA
 
+!!!Hot fixes to avoid infeasibilities in the short-term due to new processes with stiff shares
+loop((t,regi,tePrc)$(t.val ge 2010 AND t.val le 2020),
+    if(sum((opmoPrc,mat), tePrcStiffShare(tePrc,opmoPrc,mat)) AND pm_outflowPrcHist("2005",regi,tePrc,"standard") gt 0,
+        vm_deltaCap.lo(t,regi,tePrc,"1") = 1e-8;
+    );
+);
 *** EOF ./modules/37_industry/subsectors/bounds.gms

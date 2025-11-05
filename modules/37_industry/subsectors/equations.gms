@@ -254,7 +254,7 @@ q37_feedstocksShares(t,regi,entySe,entyFe,emiMkt)$(
   * sum(se2fe(entySe2,entyFe,te),
       vm_demFeNonEnergySector(t,regi,entySe2,entyFe,"indst",emiMkt)
     )
-  =e=
+  =l=
     vm_demFeNonEnergySector(t,regi,entySe,entyFe,"indst",emiMkt)
   * sum(se2fe2(entySe2,entyFe,te),
       vm_demFeSector_afterTax(t,regi,entySe2,entyFe,"indst",emiMkt)
@@ -480,7 +480,7 @@ q37_restrictMatShareChange(t,regi,tePrc,opmoPrc,mat)$(t.val gt 2020
   vm_outflowPrc(t,regi,tePrc,opmoPrc) 
 =e=
   (p37_teMatShareHist(regi,tePrc,opmoPrc,mat)+ v37_matShareChange(t,regi,tePrc,opmoPrc,mat))
-  * v37_chemFlow(t,regi,mat) !! Try to use different opmoPrc 
+  * v37_chemflow(t,regi,mat) !! Try to use different opmoPrc 
 ;
 
 ***------------------------------------------------------

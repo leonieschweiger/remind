@@ -17,10 +17,6 @@ pm_taxCO2eqSum(ttot,regi) = 0;
 pm_SolNonInfes(regi) = 1; !! assume the starting point came from a feasible solution
 pm_capCum0(ttot,regi,teLearn)$( (ttot.val ge 2005) and  (pm_SolNonInfes(regi) eq 1)) = 0;
 
-pm_globalMeanTemperature(tall)              = 0;
-pm_globalMeanTemperatureZeroed1900(tall)    = 0;
-pm_temperatureImpulseResponseCO2(tall,tall) = 0;
-
 *** Initialise to avoid compilation errors in presolve if variable not in input.gdx
 vm_demFeForEs.L(t,regi,entyFe,esty,teEs) = 0;
 vm_demFeForEs.L(t,regi,fe2es(entyFe,esty,teEs)) = 0.1;
@@ -115,10 +111,6 @@ p_inv_gdx(ttot,regi)     = vm_invMacro.l(ttot,regi,"kap");
 *------------------------------------------------------------------------------------
 *------------------------------------------------------------------------------------
 
-*** default conversion for energy services
-pm_fe2es(ttot,regi,teEs) = 1;
-pm_shFeCes(ttot,regi,enty,in,teEs) = 0;
-
 *** initialize upper and lower bound to FE share parameters as zero (this will leave any FE share bounds non-activated)
 *** please set FE share bounds by modying this parameter in the sectormodules, e.g. 36_buildings and 37_industry datainput files
 pm_shfe_up(ttot,regi,entyFe,sector)=0;
@@ -180,7 +172,7 @@ $ifthen.c_techAssumptScen "%c_techAssumptScen%" == "SSP1"
     fm_dataglob("learn",teVRE) =         1.1 * fm_dataglob("learn",teVRE);
     fm_dataglob("floorcost","spv") =     0.1 * fm_dataglob("floorcost","spv");
     fm_dataglob("floorcost","csp") =     0.8 * fm_dataglob("floorcost","csp");
-*** RP: because of the interaction of learn rates with floor costs, it is not possible to simply apply multiplicative factors. These 
+*** because of the interaction of learn rates with floor costs, it is not possible to simply apply multiplicative factors. These 
 *** values need to be set by hand!
     fm_dataglob("learn","windon")     =  0.17;  !! these values make 2100 wind onshore costs ~0.8 times those seen in SSP2 at the same cumCap
     fm_dataglob("floorcost","windon") =  200;
@@ -229,7 +221,7 @@ $elseif.c_techAssumptScen "%c_techAssumptScen%" == "SSP5"
     fm_dataglob("learn",teVRE) =         0.8 * fm_dataglob("learn",teVRE);
     fm_dataglob("floorcost","spv") =     3   * fm_dataglob("floorcost","spv");
     fm_dataglob("floorcost","csp") =     1.3 * fm_dataglob("floorcost","csp");
-*** RP: because of the interaction of learn rates with floor costs, it is not possible to simply apply multiplicative factors. These 
+*** because of the interaction of learn rates with floor costs, it is not possible to simply apply multiplicative factors. These 
 *** values need to be set by hand!
     fm_dataglob("learn","windon")     =  0.17;  !! these values make 2100 wind onshore costs ~1.5 times those seen in SSP2 at the same cumCap
     fm_dataglob("floorcost","windon") =  1000;
@@ -384,9 +376,6 @@ $ifthen.floorscen %cm_floorCostScen% == "pricestruc"
 *** for newer data than 2015, use these
     p_maxRegTechCost2020(teRegTechCosts) = SMax(regi, p_inco0("2020",regi,teRegTechCosts));
     pm_data(regi,"floorcost",teLearn(te))$(p_maxRegTechCost2020(te) ne 0) = p_oldFloorCostdata(regi,te) * p_inco0("2020",regi,te) / p_maxRegTechCost2020(te);
-*** report the new floor cost data
-    p_newFloorCostdata(regi,teLearn(te))$(p_maxRegTechCost2015(te) ne 0) = p_oldFloorCostdata(regi,te) * p_inco0("2015",regi,te) / p_maxRegTechCost2015(te);
-    p_newFloorCostdata(regi,teLearn(te))$(p_maxRegTechCost2020(te) ne 0) = p_oldFloorCostdata(regi,te) * p_inco0("2020",regi,te) / p_maxRegTechCost2020(te);
 $endif.floorscen
 
 
@@ -397,7 +386,6 @@ $ifthen.floorscen %cm_floorCostScen% == "techtrans"
     p_maxPPP2050 = SMax(regi, p_gdppcap2050_PPP(regi));
 *** take the ratio of the PPP income and the maximum income, and multiply with the global floor to get new floorcost that simulates tech transfer where costs are solely dependent on local wages, not on IP rent
     pm_data(regi,"floorcost",teLearn(te))$(p_maxPPP2050 ne 0) = p_oldFloorCostdata(regi,te) * p_gdppcap2050_PPP(regi) / p_maxPPP2050;
-    p_newFloorCostdata(regi,teLearn(te))$(p_maxPPP2050 ne 0) = p_oldFloorCostdata(regi,te) * p_gdppcap2050_PPP(regi) / p_maxPPP2050;
 $endif.floorscen
 
 *** In case regionally differentiated investment costs should be used the corresponding entries are revised:
@@ -570,27 +558,12 @@ $include "./core/input/p_share_ind_fesos_bio.cs4r"
 $offdelim
 /;
 
-*** initialize pm_share_trans with the global value, will be updated after each negishi/nash iteration
-pm_share_trans("2005",regi) = 0.617;
-pm_share_trans("2010",regi) = 0.625;
-pm_share_trans("2015",regi) = 0.626;
-pm_share_trans("2020",regi) = 0.642;
-pm_share_trans("2025",regi) = 0.684;
-pm_share_trans("2030",regi) = 0.710;
-pm_share_trans("2035",regi) = 0.727;
-pm_share_trans("2040",regi) = 0.735;
-pm_share_trans("2045",regi) = 0.735;
-pm_share_trans("2050",regi) = 0.742;
-pm_share_trans("2055",regi) = 0.736;
-pm_share_trans("2060",regi) = 0.751;
-pm_share_trans("2070",regi) = 0.774;
-pm_share_trans("2080",regi) = 0.829;
-pm_share_trans("2090",regi) = 0.810;
-pm_share_trans("2100",regi) = 0.829;
-pm_share_trans("2110",regi) = 0.818;
-pm_share_trans("2130",regi) = 0.865;
-pm_share_trans("2150",regi) = 0.872;
 
+*** carbon intensities of coal, oil, and gas
+*** emissions factor of primary energy fossil fuels
+pm_cintraw("pecoal") = 26.1 / s_zj_2_twa;
+pm_cintraw("peoil")  = 20.0 / s_zj_2_twa;
+pm_cintraw("pegas")  = 15.0 / s_zj_2_twa;
 
 $ifthen.tech_CO2capturerate not "%c_tech_CO2capturerate%" == "off"
 p_PECarriers_CarbonContent(peFos)=pm_cintraw(peFos);
@@ -682,10 +655,6 @@ pm_emifac(t,regi,"pecoal","sesofos","coaltr","ch4") = 9.46 * (1-pm_share_ind_fes
 pm_emifac(t,regi,"pebiolc","sesobio","biotr","ch4") = 9.46 * (1-pm_share_ind_fesos_bio("2005",regi));
 
 display pm_emifac;
-
-*MLB* initialization needed as include file represents only parameters that are different from zero
-p_boundtmp(ttot,all_regi,te,rlf)$(ttot.val ge 2005)       = 0;
-p_bound_cap(ttot,all_regi,te,rlf)$(ttot.val ge 2005)       = 0;
 
 *NB* include data and parameters for upper bounds on fossil fuel transport
 parameter f_IO_trade(tall,all_regi,all_enty,char)        "Energy trade bounds based on IEA data"
@@ -825,6 +794,65 @@ pm_cf(ttot,regi,"ngt")$(ttot.val ge 2040) = 0.6 * pm_cf(ttot,regi,"ngt");
 pm_cf(ttot,regi,"h2turb")$(ttot.val ge 2025) = pm_cf(ttot,regi,"ngt");
 pm_cf(ttot,regi,"h2turbVRE")$(ttot.val ge 2025) = pm_cf(ttot,regi,"ngt");
 
+
+*CG* phasing down pc cf to "peak load" cf for CHA
+$ifthen.chaPOpolicy "%cm_chaCoalPOSpeed%" == "base"
+pm_cf(ttot,"CHA","pc")$(ttot.val le 2035) = 1 * pm_cf("2020","CHA","pc");
+pm_cf(ttot,"CHA","pc")$(ttot.val ge 2040) = 0.8 * pm_cf("2020","CHA","pc");
+$endif.chaPOpolicy
+
+*CG* phasing down pc cf to "peak load" cf for CHA
+$ifthen.chaPOpolicy "%cm_chaCoalPOSpeed%" == "plateau30"
+pm_cf(ttot,"CHA","pc")$(ttot.val le 2025) = 1.1 * pm_cf("2020","CHA","pc");
+pm_cf(ttot,"CHA","pc")$(ttot.val eq 2030) = 0.99 * pm_cf("2020","CHA","pc");
+pm_cf(ttot,"CHA","pc")$(ttot.val eq 2035) = 0.75 * pm_cf("2020","CHA","pc");
+pm_cf(ttot,"CHA","pc")$(ttot.val eq 2040) = 0.55 * pm_cf("2020","CHA","pc");
+pm_cf(ttot,"CHA","pc")$(ttot.val ge 2045) = 0.35 * pm_cf("2020","CHA","pc");
+pm_cf(ttot,"CHA","pc")$(ttot.val ge 2050) = 0.15 * pm_cf("2020","CHA","pc");
+$endif.chaPOpolicy
+
+$ifthen.chaPOpolicy "%cm_chaCoalPOSpeed%" == "plateau25"
+pm_cf(ttot,"CHA","pc")$(ttot.val le 2025) = 1.1 * pm_cf("2020","CHA","pc");
+pm_cf(ttot,"CHA","pc")$(ttot.val eq 2030) = 0.7 * pm_cf("2020","CHA","pc");
+pm_cf(ttot,"CHA","pc")$(ttot.val eq 2035) = 0.55 * pm_cf("2020","CHA","pc");
+pm_cf(ttot,"CHA","pc")$(ttot.val eq 2040) = 0.35 * pm_cf("2020","CHA","pc");
+pm_cf(ttot,"CHA","pc")$(ttot.val ge 2045) = 0.15 * pm_cf("2020","CHA","pc");
+$endif.chaPOpolicy
+
+$ifthen.chaPOpolicy "%cm_chaCoalPOSpeed%" == "fast"
+pm_cf(ttot,"CHA","pc")$(ttot.val le 2025) = 0.95 * pm_cf("2020","CHA","pc");
+pm_cf(ttot,"CHA","pc")$(ttot.val eq 2030) = 0.6 * pm_cf("2020","CHA","pc");
+pm_cf(ttot,"CHA","pc")$(ttot.val eq 2035) = 0.3 * pm_cf("2020","CHA","pc");
+pm_cf(ttot,"CHA","pc")$(ttot.val eq 2040) = 0.1 * pm_cf("2020","CHA","pc");
+pm_cf(ttot,"CHA","pc")$(ttot.val ge 2045) = 0.1 * pm_cf("2020","CHA","pc");
+$endif.chaPOpolicy
+
+$ifthen.chaPOpolicy "%cm_chaCoalPOSpeed%" == "medium"
+pm_cf(ttot,"CHA","pc")$(ttot.val le 2025) = 1.1 * pm_cf("2020","CHA","pc");
+pm_cf(ttot,"CHA","pc")$(ttot.val eq 2030) = 0.8 * pm_cf("2020","CHA","pc");
+pm_cf(ttot,"CHA","pc")$(ttot.val eq 2035) = 0.65 * pm_cf("2020","CHA","pc");
+pm_cf(ttot,"CHA","pc")$(ttot.val eq 2040) = 0.5 * pm_cf("2020","CHA","pc");
+pm_cf(ttot,"CHA","pc")$(ttot.val ge 2045) = 0.3 * pm_cf("2020","CHA","pc");
+$endif.chaPOpolicy
+
+$ifthen.chaPOpolicy "%cm_chaCoalPOSpeed%" == "slow"
+pm_cf(ttot,"CHA","pc")$(ttot.val le 2025) = 1.08 * pm_cf("2020","CHA","pc");
+pm_cf(ttot,"CHA","pc")$(ttot.val eq 2030) = 0.85 * pm_cf("2020","CHA","pc");
+pm_cf(ttot,"CHA","pc")$(ttot.val eq 2035) = 0.8 * pm_cf("2020","CHA","pc");
+pm_cf(ttot,"CHA","pc")$(ttot.val eq 2040) = 0.7 * pm_cf("2020","CHA","pc");
+pm_cf(ttot,"CHA","pc")$(ttot.val ge 2045) = 0.6 * pm_cf("2020","CHA","pc");
+pm_cf(ttot,"CHA","pc")$(ttot.val ge 2050) = 0.5 * pm_cf("2020","CHA","pc");
+pm_cf(ttot,"CHA","pc")$(ttot.val gt 2050) = 0.5 * pm_cf("2020","CHA","pc");
+$endif.chaPOpolicy
+
+$ifthen.chaPOpolicy "%cm_chaPcCost%" == "on"
+p_inco0(t,"CHA","pc")$((t.val ge 2015) and (t.val le 2040)) = 500;
+p_inco0(t,"CHA","igccc")$((t.val ge 2015) and (t.val le 2060)) = 500 * 1.24;
+$endif.chaPOpolicy
+
+** CG: update on nuclear plant capacity factor in China (http://static.sse.com.cn/disclosure/listedinfo/announcement/c/new/2022-04-28/601985_20220428_5_yMPns6pY.pdf)
+f_cf(ttot,"CHA","tnrs") = 0.9227;
+
 *** FS: set CF of additional t&d H2 for buildings and industry to t&d H2 stationary value
 pm_cf(ttot,regi,"tdh2b") = pm_cf(ttot,regi,"tdh2s");
 pm_cf(ttot,regi,"tdh2i") = pm_cf(ttot,regi,"tdh2s");
@@ -863,6 +891,57 @@ $endif.Base_techpol
 $endif.Base_Cprice
 
 display pm_regiEarlyRetiRate;
+
+*CG* CHA-specific pc rate
+*$ontext
+$ifthen.chaPOpolicy "%cm_chaCoalPOSpeed%" == "plateau30"
+*** Allow first slow then fast phase-out cap
+pm_regiEarlyRetiRate(t,"CHA","pc")$(t.val le 2025) = 0;
+pm_regiEarlyRetiRate(t,"CHA","pc")$(t.val eq 2030) = 0;
+pm_regiEarlyRetiRate(t,"CHA","pc")$(t.val eq 2035) = 0.02;
+pm_regiEarlyRetiRate(t,"CHA","pc")$(t.val eq 2040) = 0.03;
+pm_regiEarlyRetiRate(t,"CHA","pc")$(t.val ge 2045) = 0.05;
+pm_regiEarlyRetiRate(t,"CHA","pc")$(t.val ge 2050) = 0.07;
+$endif.chaPOpolicy
+
+$ifthen.chaPOpolicy "%cm_chaCoalPOSpeed%" == "plateau25"
+*** Allow first slow then fast phase-out cap
+pm_regiEarlyRetiRate(t,"CHA","pc")$(t.val le 2025) = 0;
+pm_regiEarlyRetiRate(t,"CHA","pc")$(t.val eq 2030) = 0.02;
+pm_regiEarlyRetiRate(t,"CHA","pc")$(t.val eq 2035) = 0.04;
+pm_regiEarlyRetiRate(t,"CHA","pc")$(t.val eq 2040) = 0.05;
+pm_regiEarlyRetiRate(t,"CHA","pc")$(t.val ge 2045) = 0.07;
+$endif.chaPOpolicy
+
+$ifthen.chaPOpolicy "%cm_chaCoalPOSpeed%" == "fast"
+*** Allow first slow then fast phase-out cap
+pm_regiEarlyRetiRate(t,"CHA","pc")$(t.val le 2025) = 0.1;
+pm_regiEarlyRetiRate(t,"CHA","pc")$(t.val eq 2030) = 0.05;
+pm_regiEarlyRetiRate(t,"CHA","pc")$(t.val eq 2035) = 0.07;
+pm_regiEarlyRetiRate(t,"CHA","pc")$(t.val eq 2040) = 0.09;
+pm_regiEarlyRetiRate(t,"CHA","pc")$(t.val ge 2045) = 0.09;
+$endif.chaPOpolicy
+
+$ifthen.chaPOpolicy "%cm_chaCoalPOSpeed%" == "medium"
+*** Allow first slow then fast phase-out cap
+pm_regiEarlyRetiRate(t,"CHA","pc")$(t.val le 2025) = 0;
+pm_regiEarlyRetiRate(t,"CHA","pc")$(t.val eq 2030) = 0.02;
+pm_regiEarlyRetiRate(t,"CHA","pc")$(t.val eq 2035) = 0.035;
+pm_regiEarlyRetiRate(t,"CHA","pc")$(t.val eq 2040) = 0.06;
+pm_regiEarlyRetiRate(t,"CHA","pc")$(t.val ge 2045) = 0.09;
+$endif.chaPOpolicy
+
+$ifthen.chaPOpolicy "%cm_chaCoalPOSpeed%" == "slow"
+*** Allow first slow then fast phase-out cap
+pm_regiEarlyRetiRate(t,"CHA","pc")$(t.val le 2025) = 0.005;
+pm_regiEarlyRetiRate(t,"CHA","pc")$(t.val eq 2030) = 0.01;
+pm_regiEarlyRetiRate(t,"CHA","pc")$(t.val eq 2035) = 0.02;
+pm_regiEarlyRetiRate(t,"CHA","pc")$(t.val eq 2040) = 0.035;
+pm_regiEarlyRetiRate(t,"CHA","pc")$(t.val eq 2045) = 0.05;
+pm_regiEarlyRetiRate(t,"CHA","pc")$(t.val ge 2050) = 0.06;
+$endif.chaPOpolicy
+
+*$offtext
 
 ***---------------------------------------------------------------------------
 *** Calculate lifetime parameters (omeg and opTimeYr2te)
@@ -1429,9 +1508,6 @@ p_adj_coeff(ttot,regi,te)            = 32 * p_adj_coeff(ttot,regi,te);  !! Resca
 p_adj_coeff_Orig(ttot,regi,te)    = p_adj_coeff(ttot,regi,te);
 p_adj_seed_te_Orig(ttot,regi,te)  = p_adj_seed_te(ttot,regi,te);
 
-p_adj_coeff_glob(te)        = 0.0;
-p_adj_coeff_glob('tnrs')    = 0.0;
-
 *** Unit conversions
 p_emi_quan_conv_ar4(enty) = 1;
 p_emi_quan_conv_ar4(enty)$(emiMacMagpieCH4(enty)) = sm_tgch4_2_pgc * (25/s_gwpCH4);  !! need to use old GWP for MAC cost conversion as it only reverts what has been done in the calculation of the MACs
@@ -1496,8 +1572,6 @@ $if  "%cm_rcp_scen%" == "none"    sm_budgetCO2eqGlob = 20000.0000;
 
 display sm_budgetCO2eqGlob;
 ***-----------------------------------------------------------------------------
-
-p_datacs(regi,"peoil") = 0;   !! RP: 0 turn off the explicit calculation of non-energy use, as it is included in the oil total. Emission correction happens through rescaling of f_dataemiglob
 
 ***------------------------------------------------------------------------------------
 ***                                ESM  MAC data
