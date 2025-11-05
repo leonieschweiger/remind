@@ -239,4 +239,35 @@ loop((entyFe,route,tePrc,opmoPrc,secInd37)$(    tePrc2route(tePrc,opmoPrc,route)
       * pm_specFeDem(ttot,regi,entyFe,tePrc,opmoPrc);
 );
 
+*** ---------------------------------------------------------------------------
+*** Process-Based Feedstock implementation
+*** ---------------------------------------------------------------------------
+
+*** determine share of SE/FE combinations among all carbonaceous fuels input to the chemicals sector
+*** in order to get entySE and entyFE dimensions for feedstock variables for reporting
+*** ---------------------------------------------------------------------------
+o37_carbonaceousSeFeShare(ttot,regi,sefe(entySe,entyFe), emiMkt)$( 
+                          ttot.val ge 2005 
+                      AND entyFE2sector2emiMkt_NonEn(entyFe,"indst",emiMkt))
+  = vm_demFeNonEnergySector.l(ttot,regi,entySe,entyFe,"indst",emiMkt)/
+    max(
+      sum((entySe2,entyFe2), vm_demFeNonEnergySector.l(ttot,regi,entySe2,entyFe2,"indst",emiMkt)),
+      sm_eps
+    );
+o37_incinerationEmi(ttot,regi,entySe,entyFe,emiMkt)$(ttot.val ge 2005)
+  = o37_carbonaceousSeFeShare(ttot,regi,entySe,entyFe,emiMkt)
+    * v37_incinerationEmi.l(ttot,regi,emiMkt);
+o37_incinerationCCS(ttot,regi,entySe,entyFe,emiMkt)$(ttot.val ge 2005)
+  = o37_carbonaceousSeFeShare(ttot,regi,entySe,entyFe,emiMkt)
+    * vm_incinerationCCS.l(ttot,regi);
+o37_feedstocksCarbon(ttot,regi,entySe,entyFe,emiMkt)$(ttot.val ge 2005)
+  = o37_carbonaceousSeFeShare(ttot,regi,entySe,entyFe,emiMkt)
+    * v37_feedstocksCarbon.l(ttot,regi);
+o37_plasticsCarbon(ttot,regi,entySe,entyFe,emiMkt)$(ttot.val ge 2005)
+  = o37_carbonaceousSeFeShare(ttot,regi,entySe,entyFe,emiMkt)
+    * v37_plasticsCarbon.l(ttot,regi);
+o37_plasticWaste(ttot,regi,entySe,entyFe,emiMkt)$(ttot.val ge 2005)
+  = o37_carbonaceousSeFeShare(ttot,regi,entySe,entyFe,emiMkt)
+    * v37_plasticWaste.l(ttot,regi);
+
 *** EOF ./modules/37_industry/subsectors/postsolve.gms

@@ -702,8 +702,8 @@ p37_specMatDem("plasticWaste","mechRe","standard")        = 1/0.79; !! Source: T
 p37_specMatDem("plasticWaste","meSyChemRe","standard")        = 1/1.47; !! Source: Shaik Afzal 2023 Table 3. 
 p37_specMatDem("plasticWaste","stCrChemRe","standard")        = 1/0.62; !! Source: Geetanjali Yadav 2023 Table S9.
 
-p37_specMatDem("co2fdummy","fertProdH2","standard")        = 0.43; !!12/28 for NH₂CONH₂ (urea)
-p37_specMatDem("co2fdummy","meSyH2","standard")        = 0.375; !! 12/32 for CH₃OH
+p37_specMatDem("co2f","fertProdH2","standard")        = 0.43; !!12/28 for NH₂CONH₂ (urea)
+p37_specMatDem("co2f","meSyH2","standard")        = 0.375; !! 12/32 for CH₃OH
 $endif.cm_subsec_model_chemicals
 $ifthen.cm_subsec_model_steel "%cm_subsec_model_steel%" == "processes"
 p37_specMatDem("dripell","idr","ng")        = 1.44;                                           !! Source: POSTED / Average of Devlin2022, Otto2017, Volg2018, Rechberge2020
@@ -891,15 +891,10 @@ p37_priceMat(ttot,all_regi,all_enty) = 0.;
 $ifthen.cm_subsec_model_chemicals "%cm_subsec_model_chemicals%" == "processes"
 !!Execute_Loadpoint "input" pm_FEPrice = pm_FEPrice;
 
-loop(t$(t.val > 2020),
-  loop(all_regi,
-    p37_priceMat(t,all_regi,"co2fdummy") = c_CO2FeedstockPrice * 3 * 44/12 * 0.3048 * (t.val-2024) ** (-0.623) ; !! Mahdi Fasihi 2024
-  );
-);
 !! Source: Geetanjali Yadav 2023 Table S12 → 0.6 $/kg
 !! Source: Taylor Uekert 2023 Table Table S23 → 0.2-0.4 $/kg
 !! Source: Shaik Afzal 2023 Table Table S6 → 0.4-0.8 $/kg
-p37_priceMat(t,all_regi,"plasticWaste") = 0.1; 
+p37_priceMat(t,all_regi,"plasticWaste") = 0.1;
 
 $endif.cm_subsec_model_chemicals
 
@@ -916,6 +911,15 @@ loop(t$(t.val ge 2005),
 );
 $endif.cm_subsec_model_steel
 
+$ifthen.cm_subsec_model_chemicals "%cm_subsec_model_chemicals%" == "processes"
+p37_matCarbonContent("hvc") = 0.85;
+p37_matCarbonContent("methFinal") = 0.375;
+p37_matCarbonContent("fertilizer") = 0.3; !! 12/28=0.43 in urea, but there is also some non-urea fertilizer?
+p37_matCarbonContent("ammoFinal") = 0.;
+p37_matCarbonContent("otherChem") = 0.;
+
+p37_plascticsShareInHVC(t,regi) = 0.7;
+$endif.cm_subsec_model_chemicals
 
 
 
@@ -1018,8 +1022,8 @@ $ifthen.cm_subsec_model_chemicals "%cm_subsec_model_chemicals%" == "processes"
 loop(all_regi(regi),
   loop(tePrc2matOut(tePrc, opmoPrc, mat),
         if (p37_matFlowHist("2020", regi, mat) gt 0,
-          p37_teMatShareHist(regi, tePrc, opmoPrc, mat) = 
-            pm_outflowPrcHist("2020", regi, tePrc, opmoPrc) 
+          p37_teMatShareHist(regi, tePrc, opmoPrc, mat) =
+            pm_outflowPrcHist("2020", regi, tePrc, opmoPrc)
             / p37_matFlowHist("2020", regi, mat);
         else
           p37_teMatShareHist(regi, tePrc, opmoPrc, mat) = 0;
@@ -1207,7 +1211,7 @@ $ifthen.cm_subsec_model_chemicals "%cm_subsec_model_chemicals%" == "processes"
         !! see above
         pm_specFeDem(t, regi, "feels", "chemH2", "standard") =
             pm_specFeDem("2020", regi, "feels", "chemOld", "standard");
- 
+
         !! Calc feh2s for chemH2
         !! see above but without efficiency improvement, assumption: hydrogen and gas have the same efficiency
         pm_specFeDem(t, regi, "feh2s", "chemH2", "standard") =
@@ -1216,7 +1220,7 @@ $ifthen.cm_subsec_model_chemicals "%cm_subsec_model_chemicals%" == "processes"
 
       );
     );
-    
+
 $endif.cm_subsec_model_chemicals
 
 );

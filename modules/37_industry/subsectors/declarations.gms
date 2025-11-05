@@ -41,8 +41,10 @@ Parameters
   p37_teMatShareHist(all_regi,all_te,opmoPrc,mat)                              "Share that a tePrc/opmoPrc historically contributes to production of a matFin"
   p37_captureRate(all_te)                                                      "Capture rate of CCS technology"
   p37_selfCaptureRate(all_te)                                                  "Share of emissions from fossil fuels used for a CCS process which are captured by the CCS process itself"
-  p37_priceMat(tall,all_regi,all_enty)                                         "Prices of external material input [US$/kg] = [trn$US/Gt]"
-
+  p37_priceMat(tall,all_regi,all_enty)                                                  "Prices of external material input [US$/kg] = [trn$US/Gt]"
+  p37_matCarbonContent(mat)                                                    "Carbon content of final materials [GtC/Gt]"
+  p37_plascticsShareInHVC(tall,all_regi)                                       "Share of plastics in high value chemicals. To be multiplied by carbon content, so this is share of total mass / all elements [0-1]"
+  
   p37_chemicals_feedstock_share(ttot,all_regi)               "minimum share of feso/feli/fega in total chemicals FE input [0-1]"
   p37_FeedstockCarbonContent(ttot,all_regi,all_enty)         "carbon content of feedstocks [GtC/TWa]"
   p37_FE_noNonEn(ttot,all_regi,all_enty,all_enty2,emiMkt)    "testing parameter for FE without non-energy use"
@@ -64,6 +66,13 @@ Parameters
   o37_ProdIndRoute(ttot,all_regi,mat,route)                              "production volume of a material via each process route [Gt]"
   o37_demFeIndRoute(ttot,all_regi,all_enty,all_te,route,secInd37)        "FE demand by FE type, process route and tech"
   o37_specificEmi(ttot,all_regi,all_te,opmoPrc)                          "Specific emissions of a technology; Needed as auxiliary for relative outflow calculation of CC tech"
+  !! process-based feedstock implementation
+  o37_carbonaceousSeFeShare(tall,all_regi,all_enty,all_enty,all_emiMkt)  "Share of SE/FE combinations among all carbonaceous fuels input to the chemicals sector (vm_demFeNonEnergySector)"
+  o37_incinerationEmi(tall,all_regi,all_enty,all_enty,all_emiMkt)        "Emissions from incineration of plastic waste, only carbon that is not captured [GtC]"
+  o37_incinerationCCS(tall,all_regi,all_enty,all_enty,all_emiMkt)        "CCS from incineration of plastic waste [GtC]"
+  o37_feedstocksCarbon(tall,all_regi,all_enty,all_enty,all_emiMkt)       "Carbon flow: carbon contained in chemical feedstocks [GtC]"
+  o37_plasticsCarbon(tall,all_regi,all_enty,all_enty,all_emiMkt)       "Carbon flow: carbon contained in plastics [GtC]"
+  o37_plasticWaste(tall,all_regi,all_enty,all_enty,all_emiMkt)         "Carbon flow: carbon contained in plastic waste [GtC]"
   !! TODO: make route specific; So far, this only works because the relative outflow of each tech/opmo is the same for all routes.
   o37_relativeOutflow(ttot,all_regi,all_te,opmoPrc)                      "Outflow of a process relative to the outflow of the route, i.e. the final product of that route; Needed for LCOP calculation"
 
@@ -93,17 +102,17 @@ Positive Variables
   v37_emiIndCCSmax(ttot,all_regi,emiInd37)                                  "maximum abatable industry emissions"
 
   !! feedstocks
-  v37_incinerationEmi(ttot,all_regi,all_enty,all_enty,all_emiMkt)           "Emissions from incineration of plastic waste, only carbon that is not captured [GtC]"
-  vm_incinerationCCS(ttot,all_regi,all_enty,all_enty,all_emiMkt)            "CCS from incineration of plastic waste [GtC]"
-  v37_incineratedPlastics(ttot,all_regi,all_enty,all_enty,all_emiMkt)       "Carbon flow: carbon contained in plastics that are incinerated [GtC]"
-  v37_feedstocksCarbon(ttot,all_regi,all_enty,all_enty,all_emiMkt)          "Carbon flow: carbon contained in chemical feedstocks [GtC]"
-  v37_plasticsCarbon(ttot,all_regi,all_enty,all_enty,all_emiMkt)            "Carbon flow: carbon contained in plastics [GtC]"
-  v37_plasticWaste(ttot,all_regi,all_enty,all_enty,all_emiMkt)              "Carbon flow: carbon contained in plastic waste [GtC]"
+  v37_incinerationEmi(ttot,all_regi,all_emiMkt)                             "Emissions from incineration of plastic waste, only carbon that is not captured [GtC]"
+  vm_incinerationCCS(ttot,all_regi)                                         "CCS from incineration of plastic waste [GtC]"
+  v37_incineratedPlastics(ttot,all_regi)                                    "Carbon flow: carbon contained in plastics that are incinerated [GtC]"
+  v37_feedstocksCarbon(ttot,all_regi)                                       "Carbon flow: carbon contained in chemical feedstocks [GtC]"
+  v37_chemicalFeFosShare(ttot,all_regi)                                     "Fossil share of chemical feedstocks [0-1]"
+  v37_plasticsCarbon(ttot,all_regi)                                         "Carbon flow: carbon contained in plastics [GtC]"
+  v37_plasticWaste(ttot,all_regi)                                           "Carbon flow: carbon contained in plastic waste [GtC]"
   v37_regionalWasteIncinerationCCSshare(tall,all_regi)                      "Share of waste incineration that is captured [%]"
   vm_wasteIncinerationEmiBalance(tall,all_regi,all_enty,all_emiMkt)         "Sum of plastics waste incineration related emissions (positive and negative) [GtC]"
   vm_nonFosPlastic_incinCC(ttot,all_regi,all_emiMkt)                        "Carbon from non-fossil origin in plastics that gets incinerated with carbon capture [GtC]"
-  vm_nonFosNonPlasticNonEmitted(ttot,all_regi)                           "Carbon from non-fossil origin in non-plastic materials that does not get emitted to the atmosphere [GtC]"
-  v37_emiChemicalsProcess(ttot,all_regi,all_enty,all_emiMkt)                "Chemical process emissions, so far only CO2 emissions [GtC]"
+  vm_nonFosNonPlasticNonEmitted(ttot,all_regi)                              "Carbon from non-fossil origin in non-plastic materials that does not get emitted to the atmosphere [GtC]"
 
   !! process-based implementation
   vm_outflowPrc(tall,all_regi,all_te,opmoPrc)                               "Production volume of processes in process-based model [Gt/a]"
@@ -113,12 +122,12 @@ Positive Variables
   v37_shareWithCC(tall,all_regi,all_te,opmoPrc)                             "Share of process and operation mode equipped with carbon capture technology"
   vm_costMatPrc(tall,all_regi)                                              "Cost of external material inputs such as iron ore in process-based industry [trn $2017/a]"
   v37_matShareChange(tall,all_regi,all_te,opmoPrc,all_enty)                 "Change of share of processes with rectricted relative share change"
-  v37_chemFlow(tall,all_regi,all_enty)                                      "Summed material outflow of historic processes with future restricted shares; Needed as auxiliary for calculating material outflows of historic processes from the restricted shares"
-  
+  v37_chemflow(tall,all_regi,all_enty)                                      "Summed material outflow of historic processes with future restricted shares; Needed as auxiliary for calculating material outflows of historic processes from the restricted shares"
 ;
 
 Variables
 !! feedstocks
+v37_emiChemicalsProcess(ttot,all_regi,all_enty,all_emiMkt)                "Chemical process emissions, so far only CO2 emissions [GtC]"
 vm_emiFeedstockNoEnergy(ttot,all_regi,all_enty,all_emiMkt)                "Emissions from feedstocks that are not accounted as energy-related emissions, so far only CO2 emissions [GtC]"
 vm_emiNonFosNonIncineratedPlastics(ttot,all_regi,all_enty,all_emiMkt)     "Negative CO2 emissions from non-fossil carbon in non-incinerated plastics [GtC]"
 v37_emiNonPlasticWaste(ttot,all_regi,all_enty,all_emiMkt)                 "Emissions from non-plastic waste, so far only CO2 emissions [GtC]"
@@ -140,16 +149,17 @@ $endif.no_calibration
   q37_costCESmarkup(ttot,all_regi,all_in)                                           "calculation of additional CES markup cost to represent demand-side technology cost of end-use transformation, for example, cost of heat pumps etc."
   q37_chemicals_feedstocks_limit(ttot,all_regi)                                     "lower bound on feso/feli/fega in chemicals FE input for feedstocks"
   q37_demFeFeedstockChemIndst(ttot,all_regi,all_enty,all_emiMkt)                    "defines energy flow of non-energy feedstocks for the chemicals industry. It is used for emissions accounting"
-  q37_FeedstocksCarbon(ttot,all_regi,all_enty,all_enty,all_emiMkt)                  "calculate carbon contained in feedstocks [GtC]"
-  q37_plasticsCarbon(ttot,all_regi,all_enty,all_enty,all_emiMkt)                    "calculate carbon contained in plastics [GtC]"
-  q37_plasticWaste(ttot,all_regi,all_enty,all_enty,all_emiMkt)                      "calculate carbon contained in plastic waste [GtC]"
-  q37_incinerationEmi(ttot,all_regi,all_enty,all_enty,all_emiMkt)                   "calculate carbon contained in plastics that are incinerated [GtC]"
-  q37_incinerationCCS(ttot,all_regi,all_enty,all_enty,all_emiMkt)                   "calculate carbon captured from plastics that are incinerated [GtC]"
+  q37_FeedstocksCarbon(ttot,all_regi)                                               "calculate carbon contained in feedstocks [GtC]"
+  q37_plasticsCarbon(ttot,all_regi)                                                 "calculate carbon contained in plastics [GtC]"
+  q37_plasticWaste(ttot,all_regi)                                                   "calculate carbon contained in plastic waste [GtC]"
+  q37_incinerationEmi(ttot,all_regi,all_emiMkt)                                     "calculate carbon contained in plastics that are incinerated [GtC]"
+  q37_incinerationCCS(ttot,all_regi)                                                "calculate carbon captured from plastics that are incinerated [GtC]"
   q37_nonFosPlastic_incinCC(ttot,all_regi,all_emiMkt)                               "calculate non-fossil carbon captured from plastics that are incinerated [GtC]"
-  q37_incineratedPlastics(ttot,all_regi,all_enty,all_enty,all_emiMkt)               "calculate carbon contained in plastics that are incinerated [GtC]"
+  q37_incineratedPlastics(ttot,all_regi)                                            "calculate carbon contained in plastics that are incinerated [GtC]"
   q37_feedstocksShares(ttot,all_regi,all_enty,all_enty,all_emiMkt)                  "identical fossil/biomass/synfuel shares for FE and feedstocks"
   q37_wasteIncinerationEmiBalance(tall,all_regi,all_enty,all_emiMkt)                "sum feedstocks incineration emissions up in order not to clutter the core"
-  q37_nonFosNonPlasticNonEmitted(ttot,all_regi)                                    "calculate non-fossil carbon in non-plastic materials that are landfilled [GtC]"
+  q37_nonFosNonPlasticNonEmitted(ttot,all_regi)                                     "calculate non-fossil carbon in non-plastic materials that are landfilled [GtC]"
+  q37_chemicalFeFosShare(ttot,all_regi)                                             "calculate fossil share of chemical feedstocks [0-1]"
 
   q37_emiChemicalsProcess(ttot,all_regi,all_enty,all_emiMkt)                        "calculate chemicals process emissions"
   q37_emiNonFosNonIncineratedPlastics(ttot,all_regi,all_enty,all_emiMkt)            "calculate negative emissions from non-fossil non-incinerated plastics"

@@ -160,9 +160,11 @@ $endif.cm_subsec_model_steel
 
   in_chemicals_feedstock_37(all_in)   "chemicals FE that can provide feedstocks"
   /
+$ifthen.cm_subsec_model_chemicals "%cm_subsec_model_chemicals%" == "ces"
     feso_chemicals
     feli_chemicals
     fega_chemicals
+$endif.cm_subsec_model_chemicals
   /
 
   ces_eff_target_dyn37(all_in,all_in)   "limits to specific total energy use"
@@ -472,7 +474,6 @@ $ifthen.cm_subsec_model_chemicals "%cm_subsec_model_chemicals%" == "processes"
     ammoFinal     "Ammonia; final product"
     !! REMINDER: once we co2f from the CCU module, make sure that it isn't subtracted twice (once by taking it from CCU, once by subtracting feedstock carbon)
     co2f
-    co2fdummy 
 
     plasticWaste  "Plastic waste, mixed"
 $endif.cm_subsec_model_chemicals
@@ -496,7 +497,6 @@ $ifthen.cm_subsec_model_chemicals "%cm_subsec_model_chemicals%" == "processes"
     ammonia
     ammoniaH2
     co2f
-    co2fdummy
 
     plasticWaste
 $endif.cm_subsec_model_chemicals
@@ -536,7 +536,7 @@ matFin(mat)   "Final products of a process-based production route"
 $ifthen.cm_subsec_model_chemicals "%cm_subsec_model_chemicals%" == "processes"
    otherChem
    hvc
-   fertilizer 
+   fertilizer
    methFinal
    ammoFinal
 $endif.cm_subsec_model_chemicals
@@ -579,7 +579,7 @@ $ifthen.cm_subsec_model_chemicals "%cm_subsec_model_chemicals%" == "processes"
      otherChem_old
      otherChem_elec
      otherChem_h2
-     
+
      mech_recycle
 
      hvc_stCrLiq
@@ -677,7 +677,7 @@ $ifthen.cm_subsec_model_chemicals "%cm_subsec_model_chemicals%" == "processes"
     meSyH2 . standard
     meSyChemRe . standard
 
-    amSyCoal . standard 
+    amSyCoal . standard
     amSyNG . standard
     amSyLiq . standard
     amSyCoal_cc . standard
@@ -714,13 +714,13 @@ $ifthen.cm_subsec_model_chemicals "%cm_subsec_model_chemicals%" == "processes"
     amToFinal . standard  . ammonia
     amToFinal . greenh2  . ammoniaH2
 
-    meSyH2 . standard  . co2fdummy
-    fertProdH2 . standard  . co2fdummy
+    meSyH2 . standard  . co2f
+    fertProdH2 . standard  . co2f
 
     mechRe . standard  . plasticWaste
     stCrChemRe . standard  . plasticWaste
     meSyChemRe . standard  . plasticWaste
-    
+
 $endif.cm_subsec_model_chemicals
 $ifthen.cm_subsec_model_steel "%cm_subsec_model_steel%" == "processes"
     idr . (h2,ng) . dripell
@@ -811,7 +811,7 @@ $ifthen.cm_subsec_model_chemicals "%cm_subsec_model_chemicals%" == "processes"
    stCrChemRe . standard . ue_chemicals
    mechRe . standard . ue_chemicals
 
-   meSySol             . (standard,greenh2)     . ue_chemicals 
+   meSySol             . (standard,greenh2)     . ue_chemicals
    meSySol_cc           . standard           . ue_chemicals
    meSyNg   . standard         . ue_chemicals
    (meSyLiq,meSyLiq_cc) . standard        . ue_chemicals
@@ -819,7 +819,7 @@ $ifthen.cm_subsec_model_chemicals "%cm_subsec_model_chemicals%" == "processes"
    meSyChemRe           . standard        . ue_chemicals
 
    (amSyCoal,amSyCoal_cc) . standard . ue_chemicals
-   (amSyNG,amSyNG_cc) . standard . ue_chemicals 
+   (amSyNG,amSyNG_cc) . standard . ue_chemicals
    (amSyLiq,amSyLiq_cc) . standard . ue_chemicals
    amSyH2 . standard . ue_chemicals
 
@@ -844,11 +844,11 @@ $endif.cm_subsec_model_steel
 tePrc2teCCPrc(all_te,opmoPrc,all_te,opmoPrc)  "Mapping of base technologies to CCS technologies"
   /
 $ifthen.cm_subsec_model_chemicals "%cm_subsec_model_chemicals%" == "processes"
-    meSySol   . standard . meSySol_cc  . standard   
+    meSySol   . standard . meSySol_cc  . standard
     meSyNg    . standard . meSyNg_cc   . standard
     meSyLiq   . standard . meSyLiq_cc  . standard
 
-    amSyCoal  . standard . amSyCoal_cc  . standard 
+    amSyCoal  . standard . amSyCoal_cc  . standard
     amSyNG    . standard . amSyNG_cc    . standard
     amSyLiq   . standard . amSyLiq_cc    . standard
 $endif.cm_subsec_model_chemicals
@@ -972,7 +972,7 @@ mat2ue(mat,all_in)   "Mapping of materials (final route products) onto the UE ce
 $ifthen.cm_subsec_model_chemicals "%cm_subsec_model_chemicals%" == "processes"
    otherChem . ue_chemicals
    hvc   . ue_chemicals
-   fertilizer   . ue_chemicals 
+   fertilizer   . ue_chemicals
    methFinal   . ue_chemicals
    ammoFinal   . ue_chemicals
 $endif.cm_subsec_model_chemicals
@@ -995,7 +995,7 @@ $ifthen.cm_subsec_model_chemicals "%cm_subsec_model_chemicals%" == "processes"
 
     entydummy.entydummy.mechRe
 
-    entydummy.entydummy.meSySol 
+    entydummy.entydummy.meSySol
     entydummy.entydummy.meSyNg
     entydummy.entydummy.meSyLiq
     entydummy.entydummy.meSySol_cc
@@ -1004,7 +1004,7 @@ $ifthen.cm_subsec_model_chemicals "%cm_subsec_model_chemicals%" == "processes"
     entydummy.entydummy.meSyH2
     entydummy.entydummy.meSyChemRe
 
-    entydummy.entydummy.amSyCoal 
+    entydummy.entydummy.amSyCoal
     entydummy.entydummy.amSyNG
     entydummy.entydummy.amSyLiq
     entydummy.entydummy.amSyCoal_cc

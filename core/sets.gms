@@ -470,7 +470,6 @@ all_enty             "all types of quantities"
 *** materials, feedstock, and industrial goods
 
     co2f         "feedstock CO2"
-    co2fdummy         "feedstock CO2 deummy"
 
 *** chemicals
     otherChem
@@ -1457,18 +1456,18 @@ teAdj(all_te)           "technologies with adjustment costs on capacity addition
 $ifthen.cm_subsec_model_chemicals "%cm_subsec_model_chemicals%" == "processes"
     chemElec        "Other chemicals by Electricity"
     chemH2          "Other chemicals by Hydrogen"
-    meSySol         "Methanol by Soilds" 
+    meSySol         "Methanol by Soilds"
     meSyNg          "Methanol by Gas"
     meSyLiq         "Methanol by Liquids"
-    meSySol_cc      "Methanol by Soilds CCS" 
+    meSySol_cc      "Methanol by Soilds CCS"
     meSyNg_cc       "Methanol by Gas CCS"
     meSyLiq_cc      "Methanol by Liquids CCS"
     meSyH2          "Methanol by Hydrogen"
     meSyChemRe      "Methanol by Chemical Recycling"
-    amSyCoal        "Ammonia by Coal" 
+    amSyCoal        "Ammonia by Coal"
     amSyNG          "Ammonia by Gas"
     amSyLiq         "Ammonia by Liquids"
-    amSyCoal_cc     "Ammonia by Coal CCS" 
+    amSyCoal_cc     "Ammonia by Coal CCS"
     amSyNG_cc       "Ammonia by Gas CCS"
     amSyLiq_cc      "Ammonia by Liquids CCS"
     amSyH2          "Ammonia by Hydrogen"
