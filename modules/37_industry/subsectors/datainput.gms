@@ -929,30 +929,12 @@ $ifthen.cm_subsec_model_chemicals "%cm_subsec_model_chemicals%" == "ces"
 p37_mat2ue(tall,all_regi,all_enty,all_in) = 0.;
 $endif.cm_subsec_model_chemicals
 $ifthen.cm_subsec_model_chemicals "%cm_subsec_model_chemicals%" == "processes"
-Parameter
-  p37_mat2ueLookup(tall,all_regi,all_enty,all_in, all_LU_emi_scen, all_rcp_scen) "conversion factors [2017$/kg or 2017$/kgN] for 2020-2050 to convert material [Gt or GtN] into UE [trn$2017]"
-  /
-$ondelim
-$include "./modules/37_industry/subsectors/input/p37_mat2ue_chemicals.cs4r";
-$offdelim
-  /
-;
-!! select mat2ue conversion fators from look-up table according to SSP and RCP (fertilizer demand projections from MagPie vary with SSP and RCP)
-p37_mat2ue(t,regi,mat,in) = p37_mat2ueLookup(t,regi,mat,in,"%cm_LU_emi_scen%","%cm_rcp_scen%");
-
-!! constant before IEA report temporal scope
-p37_mat2ue(t,regi,mat,in)$(t.val lt 2020) = p37_mat2ue("2020",regi,mat,in);
-
 !! ue_chemicals is measured in value_added (trn$2017), whilst material is measured in Gt
 !! So this is the price of material in trn$2017/Gt = $2017/kg
-
-!! new calculation value added: Global plastic production volume 400.3 Mt Global plastic market size 712bn USD in 2022 https://www.statista.com/topics/5266/plastics-industry/#:~:text=Since%20the%20mass%20production%20of%20plastic%20products%20began,to%20experience%20considerable%20growth%20over%20the%20next%20decade.
-
-!!TODO QIanzhi: Change to 2017$
-!!p37_mat2ue(t,all_regi,"hvc","ue_chemicals") = 0.66; !!2017$/kg Source: https://businessanalytiq,com/procurementanalytics/index/ethylene-price-index/
-!!p37_mat2ue("fertilizer","ue_chemicals") = 0.73; !!2017$/kgN Source: https://farmdocdaily,illinois,edu/wp-content/uploads/2023/06/06132023_fig1,png 2020 Global Average
-!!p37_mat2ue("methFinal","ue_chemicals") = 0.37; !!2017$/kg Source: https://www,methanex,com/about-methanol/pricing/ 2020 Global Average
-!!p37_mat2ue("ammoFinal","ue_chemicals") = 0.69; !!2017$/kg Source: https://businessanalytiq,com/procurementanalytics/index/ammonia-price-index/ 2020 Global Average
+p37_mat2ue(t,all_regi,"hvc","ue_chemicals") = 0.66; !!2017$/kg Source: https://businessanalytiq,com/procurementanalytics/index/ethylene-price-index/
+p37_mat2ue(t,all_regi,"fertilizer","ue_chemicals") = 0.73; !!2017$/kgN Source: https://farmdocdaily,illinois,edu/wp-content/uploads/2023/06/06132023_fig1,png 2020 Global Average
+p37_mat2ue(t,all_regi,"methFinal","ue_chemicals") = 0.37; !!2017$/kg Source: https://www,methanex,com/about-methanol/pricing/ 2020 Global Average
+p37_mat2ue(t,all_regi,"ammoFinal","ue_chemicals") = 0.69; !!2017$/kg Source: https://businessanalytiq,com/procurementanalytics/index/ammonia-price-index/ 2020 Global Average
 p37_mat2ue(t,all_regi,"otherChem","ue_chemicals") = 1.;
 $endif.cm_subsec_model_chemicals
 $ifthen.cm_subsec_model_steel "%cm_subsec_model_steel%" == "processes"
@@ -977,13 +959,22 @@ sum(tePrc2matOut(tePrc,opmoPrc,mat),
     )
 ;
 
-!! Calc ue_share
-!! can this be deleted?
+Parameter
+  p37_ue_shareLookup(tall,all_regi,all_enty,all_in, all_LU_emi_scen, all_rcp_scen) "Share of material to total ue for 2020-2050 [trn$2017/trn$2017]"
+  /
+$ondelim
+$include "./modules/37_industry/subsectors/input/p37_ue_share_chemicals.cs4r";
+$offdelim
+  /
+;
+!! select ue_share from look-up table according to SSP and RCP (fertilizer demand projections from MagPie vary with SSP and RCP)
+p37_ue_share(t,regi,mat,in) = p37_ue_shareLookup(t,regi,mat,in,"%cm_LU_emi_scen%","%cm_rcp_scen%");
+
+!! Calc historic ue_share
 p37_ue_share(t,regi,mat,in)$(mat2ue(mat,in) AND sameas(in,"ue_chemicals") AND t.val le 2020) =
   (p37_mat2ue(t,regi,mat,in) * p37_matFlowHist(t,regi,mat))
   / pm_cesdata(t,regi,in,"quantity");
 ;
-p37_ue_share(t,regi,mat,in)$(t.val gt 2020) = p37_ue_share("2020",regi,mat,in);
 $endif.cm_subsec_model_chemicals
 
 $ifthen.cm_subsec_model_steel "%cm_subsec_model_steel%" == "processes"
