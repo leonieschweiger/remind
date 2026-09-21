@@ -727,24 +727,6 @@ $ifthen.cm_subsec_model_chemicals "%cm_subsec_model_chemicals%" == "processes"
 !! TODO Qianzhi 1MWh NH3,LHV = 0.19355 tons
 
 !! 1 / (sm_TWa_2_MWh/sm_giga_2_non) unit conversion: MWh/t output -> TWa/Gt output
-
-!! should not be needed anymore
-!!p37_specFeDemTarget("fesos","chemOld","standard")  = 1.5 / (sm_TWa_2_MWh/sm_giga_2_non);
-!!p37_specFeDemTarget("fegas","chemOld","standard")  = 3.0 / (sm_TWa_2_MWh/sm_giga_2_non);
-!!p37_specFeDemTarget("fehos","chemOld","standard")  = 3.9 / (sm_TWa_2_MWh/sm_giga_2_non);
-!!p37_specFeDemTarget("feels","chemOld","standard")  = 2.4 / (sm_TWa_2_MWh/sm_giga_2_non);
-
-!!p37_specFeDemTarget("fesos","chemElec","standard")  = 1.2 / (sm_TWa_2_MWh/sm_giga_2_non);
-!!p37_specFeDemTarget("fegas","chemElec","standard")  = 2.7 / (sm_TWa_2_MWh/sm_giga_2_non);
-!!p37_specFeDemTarget("fehos","chemElec","standard")  = 3.3 / (sm_TWa_2_MWh/sm_giga_2_non);
-!!p37_specFeDemTarget("feels","chemElec","standard")  = 3.6 / (sm_TWa_2_MWh/sm_giga_2_non);
-
-!!p37_specFeDemTarget("fesos","chemH2","standard")  = 1.2 / (sm_TWa_2_MWh/sm_giga_2_non);
-!!p37_specFeDemTarget("fegas","chemH2","standard")  = 2.7 / (sm_TWa_2_MWh/sm_giga_2_non);
-!!p37_specFeDemTarget("fehos","chemH2","standard")  = 3.3 / (sm_TWa_2_MWh/sm_giga_2_non);
-!!p37_specFeDemTarget("feh2s","chemH2","standard")  = 2.1 / (sm_TWa_2_MWh/sm_giga_2_non);   
-!!p37_specFeDemTarget("feels","chemH2","standard")  = 1.8 / (sm_TWa_2_MWh/sm_giga_2_non); 
-
 p37_specFeDemTarget("fehos","stCrNg","standard")  = 15.8 / (sm_TWa_2_MWh/sm_giga_2_non);  !! Source: Yang, M., & You, F. (2017). Table1 NGL input/(Ethylene + By Products)
 !!p37_specFeDemTarget("fegas","stCrNg","standard")  = 2.8 / (sm_TWa_2_MWh/sm_giga_2_non);   !! Source: Yang, M., & You, F. (2017). Table1 External Energy input/(Ethylene + By Products)
 p37_specFeDemTarget("fegas","stCrNg","standard")  = 0.60 / (sm_TWa_2_MWh/sm_giga_2_non);   !! Source: Yang, M., & You, F. (2017). Table1 (External Energy input - Hydrogen Output)/(Ethylene + By Products)
@@ -1016,7 +998,6 @@ if (cm_startyear gt 2005,
 
 *** --------------------------------
 p37_teMatShareHist(all_regi,tePrc,opmoPrc,mat) = 0.;
-!! this can be deleted in the future
 $ifthen.cm_subsec_model_chemicals "%cm_subsec_model_chemicals%" == "processes"
 loop(all_regi(regi),
   loop(tePrc2matOut(tePrc, opmoPrc, mat),
@@ -1029,7 +1010,6 @@ loop(all_regi(regi),
         );
       );
     );
-
 $endif.cm_subsec_model_chemicals
 
 $ifthen.cm_subsec_model_steel "%cm_subsec_model_steel%" == "processes"
@@ -1054,43 +1034,17 @@ loop((regi,matFin(mat))$(NOT mat2ue(mat,"ue_chemicals")),
 
 $ifthen.cm_subsec_model_chemicals "%cm_subsec_model_chemicals%" == "processes"
 Parameter
-  p37_demFePrcHist(tall,all_regi,all_te,opmoPrc,all_enty) "total FE demand [EJ] per process in 2005-2020 (calculated from specific FE demand and production volume)"
+  p37_specFeDem_chemicals(tall,all_regi,all_te,opmoPrc,all_enty) "specific FE demand [GJ/t-output] per process in 2005-2020"
   /
 $ondelim
-$include "./modules/37_industry/subsectors/input/p37_demFePrcHist_chemicals.cs4r";
+$include "./modules/37_industry/subsectors/input/p37_specFeDem_chemicals.cs4r";
 $offdelim
   /
 ;
-!! HOT FIX
-!! OtherChem is totalChemicals-sum(all other processes)
-!! is duplicate with mrindustry, could maybe be deleted
-p37_demFePrcHist(t,regi,tePrc,opmoPrc,entyFe) = sm_EJ_2_TWa * p37_demFePrcHist(t,regi,tePrc,opmoPrc,entyFe);
-loop(t$(t.val ge 2005 AND t.val le 2020),
-    p37_demFePrcHist(t,regi,"chemOld","standard","fesos")
-    = pm_fedemand(t,regi,"feso_chemicals") * sm_EJ_2_TWa
-    - sum((tePrc, opmoPrc)$(NOT sameas(tePrc,"chemOld")), p37_demFePrcHist(t,regi,tePrc,opmoPrc,"fesos"));
-
-    p37_demFePrcHist(t,regi,"chemOld","standard","fehos")
-    = pm_fedemand(t,regi,"feli_chemicals") * sm_EJ_2_TWa
-    - sum((tePrc, opmoPrc)$(NOT sameas(tePrc,"chemOld")), p37_demFePrcHist(t,regi,tePrc,opmoPrc,"fehos"));
-
-    p37_demFePrcHist(t,regi,"chemOld","standard","fegas")
-    = (pm_fedemand(t,regi,"fega_chemicals")
-    +  pm_fedemand(t,regi,"feh2_chemicals")) * sm_EJ_2_TWa
-    - sum((tePrc, opmoPrc)$(NOT sameas(tePrc,"chemOld")), p37_demFePrcHist(t,regi,tePrc,opmoPrc,"fegas"));
-
-    p37_demFePrcHist(t,regi,"chemOld","standard","feels")
-    = (pm_fedemand(t,regi,"feelhth_chemicals")
-    +  pm_fedemand(t,regi,"feelwlth_chemicals")) * sm_EJ_2_TWa
-    - sum((tePrc, opmoPrc)$(NOT sameas(tePrc,"chemOld")), p37_demFePrcHist(t,regi,tePrc,opmoPrc,"feels"));
-);
+p37_specFeDem_chemicals(t,regi,tePrc,opmoPrc,entyFe) = sm_EJ_2_TWa * p37_specFeDem_chemicals(t,regi,tePrc,opmoPrc,entyFe);
 loop((t,regi,tePrc,opmoPrc)$(t.val ge 2005 AND t.val le 2020),
-   IF(pm_outflowPrcHist(t,regi,tePrc,opmoPrc) gt EPS,
-      loop(entyFe,
-        pm_specFeDem(t,regi,entyFe,tePrc,opmoPrc)
-        = p37_demFePrcHist(t,regi,tePrc,opmoPrc,entyFe)
-        / pm_outflowPrcHist(t,regi,tePrc,opmoPrc);
-    );
+  IF(p37_specFeDem_chemicals(t,regi,tePrc,opmoPrc) gt EPS,
+    pm_specFeDem(t,regi,entyFe,tePrc,opmoPrc) = p37_specFeDem_chemicals(t,regi,tePrc,opmoPrc,entyFe);
   );
 );
 $endif.cm_subsec_model_chemicals
@@ -1100,6 +1054,7 @@ s37_shareHistFeDemPenalty = 0.6;
 *** --------------------------------
 
 if (cm_startyear eq 2005,
+  !! applies only to steel
   loop(t$(t.val ge 2005 AND t.val le 2020),
 
     !! 2nd stage tech
@@ -1151,7 +1106,7 @@ if (cm_startyear eq 2005,
 
   );
 
-  !! loop over other years and blend
+  !! applies to both steel and chemicals: loop over other years and blend
   loop((regi(all_regi),entyFeStat(all_enty), tePrc(all_te), opmoPrc),
     if( pm_specFeDem("2020",all_regi,all_enty,all_te,opmoPrc) gt 0.,
       loop(t$(t.val > 2020),
@@ -1162,10 +1117,10 @@ if (cm_startyear eq 2005,
             + (pm_specFeDem("2020",regi,all_enty,all_te,opmoPrc) - p37_specFeDemTarget(all_enty,all_te,opmoPrc))
             * power(0.9804, t.val - 2020)
           );
-        else
-          pm_specFeDem(t,regi,all_enty,all_te,opmoPrc) = p37_specFeDemTarget(all_enty,all_te,opmoPrc)
-      );
+      else
+        pm_specFeDem(t,regi,all_enty,all_te,opmoPrc) = p37_specFeDemTarget(all_enty,all_te,opmoPrc)
     );
+  );
 
 
 !! Hot fix on regional otherChem Energy Demand
