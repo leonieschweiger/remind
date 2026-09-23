@@ -1131,8 +1131,8 @@ if (cm_startyear eq 2005,
   loop(t$(t.val ge 2005 AND t.val le 2020),
 
     !! 2nd stage tech
-    loop(mat2ue(mat,in),
-      p37_matFlowHist(ttot,regi,mat) = pm_fedemand(ttot,regi,in) / p37_mat2ue(mat,in) * p37_ue_share(mat,in);
+    loop(mat2ue(mat,in)$(NOT sameas(in,"ue_chemicals")),
+      p37_matFlowHist(t,regi,mat) = pm_fedemandInd(t,regi,in) / p37_mat2ue(t,regi,mat,in) * p37_ue_share(t,regi,mat,in);
       loop(tePrc2matOut(tePrc,opmoPrc,mat),
         pm_outflowPrcHist(t,regi,tePrc,opmoPrc) = p37_matFlowHist(t,regi,mat) * p37_teMatShareHist(regi,tePrc,opmoPrc,mat);
       );
