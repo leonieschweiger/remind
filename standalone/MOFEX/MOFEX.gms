@@ -77,21 +77,21 @@ $setGlobal agCosts  costs               !! def = costs
 ***---------------------    29_CES_parameters    --------------------------------
 $setglobal CES_parameters  load       !! def = load
 ***---------------------    30_biomass    ---------------------------------------
-$setGlobal biomass  magpie_40 !! def = magpie_40
+$setGlobal biomass  magpie !! def = magpie
 ***---------------------    31_fossil    ----------------------------------------
 $setGlobal fossil  timeDepGrades        !! def = MOFEX
-***---------------------    32_power    ----------------------------------------
+***---------------------    32_power    -----------------------------------------
 $setGlobal power  IntC               !! def = IntC
-***---------------------    33_cdr       ----------------------------------------
-$setGlobal CDR  DAC                   !! def = DAC
+***---------------------    33_carbonRemoval       ------------------------------
+$setGlobal carbonRemoval  DAC                   !! def = DAC
 ***---------------------    35_transport    -------------------------------------
 $setGlobal transport  edge_esm        !! def = edge_esm
 ***---------------------    36_buildings    -------------------------------------
 $setglobal buildings  simple          !! def = simple
 ***---------------------    37_industry    --------------------------------------
 $setglobal industry  subsectors     !! def = subsectors
-***---------------------    39_CCU    --------------------------------------
-$setglobal CCU  on !! def = on
+***---------------------    39_carbonUtilization    -----------------------------
+$setglobal carbonUtilization  on !! def = on
 ***---------------------    40_techpol  -----------------------------------------
 $setglobal techpol  none              !! def = none
 ***---------------------    41_emicapregi  --------------------------------------
@@ -128,18 +128,18 @@ cm_taxCO2_startyear  "level of co2 tax in start year in $ per t CO2eq"
 cm_taxCO2_expGrowth     "growth rate of carbon tax"
 c_macscen            "use of mac"
 cm_nucscen            "nuclear option choice"
-cm_ccapturescen       "carbon capture option choice"
+c_co2captureEnergy    "carbon capture option choice"
 c_bioliqscen          "bioenergy liquids technology choise"
 c_bioh2scen           "bioenergy hydrogen technology choice"
 c_shGreenH2           "lower bound on share of green hydrogen in all hydrogen by 2030"
 c_shBioTrans          "upper bound on share of bioliquids in transport from 2025 onwards"
 cm_shSynTrans         "lower bound on share of synthetic fuels in all transport fuels by 2045"
 cm_shSynGas           "lower bound on share of synthetic gases by 2045"
-cm_IndCCSscen        "CCS for Industry"
-cm_optimisticMAC     "assume optimistic Industry MAC from AR5 Ch. 10?"
-cm_CCS_cement        "CCS for cement sub-sector"
-cm_CCS_chemicals     "CCS for chemicals sub-sector"
-cm_CCS_steel         "CCS for steel sub-sector"
+cm_optimisticMAC      "assume optimistic Industry MAC from AR5 Ch. 10?"
+cm_co2captureInd        "carbon capture for Industry"
+cm_co2captureCement          "carbon capture for cement sub-sector"
+cm_co2captureChemicals       "carbon capture for chemicals sub-sector"
+cm_co2captureSteel            "carbon capture for steel sub-sector"
 cm_bioenergy_SustTax    "level of the bioenergy sustainability tax in fraction of bioenergy price"
 cm_bioenergy_EF_for_tax "bioenergy emission factor that is used to derive a bioenergy tax [kgCO2 per GJ]"
 cm_maxProdBiolc         "bound on global pebiolc production including residues but excluding traditionally used biomass [EJ per yr]"
@@ -149,7 +149,6 @@ cm_tradbio_phaseout     "switch that allows for a faster phase out of traditiona
 cm_startyear          "first optimized modelling time step [year]"
 c_start_budget        "start of GHG budget limit"
 cm_prtpScen           "pure rate of time preference standard values"
-cm_fetaxscen          "choice of final energy tax path, subsidy path and inconvenience cost path, values other than 0 make setting module 21_tax on"
 cm_multigasscen       "scenario on GHG portfolio to be included in permit trading scheme"
 cm_permittradescen    "scenario on permit trade"
 cm_rentdiscoil        "[grades2poly] discount factor for the oil rent"
@@ -169,8 +168,7 @@ c_ccscapratescen      "CCS capture rate"
 c_export_tax_scen    "choose which oil export tax is used in the model. 0 = none, 1 = fix"
 cm_iterative_target_adj "whether or not a tax or a budget target should be iteratively adjusted depending on actual emission or forcing level"
 cm_gdximport_target   "whether or not the starting value for iteratively adjusted budgets, tax scenarios, or forcing targets (emiscen 5,6,8,9) should be read in from the input.gdx"
-cm_gs_ew              "grain size (for enhanced weathering, CDR module) [micrometre]"
-cm_LimRock             "limit amount of rock spread each year [Gt]"
+cm_33_EW_rockRemPot     "Maximum CO2 removal potential per ton of rock (t CO2 / t rock)."
 cm_expoLinear_yearStart "time at which carbon price increases linearly instead of exponentially"
 
 c_budgetCO2FFI        "carbon budget for CO2 emissions from FFI (in GtCO2)"
@@ -190,7 +188,7 @@ cm_frac_NetNegEmi    "tax on net negative emissions to reflect risk of overshoot
 c_peakBudgYr       "date of net-zero CO2 emissions for peak budget runs without overshoot"
 cm_taxCO2_IncAfterPeakBudgYr "annual increase of CO2 price after the Peak Budget Year in $ per tCO2"
 c_regi_nucscen				"regions to apply nucscen to"
-c_regi_capturescen			"region to apply ccapturescen to"
+c_regi_captureEnergy		"region to apply ccapturescen to"
 c_regi_synfuelscen			"region to apply synfuelscen to"
 cm_TaxConvCheck             "switch for enabling tax convergence check in nash mode"
 c_regi_sensscen				"regions which regional sensitivity parameters apply to"
@@ -209,7 +207,6 @@ cm_import_EU                "EU switch for different scenarios of EU SE import a
 cm_noPeFosCCDeu              "switch to suppress Pe2Se Fossil Carbon Capture in Germany"
 cm_HeatLim_b                "switch to set maximum share of district heating in FE buildings"
 cm_ElLim_b                  "switch to set maximum share of electricity in FE buildings"
-cm_startIter_EDGET          "starting iteration of EDGE-T"
 cm_ARIADNE_FeShareBounds    "switch for minimum share of liquids and gases for industry needed for the ARIADNE project"
 cm_ariadne_trade_el         "switch for enabling electricity imports to Germany for ARIADNE project"
 cm_ariadne_trade_h2         "switch for enabling H2 imports to Germany for ARIADNE project"
@@ -233,7 +230,6 @@ cm_iteration_max       = 1;     !! def = 1
 c_solver_try_max       = 2;     !! def = 2
 c_keep_iteration_gdxes = 0;     !! def = 0
 cm_nash_autoconverge   = 1;     !! def = 1
-$setglobal cm_MAgPIE_coupling  off     !! def = "off"
 
 cm_emiscen        = 1;         !! def = 1
 $setglobal cm_rcp_scen  none   !! def = "none"
@@ -242,7 +238,7 @@ cm_taxCO2_expGrowth = 1.05;      !! def = 1.05
 c_macscen         = 1;         !! def = 1
 
 cm_nucscen       = 2;        !! def = 2
-cm_ccapturescen  = 1;        !! def = 1
+c_co2captureEnergy  = 1;        !! def = 1
 c_bioliqscen     = 1;        !! def = 1
 c_bioh2scen      = 1;        !! def = 1
 c_shGreenH2      = 0;        !! def = 0
@@ -250,11 +246,11 @@ c_shBioTrans     = 1;        !! def = 1
 cm_shSynTrans    = 0;        !! def = 0
 cm_shSynGas      = 0;        !! def = 0
 
-cm_IndCCSscen          = 1;        !! def = 1
 cm_optimisticMAC       = 0;        !! def = 0
-cm_CCS_cement          = 1;        !! def = 1
-cm_CCS_chemicals       = 1;        !! def = 1
-cm_CCS_steel           = 1;        !! def = 1
+cm_co2captureInd          = 1;        !! def = 1
+cm_co2captureCement          = 1;        !! def = 1
+cm_co2captureChemicals       = 1;        !! def = 1
+cm_co2captureSteel           = 1;        !! def = 1
 
 $setglobal cm_secondary_steel_bound  none   !! def = "scenario"
 
@@ -275,7 +271,7 @@ cm_startyear      = 2005;      !! def = 2005 for a BAU, 2015 for policy runs
 c_start_budget    = 2100;      !! def = 2100
 
 cm_prtpScen         = 3;         !! def = 3
-cm_fetaxscen        = 3;         !! def = 3
+$setGlobal cm_fetaxscen 3         !! def = 3 !! choice of final energy tax path, subsidy path and inconvenience cost path, values other than 0 make setting module 21_tax on
 cm_multigasscen     = 2;         !! def = 2
 cm_permittradescen  = 1;         !! def = 1
 $setGlobal cm_oil_scen  medOil         !! def = medOil
@@ -300,8 +296,7 @@ c_export_tax_scen     = 0;         !! def = 0
 cm_iterative_target_adj  = 0;      !! def = 0
 cm_gdximport_target      = 0;      !! def = 0
 $setglobal c_SSP_forcing_adjust  forcing_SSP2   !! def = forcing_SSP2
-cm_gs_ew                 = 20;     !! def = 20
-cm_LimRock               = 1000;   !! def = 1000
+cm_33_EW_rockRemPot      = 0.3;    !! def = 0.3
 cm_expoLinear_yearStart  = 2050;   !! def = 2050
 c_budgetCO2FFI           = 1000;   !! def = 1000
 c_abtrdy                 = 2010;   !! def = 2010
@@ -335,14 +330,10 @@ $setGlobal cm_pushCalib  none !! def = none
 $setGlobal cm_reducCostB  none !! def = none
 $setGlobal cm_effHP  5 !! def = 5
 
-$setGlobal cm_EDGEtr_scen  ConvCase  !! def = ConvCase
-
 $setGlobal c_regi_nucscen  all !! def = all
-$setGlobal c_regi_capturescen  all !! def = all
+$setGlobal c_regi_captureEnergy  all !! def = all
 $setGlobal c_regi_synfuelscen  all !! def = all
 $setGlobal c_regi_sensscen  all !! def = all
-
-
 
 																	  
 cm_biotrade_phaseout = 0; !! def 0
@@ -376,9 +367,6 @@ cm_noPeFosCCDeu = 0; !! def 0
 
 cm_HeatLim_b = 1; !! def 1
 cm_ElLim_b = 1; !! def 1
-
-cm_startIter_EDGET = 14; !! def 14, by default EDGE-T is run first in iteration 14
-
 
 cm_TaxConvCheck = 0; !! def 0, which means tax convergence check is off
 
@@ -452,8 +440,8 @@ $setglobal cm_adj_coeff_multiplier  off
 $setglobal cm_inco0Factor  off !! def = off
 $setglobal cm_inco0RegiFactor  off !! def = off
 
-$setglobal cm_CCS_markup  off !! def = off
-$setglobal cm_Industry_CCS_markup  off !! def = off
+$setglobal cm_co2captureEnergyMarkup  off !! def = off
+$setglobal cm_co2captureIndMarkup  off !! def = off
 $setglobal cm_renewables_floor_cost  off !! def = off 
 
 $setglobal cm_sehe_upper  off !! def = off 
