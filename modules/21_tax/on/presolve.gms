@@ -13,6 +13,9 @@ if( (cm_NetNegEmi_calculation eq 1) AND (iteration.val le 2),
     s21_frac_NetNegEmi = cm_frac_NetNegEmi;
 );
 
+*** calculate CO2 tax for netnegative emissions tax as non-negative carbon price to avoid subsidy when pm_taxCO2eqSum < 0
+p21_taxCO2eqSum_NetNegEmi(ttot,regi) = max(0, pm_taxCO2eqSum(ttot,regi));
+
 *JS*
 *** calculation of tax rate, as a function of per-capita gdp levels
 p21_tau_so2_tax(ttot,regi)$(ttot.val ge 2005)=s21_so2_tax_2010*pm_gdp(ttot,regi)/pm_pop(ttot,regi);  !! scaled by GDP/cap in the unit [trn US$/bn people]
@@ -27,10 +30,17 @@ p21_tau_so2_tax(ttot,regi)$(ttot.val>2100)=p21_tau_so2_tax("2100",regi);
 pm_taxrevGHG0(t,regi) = pm_taxCO2eqSum(t,regi) * (vm_co2eq.l(t,regi) - vm_emiMacSector.l(t,regi,"co2luc")$(cm_multigasscen ne 3));
 pm_taxrevCO2Sector0(ttot,regi,emi_sectors) = p21_CO2TaxSectorMarkup(ttot,regi,emi_sectors) * pm_taxCO2eqSum(ttot,regi) * vm_emiCO2Sector.l(ttot,regi,emi_sectors);
 pm_taxrevCO2LUC0(t,regi) = pm_taxCO2eqSum(t,regi) * vm_emiMacSector.l(t,regi,"co2luc")$(cm_multigasscen ne 3);
-p21_taxrevCCS0(ttot,regi) = cm_frac_CCS * pm_data(regi,"omf","ccsinje") * pm_inco0_t(ttot,regi,"ccsinje") 
-                            * ( sum(teCCS2rlf(te,rlf), sum(ccs2te(ccsCo2(enty),enty2,te), vm_co2CCS.l(ttot,regi,enty,enty2,te,rlf) ) ) )
-                            * (1/pm_ccsinjecrate(regi)) * sum(teCCS2rlf(te,rlf), sum(ccs2te(ccsCo2(enty),enty2,te), vm_co2CCS.l(ttot,regi,enty,enty2,te,rlf) ) ) / pm_dataccs(regi,"quan","1");
-pm_taxrevNetNegEmi0(ttot,regi) = s21_frac_NetNegEmi * pm_taxCO2eqSum(ttot,regi) * ( (1 - cm_NetNegEmi_calculation) * vm_emiAllco2neg.l(ttot,regi) + cm_NetNegEmi_calculation * v21_emiAllco2neg_acrossIterations.l(ttot,regi) );
+
+p21_taxrevCCS0(ttot,regi) = cm_frac_CCS 
+                            * sum(teCCS2rlf(te,rlf), sum(ccs2te(ccsCo2(enty),enty2,te),
+                                pm_data(regi,"omf",te) * pm_inco0_t(ttot,regi,te) 
+                              * vm_co2CCS.l(ttot,regi,enty,enty2,te,rlf)
+                              * vm_co2CCS.l(ttot,regi,enty,enty2,te,rlf) / ( pm_dataccs(regi,"quan",te) * pm_ccsinjecrate(regi))
+                            ));
+
+pm_taxrevNetNegEmi0(ttot,regi) = s21_frac_NetNegEmi * p21_taxCO2eqSum_NetNegEmi(ttot,regi) * ( (1 - cm_NetNegEmi_calculation) * vm_emiAllco2neg.l(ttot,regi) + cm_NetNegEmi_calculation * v21_emiAllco2neg_acrossIterations.l(ttot,regi) );
+p21_taxrevCDR0(ttot,regi) = cm_frac_CDR * pm_taxCO2eqSum(ttot,regi) *  vm_emiCdrAll.l(ttot,regi);
+
 p21_emiAllco2neg0(ttot,regi)  = vm_emiAllco2neg.l(ttot,regi);
 p21_emiAllco2neg_acrossIterations0(ttot,regi)  = v21_emiAllco2neg_acrossIterations.l(ttot,regi);
 p21_taxrevFE0(ttot,regi) = sum((entyFe,sector)$entyFe2Sector(entyFe,sector),

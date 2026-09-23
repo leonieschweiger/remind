@@ -8,6 +8,10 @@
 prepare <- function() {
 
   timePrepareStart <- Sys.time()
+  # Record the time when the preparation starts in runtime.log
+  # The content of this file will be added to runstatistics.rda at the end.
+  cat("Saving timePrepareStart to runtime.log\n")
+  write(paste(Sys.time(), "prepare", 0, sep = ","), file = "runtime.log")
 
   # Load libraries
   #require(lucode, quietly = TRUE,warn.conflicts =FALSE)
@@ -25,7 +29,7 @@ prepare <- function() {
         } else {
            cat(paste0("Copied ",filelist[i]," to ",to,"\n"))
         }
-	        
+
       }
 	  }
   }
@@ -48,7 +52,7 @@ prepare <- function() {
     # list all packages of interest alphabetically here
         tribble(
             ~Package, "data.table", "devtools", "dplyr", "edgeTransport",
-            "flexdashboard", "gdx", "gdxdt", "gdxrrw", "ggplot2", "gtools",
+            "flexdashboard", "gdx2", "gdxdt", "gdxrrw", "ggplot2", "gtools",
             "lucode2", "luplot", "luscale", "magclass", "magpie4", "methods",
             "mip", "mrtransport", "optparse", "parallel",
             "plotly", "remind2", "reporttransport", "reticulate", "rlang",
@@ -105,17 +109,6 @@ prepare <- function() {
     create_input_for_50_damage_exogenous(as.character(cfg$files2export$start["input_damage.gdx"]))
   }
 
-  # If a path to a MAgPIE report is supplied use it as REMIND input (used for REMIND-MAgPIE coupling)
-  # ATTENTION: modifying gms files
-  if (!is.null(cfg$pathToMagpieReport)) {
-    getReportData(
-      path_to_report = cfg$pathToMagpieReport,
-      inputpath_mag  = cfg$gms$biomass,
-      inputpath_acc  = cfg$gms$agCosts,
-      var_luc        = cfg$var_luc
-    )
-  }
-
   # Update module paths in GAMS code
   update_modules_embedding()
 
@@ -156,13 +149,6 @@ prepare <- function() {
   # check whether the regional resolution and input data revision are outdated and update data if needed
   cfg <- updateInputData(cfg, remindPath = ".")
 
-  # extract BAU emissions for NDC runs to set up emission goals for region where only some countries have a target
-  if (isTRUE(cfg$gms$carbonprice == "NDC") || isTRUE(cfg$gms$carbonpriceRegi == "NDC")) {
-    cat("\nRun scripts/input/prepare_NDC.R.\n")
-    source("scripts/input/prepare_NDC.R")
-    prepare_NDC(as.character(cfg$files2export$start["input_bau.gdx"]), cfg)
-  }
-
   ############ update information ########################
   # update_info, which regional resolution and input data revision in tmpModelFile
   update_info(madrat::regionscode(cfg$regionmapping), cfg$inputRevision, cfg$model_version)
@@ -189,13 +175,16 @@ prepare <- function() {
   replace_in_file('core/sets.gms',content,"MODULES",comment="***")
   ### ADD MODULE INFO IN SETS  ############# END #########
 
-  # copy right gdx file to the output folder
-  gdx_name <- paste0("config/gdx-files/",cfg$gms$cm_CES_configuration,".gdx")
-  if (0 != system(paste('cp', gdx_name,
-			file.path(cfg$results_folder, 'input.gdx')))) {
-    stop('Could not copy gdx file ', gdx_name)
-  } else {
-    message('Copied ', gdx_name, ' to input.gdx')
+  # Retrieve appropriate gdx file
+  gdxConfig <- paste0("config/gdx-files/", cfg$gms$cm_CES_configuration, ".gdx")
+  gdxInput <- file.path(cfg$results_folder, "input.gdx")
+  if (file.copy(gdxConfig, gdxInput)) {
+    message("Copied: ", gdxConfig, "\n    to: ", gdxInput)
+  } else  {
+    stop(ifelse (cfg$gms$CES_parameters == "calibrate",
+        "Calibration requires a starting gdx; please copy the gdx file with the closest configuration and paste it to:",
+        "Could not find gdx file:"),
+      "\n    ", gdxConfig, "\n\n")
   }
 
   # choose which conopt files to copy
@@ -381,7 +370,7 @@ prepare <- function() {
   }
 
   if (cfg$gms$cm_startyear > 2005) {
-    cm_startyear_ref <- as.integer(readGDX("input_ref.gdx", name = "cm_startyear", format = "simplest"))
+    cm_startyear_ref <- as.integer(gdx2::readGDX("input_ref.gdx", name = "cm_startyear", format = "simplest"))
     if (cfg$gms$cm_startyear < cm_startyear_ref) stop("cm_startyear must be larger than its counterpart in input_ref.gdx")
   }
 
