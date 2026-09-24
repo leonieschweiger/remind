@@ -48,7 +48,7 @@ submit <- function(cfg, restart = FALSE, stopOnFolderCreateError = TRUE) {
     } else {
       # we only want to run renv checks/updates in the first run in a cascade:
       # cfg$UseThisRenvLock is only NULL for the first run in a cascade.
-      # For a subsequent run it has been set by the parent run in run.R (standalone) or start_coupled.R (coupled).
+      # For a subsequent run it has been set by the parent run in run.R
       firstRunInCascade <- is.null(cfg$UseThisRenvLock)
       if (firstRunInCascade) {
         if (getOption("autoRenvUpdates", FALSE)) {
@@ -86,6 +86,11 @@ submit <- function(cfg, restart = FALSE, stopOnFolderCreateError = TRUE) {
       createResultsfolderRenv <- function() {
         renv::init() # will overwrite renv.lock if existing...
         file.rename("_renv.lock", "renv.lock") # so we need this rename
+        if (!identical(Sys.info()[["sysname"]], "Windows")) {
+          # the renv package installation folder is copied from the renv cache, where it might
+          # be write protected, but we don't want write protection in the results folder
+          system("chmod ug+w -R renv/library")
+        }
         renv::restore(prompt = FALSE)
       }
 
@@ -127,7 +132,8 @@ submit <- function(cfg, restart = FALSE, stopOnFolderCreateError = TRUE) {
                               " --output=log.txt --open-mode=append", # append for requeued jobs
                               " --mail-type=END,FAIL",
                               " --comment=REMIND",
-                              " --wrap=\"Rscript prepareAndRun.R \" ",
+                              # Prefix RSCRIPT_SLURM_HOOK for piam-apptainer integration (empty if unset)
+                              " --wrap=\"", trimws(paste(Sys.getenv("RSCRIPT_SLURM_HOOK", unset = ""), "Rscript")), " prepareAndRun.R \" ",
                               cfg$slurmConfig))
     Sys.sleep(1)
   }

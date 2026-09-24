@@ -118,23 +118,28 @@ $ifthen.cm_implicitQttyTarget not "%cm_implicitQttyTarget%" == "off"
 *** assign cm_implicitQttyTarget values if not defined yet
 $ifThen.cm_implicitQttyTargetType "%cm_implicitQttyTargetType%" == "scenario"
 *** define quantity target scenario values
-  p47_implicitQttyTargetScenario("EU27_eedEff" ,"2030","EU27_regi","tax","t","FE_wo_b_wo_n_e","all") = 1.1235;
-  p47_implicitQttyTargetScenario("EU27_ff55Eff","2030","EU27_regi","tax","t","FE_wo_b_wo_n_e","all") = 1.0452;
-  p47_implicitQttyTargetScenario("EU27_RpEUEff","2030","EU27_regi","tax","t","FE_wo_b_wo_n_e","all") = 0.9960;
+  p47_implicitQttyTargetScenario("EU27_eedEff" ,"2030",ext_regi,"tax","t","FE_wo_b_wo_n_e","all")$(sameas(ext_regi,"EU27_regi")) = 1.1235;
+  p47_implicitQttyTargetScenario("EU27_ff55Eff","2030",ext_regi,"tax","t","FE_wo_b_wo_n_e","all")$(sameas(ext_regi,"EU27_regi")) = 1.0452;
+  p47_implicitQttyTargetScenario("EU27_RpEUEff","2030",ext_regi,"tax","t","FE_wo_b_wo_n_e","all")$(sameas(ext_regi,"EU27_regi")) = 0.9960;
 
-  p47_implicitQttyTargetScenario("EU27_bio4"  ,"2035","EU27_regi","tax","t","PE","biomass") = 0.19;
-  p47_implicitQttyTargetScenario("EU27_bio4"  ,"2050","EU27_regi","tax","t","PE","biomass") = 0.126667;
-  p47_implicitQttyTargetScenario("EU27_bio7"  ,t     ,"EU27_regi","tax","t","PE","biomass")$((t.val ge 2035) AND (t.val le 2050)) = 0.221666;
-  p47_implicitQttyTargetScenario("EU27_bio7p5",t     ,"EU27_regi","tax","t","PE","biomass")$((t.val ge 2035) AND (t.val le 2050)) = 0.237825;
-  p47_implicitQttyTargetScenario("EU27_bio12" ,t     ,"EU27_regi","tax","t","PE","biomass")$((t.val ge 2035) AND (t.val le 2050)) = 0.38;
-  p47_implicitQttyTargetScenario("GLO_bio100" ,t     ,"GLO","tax","t","PE","biomass")$((t.val ge 2035) AND (t.val le 2050)) = 3.17;
+  p47_implicitQttyTargetScenario("EU27_bio4"  ,"2035",ext_regi,"tax","t","PE","biomass")$(sameas(ext_regi,"EU27_regi")) = 0.19;
+  p47_implicitQttyTargetScenario("EU27_bio4"  ,"2050",ext_regi,"tax","t","PE","biomass")$(sameas(ext_regi,"EU27_regi")) = 0.126667;
+  p47_implicitQttyTargetScenario("EU27_bio7"  ,t     ,ext_regi,"tax","t","PE","biomass")$(sameas(ext_regi,"EU27_regi") AND (t.val ge 2035) AND (t.val le 2050)) = 0.221666;
+  p47_implicitQttyTargetScenario("EU27_bio7p5",t     ,ext_regi,"tax","t","PE","biomass")$(sameas(ext_regi,"EU27_regi") AND (t.val ge 2035) AND (t.val le 2050)) = 0.237825;
+  p47_implicitQttyTargetScenario("EU27_bio12" ,t     ,ext_regi,"tax","t","PE","biomass")$(sameas(ext_regi,"EU27_regi") AND (t.val ge 2035) AND (t.val le 2050)) = 0.38;
+  p47_implicitQttyTargetScenario("GLO_bio100" ,t     ,"GLO","tax","t","PE","biomass")$((t.val ge 2035) AND (t.val le 2100)) = 3.171;
+  p47_implicitQttyTargetScenario("GLO_bio110" ,t     ,"GLO","tax","t","PE","biomass")$((t.val ge 2035) AND (t.val le 2100)) = 3.4881;
+  p47_implicitQttyTargetScenario("GLO_bio150" ,t     ,"GLO","tax","t","PE","biomass")$((t.val ge 2035) AND (t.val le 2100)) = 4.7565;
+  p47_implicitQttyTargetScenario("GLO_bio200" ,t     ,"GLO","tax","t","PE","biomass")$((t.val ge 2035) AND (t.val le 2100)) = 6.342;
+  p47_implicitQttyTargetScenario("GLO_bio250" ,t     ,"GLO","tax","t","PE","biomass")$((t.val ge 2035) AND (t.val le 2100)) = 7.9275;
+  p47_implicitQttyTargetScenario("GLO_bio300" ,t     ,"GLO","tax","t","PE","biomass")$((t.val ge 2035) AND (t.val le 2100)) = 9.513;
 
-  p47_implicitQttyTargetScenario("EU27_limVRE" ,"2025","EU27_regi","tax","t","PE","wind")  = 0.072;
-  p47_implicitQttyTargetScenario("EU27_limVRE" ,"2050","EU27_regi","tax","t","PE","wind")  = 0.201;
-  p47_implicitQttyTargetScenario("EU27_limVRE" ,"2025","EU27_regi","tax","t","PE","solar") = 0.04;
-  p47_implicitQttyTargetScenario("EU27_limVRE" ,"2050","EU27_regi","tax","t","PE","solar") = 0.168;
+  p47_implicitQttyTargetScenario("EU27_limVRE" ,"2025",ext_regi,"tax","t","PE","wind")$(sameas(ext_regi,"EU27_regi"))  = 0.072;
+  p47_implicitQttyTargetScenario("EU27_limVRE" ,"2050",ext_regi,"tax","t","PE","wind")$(sameas(ext_regi,"EU27_regi"))  = 0.201;
+  p47_implicitQttyTargetScenario("EU27_limVRE" ,"2025",ext_regi,"tax","t","PE","solar")$(sameas(ext_regi,"EU27_regi")) = 0.04;
+  p47_implicitQttyTargetScenario("EU27_limVRE" ,"2050",ext_regi,"tax","t","PE","solar")$(sameas(ext_regi,"EU27_regi")) = 0.168;
 
-  p47_implicitQttyTargetScenario("EU28_CCS250Mt",t    ,"EUR_regi","tax","t","CCS","all")$((t.val ge 2035) AND (t.val le 2050)) = 250;
+  p47_implicitQttyTargetScenario("EU28_CCS250Mt",t    ,ext_regi,"tax","t","CCS","all")$(sameas(ext_regi,"EUR_regi") AND (t.val ge 2035) AND (t.val le 2050)) = 250;
   p47_implicitQttyTargetScenario("GLO_CCS2Gt"   ,t    ,"GLO","tax","t","CCS","all")$((t.val ge 2035) AND (t.val le 2050)) = 2000;
 
 *** assign active scenarios to the current run
@@ -151,6 +156,8 @@ $endif.cm_implicitQttyTargetType
 *** intialize energy type bound implicit target parameters
   pm_implicitQttyTarget(ttot,ext_regi,taxType,targetType,"CCS",qttyTargetGroup)$pm_implicitQttyTarget(ttot,ext_regi,taxType,targetType,"CCS",qttyTargetGroup) = pm_implicitQttyTarget(ttot,ext_regi,taxType,targetType,"CCS",qttyTargetGroup)/(sm_c_2_co2*1000);
   pm_implicitQttyTarget(ttot,ext_regi,taxType,targetType,"oae",qttyTargetGroup)$pm_implicitQttyTarget(ttot,ext_regi,taxType,targetType,"oae",qttyTargetGroup) = pm_implicitQttyTarget(ttot,ext_regi,taxType,targetType,"oae",qttyTargetGroup)/(sm_c_2_co2*1000);
+  pm_implicitQttyTarget(ttot,ext_regi,taxType,targetType,"novelCDR",qttyTargetGroup)$pm_implicitQttyTarget(ttot,ext_regi,taxType,targetType,"novelCDR",qttyTargetGroup) = pm_implicitQttyTarget(ttot,ext_regi,taxType,targetType,"novelCDR",qttyTargetGroup)/(sm_c_2_co2*1000);
+  pm_implicitQttyTarget(ttot,ext_regi,taxType,targetType,"allCDR",qttyTargetGroup)$pm_implicitQttyTarget(ttot,ext_regi,taxType,targetType,"allCDR",qttyTargetGroup) = pm_implicitQttyTarget(ttot,ext_regi,taxType,targetType,"allCDR",qttyTargetGroup)/(sm_c_2_co2*1000);
 	p47_implicitQttyTargetTax0(t,all_regi) = 0;
 $endIf.cm_implicitQttyTarget
 
@@ -228,37 +235,14 @@ $endIf.cm_implicitPePriceTarget
 *** Region-specific datainput (with hard-coded regions)
 ***---------------------------------------------------------------------------
 
-$IFTHEN.CCScostMarkup not "%cm_CCS_markup%" == "off" 
-	pm_inco0_t(ttot,regi,teCCS)$(regi_group("EUR_regi",regi)) = pm_inco0_t(ttot,regi,teCCS)*%cm_CCS_markup%;
-$ENDIF.CCScostMarkup
+$IFTHEN.CCcostMarkup not "%cm_co2captureEnergyMarkup%" == "off" 
+	pm_inco0_t(ttot,regi,teCCS)$(regi_group("EUR_regi",regi)) = pm_inco0_t(ttot,regi,teCCS)*%cm_co2captureEnergyMarkup%;
+$ENDIF.CCcostMarkup
 
 $IFTHEN.renewablesFloorCost not "%cm_renewables_floor_cost%" == "off" 
 	parameter p_new_renewables_floor_cost(all_te) / %cm_renewables_floor_cost% /;
 	pm_data(regi,"floorcost",te)$((regi_group("EUR_regi",regi)) AND (p_new_renewables_floor_cost(te))) = pm_data(regi,"floorcost",te)  + p_new_renewables_floor_cost(te);
 $ENDIF.renewablesFloorCost
-
-*** VRE capacity factor adjustments for Germany in line with results from detailed models in ARIADNE project
- loop(te$sameas(te,"windon"),
-  loop(regi$sameas(regi,"DEU"),
-    pm_cf("2025",regi,te) =  1.04 * pm_cf("2025",regi,te);
-    pm_cf("2030",regi,te) =  1.08 * pm_cf("2030",regi,te);
-    pm_cf("2035",regi,te) =  1.12 * pm_cf("2035",regi,te);
-    pm_cf("2040",regi,te) =  1.16 * pm_cf("2040",regi,te);
-    pm_cf("2045",regi,te) =  1.2  * pm_cf("2045",regi,te);
-    pm_cf(t,regi,te)$(t.val gt 2045) =  pm_cf("2045",regi,te);
-  );
-);
-
-loop(te$sameas(te,"spv"),
-  loop(regi$sameas(regi,"DEU"),
-    pm_cf("2025",regi,te) =  1.02 * pm_cf("2025",regi,te);
-    pm_cf("2030",regi,te) =  1.04 * pm_cf("2030",regi,te);
-    pm_cf("2035",regi,te) =  1.06 * pm_cf("2035",regi,te);
-    pm_cf("2040",regi,te) =  1.08 * pm_cf("2040",regi,te);
-    pm_cf("2045",regi,te) =  1.10 * pm_cf("2045",regi,te);
-    pm_cf(t,regi,te)$(t.val gt 2045) =  pm_cf("2045",regi,te);
-  );
-);
 
 
 *** p_EmiLULUCFCountryAcc contains historic LULUCF emissions from UNFCCC, 
@@ -271,19 +255,8 @@ $offdelim
 /
 ;
 
-*** difference between 2020 land-use change emissions from Magpie and UNFCCC 2015 and 2020 moving average land-use change emissions
-p47_LULUCFEmi_GrassiShift(ttot,regi)$(p47_EmiLULUCFCountryAcc("2020",regi)) =
-  pm_macBaseMagpie("2020",regi,"co2luc")
-  -
-  (
-    (
-      ((p47_EmiLULUCFCountryAcc("2013",regi) + p47_EmiLULUCFCountryAcc("2014",regi) + p47_EmiLULUCFCountryAcc("2015",regi) + p47_EmiLULUCFCountryAcc("2016",regi) + p47_EmiLULUCFCountryAcc("2017",regi))/5)
-      +
-      ((p47_EmiLULUCFCountryAcc("2018",regi) + p47_EmiLULUCFCountryAcc("2019",regi) + p47_EmiLULUCFCountryAcc("2020",regi) + p47_EmiLULUCFCountryAcc("2021",regi))/4)
-    )/2
-    * 1e-3/sm_c_2_co2
-  )
-;
+
+*** Moved calculation of pm_emiLULUCF_GrassiShift to 47_regipol/regiCarbonPrice/presolve.gms
 
 *** -------------------------Primary Energy Tax--------------------------
 
