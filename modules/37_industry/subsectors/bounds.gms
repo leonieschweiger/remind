@@ -134,16 +134,14 @@ if (cm_startyear eq 2005,
 );
 
 !! Switch to turn off steel CCS
-if (cm_co2captureSteel ne 1 OR cm_co2captureInd ne 1,
-  vm_cap.fx(t,regi,teCCPrc,rlf) = 0.;
-);
 !! TOCHECK:Qianzhi
-if (cm_CCS_steel ne 1,
+if (cm_co2captureSteel ne 1 OR cm_co2captureInd ne 1,
   loop(tePrc$(teCCPrc(tePrc) AND secInd37_tePrc("steel", tePrc)),
     vm_cap.fx(t,regi,tePrc,rlf) = 0.;
   );
 );
-if (cm_CCS_chemicals ne 1,
+!! Switch to turn off chemicals CCS
+if (cm_co2captureChemicals ne 1 OR cm_co2captureInd ne 1,
   loop(tePrc$(teCCPrc(tePrc) AND secInd37_tePrc("chemicals", tePrc)),
     vm_cap.fx(t,regi,tePrc,rlf) = 0.;
   );

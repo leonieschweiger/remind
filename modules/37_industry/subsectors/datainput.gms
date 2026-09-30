@@ -997,7 +997,7 @@ p37_ueHistTmp("2020",regi)
 
 pm_outflowPrcHist("2020",regi,tePrc,opmoPrc)$(secInd37_tePrc("chemicals",tePrc))
   = pm_outflowPrcHist("2020",regi,tePrc,opmoPrc)
-  * pm_fedemand("2020",regi,"ue_chemicals")
+  * pm_fedemandInd("2020",regi,"ue_chemicals")
   / p37_ueHistTmp("2020",regi);
 
 !! 2. scale 2005 to 2015 with ue_chemicals
@@ -1005,8 +1005,8 @@ pm_outflowPrcHist("2020",regi,tePrc,opmoPrc)$(secInd37_tePrc("chemicals",tePrc))
 loop(t$(t.val ge 2005 AND t.val le 2015),
   pm_outflowPrcHist(t,regi,tePrc,opmoPrc)
   = pm_outflowPrcHist("2020",regi,tePrc,opmoPrc)
-  * pm_fedemand(t,regi,"ue_chemicals")
-  / pm_fedemand("2020",regi,"ue_chemicals");
+  * pm_fedemandInd(t,regi,"ue_chemicals")
+  / pm_fedemandInd("2020",regi,"ue_chemicals");
 );
 
 
@@ -1095,21 +1095,21 @@ $offdelim
 p37_demFePrcHist(t,regi,tePrc,opmoPrc,entyFe) = sm_EJ_2_TWa * p37_demFePrcHist(t,regi,tePrc,opmoPrc,entyFe);
 loop(t$(t.val ge 2005 AND t.val le 2020),
     p37_demFePrcHist(t,regi,"chemOld","standard","fesos")
-    = pm_fedemand(t,regi,"feso_chemicals") * sm_EJ_2_TWa
+    = pm_fedemandInd(t,regi,"feso_chemicals") * sm_EJ_2_TWa
     - sum((tePrc, opmoPrc)$(NOT sameas(tePrc,"chemOld")), p37_demFePrcHist(t,regi,tePrc,opmoPrc,"fesos"));
 
     p37_demFePrcHist(t,regi,"chemOld","standard","fehos")
-    = pm_fedemand(t,regi,"feli_chemicals") * sm_EJ_2_TWa
+    = pm_fedemandInd(t,regi,"feli_chemicals") * sm_EJ_2_TWa
     - sum((tePrc, opmoPrc)$(NOT sameas(tePrc,"chemOld")), p37_demFePrcHist(t,regi,tePrc,opmoPrc,"fehos"));
 
     p37_demFePrcHist(t,regi,"chemOld","standard","fegas")
-    = (pm_fedemand(t,regi,"fega_chemicals")
-    +  pm_fedemand(t,regi,"feh2_chemicals")) * sm_EJ_2_TWa
+    = (pm_fedemandInd(t,regi,"fega_chemicals")
+    +  pm_fedemandInd(t,regi,"feh2_chemicals")) * sm_EJ_2_TWa
     - sum((tePrc, opmoPrc)$(NOT sameas(tePrc,"chemOld")), p37_demFePrcHist(t,regi,tePrc,opmoPrc,"fegas"));
 
     p37_demFePrcHist(t,regi,"chemOld","standard","feels")
-    = (pm_fedemand(t,regi,"feelhth_chemicals")
-    +  pm_fedemand(t,regi,"feelwlth_chemicals")) * sm_EJ_2_TWa
+    = (pm_fedemandInd(t,regi,"feelhth_chemicals")
+    +  pm_fedemandInd(t,regi,"feelwlth_chemicals")) * sm_EJ_2_TWa
     - sum((tePrc, opmoPrc)$(NOT sameas(tePrc,"chemOld")), p37_demFePrcHist(t,regi,tePrc,opmoPrc,"feels"));
 );
 loop((t,regi,tePrc,opmoPrc)$(t.val ge 2005 AND t.val le 2020),
