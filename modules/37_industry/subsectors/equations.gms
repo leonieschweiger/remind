@@ -285,8 +285,11 @@ q37_FeedstocksCarbon(t,regi) ..
   v37_feedstocksCarbon(t,regi)
   =e=
 $ifthen.cm_subsec_model_chemicals "%cm_subsec_model_chemicals%" == "ces"
-    vm_demFeNonEnergySector(t,regi,entySe,entyFe,"indst",emiMkt)
-  * p37_FeedstockCarbonContent(t,regi,entyFe)
+  sum((entySe,entyFe)$(sefe(entySe,entyFe)
+                       AND entyFE2sector2emiMkt_NonEn(entyFe,"indst","ETS")),
+    vm_demFeNonEnergySector(t,regi,entySe,entyFe,"indst","ETS")
+    * p37_FeedstockCarbonContent(t,regi,entyFe)
+  )
 $else.cm_subsec_model_chemicals
   sum(mat2ue(mat,"ue_chemicals"),
     v37_matFlow(t,regi,mat)
