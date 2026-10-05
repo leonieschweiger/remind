@@ -83,12 +83,12 @@ p04_IO_output_beforeFix_Total(t,regi,"fehob") = p04_IO_output_beforeFix(t,regi,"
                                                   + p04_IO_output_beforeFix(t,regi,"seliqfos","fehob","tdfoshob");
 
 *** adjust buildings solids
-f04_IO_output("2005",regi,"sesobio","fesob","tdbiosob")$(p04_IO_output_beforeFix_Total("2005",regi,"fesob")) = p04_IO_output_beforeFix("2005",regi,"sesobio","fesob","tdbiosob") * pm_fedemand("2005",regi,"fesob")/p04_IO_output_beforeFix_Total("2005",regi,"fesob");
-f04_IO_output("2005",regi,"sesofos","fesob","tdfossob")$(p04_IO_output_beforeFix_Total("2005",regi,"fesob")) = p04_IO_output_beforeFix("2005",regi,"sesofos","fesob","tdfossob") * pm_fedemand("2005",regi,"fesob")/p04_IO_output_beforeFix_Total("2005",regi,"fesob");
+f04_IO_output("2005",regi,"sesobio","fesob","tdbiosob")$(p04_IO_output_beforeFix_Total("2005",regi,"fesob")) = p04_IO_output_beforeFix("2005",regi,"sesobio","fesob","tdbiosob") * pm_fedemandBuild("2005",regi,"fesob")/p04_IO_output_beforeFix_Total("2005",regi,"fesob");
+f04_IO_output("2005",regi,"sesofos","fesob","tdfossob")$(p04_IO_output_beforeFix_Total("2005",regi,"fesob")) = p04_IO_output_beforeFix("2005",regi,"sesofos","fesob","tdfossob") * pm_fedemandBuild("2005",regi,"fesob")/p04_IO_output_beforeFix_Total("2005",regi,"fesob");
 
 *** adjust buildings liquids
-f04_IO_output("2005",regi,"seliqbio","fehob","tdbiohob")$(p04_IO_output_beforeFix_Total("2005",regi,"fehob")) = p04_IO_output_beforeFix("2005",regi,"seliqbio","fehob","tdbiohob") * pm_fedemand("2005",regi,"fehob")/p04_IO_output_beforeFix_Total("2005",regi,"fehob");
-f04_IO_output("2005",regi,"seliqfos","fehob","tdfoshob")$(p04_IO_output_beforeFix_Total("2005",regi,"fehob")) = p04_IO_output_beforeFix("2005",regi,"seliqfos","fehob","tdfoshob") * pm_fedemand("2005",regi,"fehob")/p04_IO_output_beforeFix_Total("2005",regi,"fehob");
+f04_IO_output("2005",regi,"seliqbio","fehob","tdbiohob")$(p04_IO_output_beforeFix_Total("2005",regi,"fehob")) = p04_IO_output_beforeFix("2005",regi,"seliqbio","fehob","tdbiohob") * pm_fedemandBuild("2005",regi,"fehob")/p04_IO_output_beforeFix_Total("2005",regi,"fehob");
+f04_IO_output("2005",regi,"seliqfos","fehob","tdfoshob")$(p04_IO_output_beforeFix_Total("2005",regi,"fehob")) = p04_IO_output_beforeFix("2005",regi,"seliqfos","fehob","tdfoshob") * pm_fedemandBuild("2005",regi,"fehob")/p04_IO_output_beforeFix_Total("2005",regi,"fehob");
 
 
 *** industry solids
@@ -97,18 +97,18 @@ p04_IO_output_beforeFix_Total(t,regi,"fesoi") = p04_IO_output_beforeFix(t,regi,"
 
 
 f04_IO_output("2005",regi,"sesobio","fesoi","tdbiosoi")$(p04_IO_output_beforeFix_Total("2005",regi,"fesoi")) = p04_IO_output_beforeFix("2005",regi,"sesobio","fesoi","tdbiosoi")  
-                                                            *  ( pm_fedemand("2005",regi,"feso_otherInd")
-                                                               + pm_fedemand("2005",regi,"feso_cement")
-                                                               + pm_fedemand("2005",regi,"feso_steel")
-                                                               + pm_fedemand("2005",regi,"feso_chemicals"))
+                                                            *  ( pm_fedemandInd("2005",regi,"feso_otherInd")
+                                                               + pm_fedemandInd("2005",regi,"feso_cement")
+                                                               + pm_fedemandInd("2005",regi,"feso_steel")
+                                                               + pm_fedemandInd("2005",regi,"feso_chemicals"))
                                                             /  p04_IO_output_beforeFix_Total("2005",regi,"fesoi");
 
 
 f04_IO_output("2005",regi,"sesofos","fesoi","tdfossoi")$(p04_IO_output_beforeFix_Total("2005",regi,"fesoi")) = p04_IO_output_beforeFix("2005",regi,"sesofos","fesoi","tdfossoi")  
-                                                            *  ( pm_fedemand("2005",regi,"feso_otherInd")
-                                                               + pm_fedemand("2005",regi,"feso_cement")
-                                                               + pm_fedemand("2005",regi,"feso_steel")
-                                                               + pm_fedemand("2005",regi,"feso_chemicals"))
+                                                            *  ( pm_fedemandInd("2005",regi,"feso_otherInd")
+                                                               + pm_fedemandInd("2005",regi,"feso_cement")
+                                                               + pm_fedemandInd("2005",regi,"feso_steel")
+                                                               + pm_fedemandInd("2005",regi,"feso_chemicals"))
                                                             /  p04_IO_output_beforeFix_Total("2005",regi,"fesoi");
 
 *** industry liquids
@@ -117,18 +117,18 @@ p04_IO_output_beforeFix_Total(t,regi,"fehoi") = p04_IO_output_beforeFix(t,regi,"
 
 
 f04_IO_output("2005",regi,"seliqbio","fehoi","tdbiohoi")$(p04_IO_output_beforeFix_Total("2005",regi,"fehoi")) = p04_IO_output_beforeFix("2005",regi,"seliqbio","fehoi","tdbiohoi")  
-                                                            *  ( pm_fedemand("2005",regi,"feli_otherInd")
-                                                               + pm_fedemand("2005",regi,"feli_cement")
-                                                               + pm_fedemand("2005",regi,"feli_steel")
-                                                               + pm_fedemand("2005",regi,"feli_chemicals"))
+                                                            *  ( pm_fedemandInd("2005",regi,"feli_otherInd")
+                                                               + pm_fedemandInd("2005",regi,"feli_cement")
+                                                               + pm_fedemandInd("2005",regi,"feli_steel")
+                                                               + pm_fedemandInd("2005",regi,"feli_chemicals"))
                                                             /  p04_IO_output_beforeFix_Total("2005",regi,"fehoi");
 
 
 f04_IO_output("2005",regi,"seliqfos","fehoi","tdfoshoi")$(p04_IO_output_beforeFix_Total("2005",regi,"fehoi")) = p04_IO_output_beforeFix("2005",regi,"seliqfos","fehoi","tdfoshoi")  
-                                                            *  ( pm_fedemand("2005",regi,"feli_otherInd")
-                                                               + pm_fedemand("2005",regi,"feli_cement")
-                                                               + pm_fedemand("2005",regi,"feli_steel")
-                                                               + pm_fedemand("2005",regi,"feli_chemicals"))
+                                                            *  ( pm_fedemandInd("2005",regi,"feli_otherInd")
+                                                               + pm_fedemandInd("2005",regi,"feli_cement")
+                                                               + pm_fedemandInd("2005",regi,"feli_steel")
+                                                               + pm_fedemandInd("2005",regi,"feli_chemicals"))
                                                             /  p04_IO_output_beforeFix_Total("2005",regi,"fehoi");
 
 *** industry gases
@@ -137,18 +137,18 @@ p04_IO_output_beforeFix_Total(t,regi,"fegai") = p04_IO_output_beforeFix(t,regi,"
 
 
 f04_IO_output("2005",regi,"segabio","fegai","tdbiogai")$(p04_IO_output_beforeFix_Total("2005",regi,"fegai")) = p04_IO_output_beforeFix("2005",regi,"segabio","fegai","tdbiogai")  
-                                                            *  ( pm_fedemand("2005",regi,"fega_otherInd")
-                                                               + pm_fedemand("2005",regi,"fega_cement")
-                                                               + pm_fedemand("2005",regi,"fega_steel")
-                                                               + pm_fedemand("2005",regi,"fega_chemicals"))
+                                                            *  ( pm_fedemandInd("2005",regi,"fega_otherInd")
+                                                               + pm_fedemandInd("2005",regi,"fega_cement")
+                                                               + pm_fedemandInd("2005",regi,"fega_steel")
+                                                               + pm_fedemandInd("2005",regi,"fega_chemicals"))
                                                             /  p04_IO_output_beforeFix_Total("2005",regi,"fegai");
 
 
 f04_IO_output("2005",regi,"segafos","fegai","tdfosgai")$(p04_IO_output_beforeFix_Total("2005",regi,"fegai")) = p04_IO_output_beforeFix("2005",regi,"segafos","fegai","tdfosgai")  
-                                                            *  ( pm_fedemand("2005",regi,"fega_otherInd")
-                                                               + pm_fedemand("2005",regi,"fega_cement")
-                                                               + pm_fedemand("2005",regi,"fega_steel")
-                                                               + pm_fedemand("2005",regi,"fega_chemicals"))
+                                                            *  ( pm_fedemandInd("2005",regi,"fega_otherInd")
+                                                               + pm_fedemandInd("2005",regi,"fega_cement")
+                                                               + pm_fedemandInd("2005",regi,"fega_steel")
+                                                               + pm_fedemandInd("2005",regi,"fega_chemicals"))
                                                             /  p04_IO_output_beforeFix_Total("2005",regi,"fegai");
 
 
@@ -158,7 +158,7 @@ p04_IO_output_beforeFix_Total(t,regi,"fehei") = p04_IO_output_beforeFix(t,regi,"
 
 
 f04_IO_output("2005",regi,"sehe","fehei","tdhei")$(p04_IO_output_beforeFix_Total("2005",regi,"fehei")) = p04_IO_output_beforeFix("2005",regi,"sehe","fehei","tdhei")  
-                                                            *  ( pm_fedemand("2005",regi,"fehe_otherInd")
+                                                            *  ( pm_fedemandInd("2005",regi,"fehe_otherInd")
                                                               )
                                                             /  p04_IO_output_beforeFix_Total("2005",regi,"fehei");
 
@@ -178,6 +178,23 @@ pm_secBioShare(ttot,regi,entyFe,sector)$((seAgg2fe("all_seso",entyFe) OR seAgg2f
   /
   sum((entySe,all_enty,all_te)$entyFeSec2entyFeDetail(entyFe,sector,all_enty), f04_IO_output(ttot,regi,entySe,all_enty,all_te) )
 ;
+
+
+*** adjustment of biomass shares in demand sectors specifically for Germany
+*** 1. adjustment of 2020 shares based on AGEB data
+*** 2. assumptions on non-increasing coal shares for after 2020 in industry and buildings
+loop(regi$(sameAs("DEU", regi)),
+*** set 2020 biomass share in LDV transport in Germany to 6% based on AGEB data
+*** https://ag-energiebilanzen.de/daten-und-fakten/auswertungstabellen/
+  pm_secBioShare("2020",regi,"fepet","trans") = 0.06;
+*** set 2020 biomass share in in non-LDV transport in Germany to 5% based on AGEB data
+*** biofuel share in HDV road transport liquids about 7%, translated to total non-LDV liqiuds about 5%
+  pm_secBioShare("2020",regi,"fedie","trans") = 0.05;
+*** set 2020 biomass share in industry solids to 20% based on AGEB data
+  pm_secBioShare("2020",regi,"fesos","indst") = 0.2;
+*** set maximum coal share in buildings after 2020 to 2020 value as residential coal heating is not going to recover once phased out
+  pm_secBioShare(t,regi,"fesos","build")$(t.val gt 2020) = pm_secBioShare("2020",regi,"fesos","build");
+);
 
 display pm_secBioShare;
 
@@ -289,7 +306,8 @@ p04_prodCoupleGlob("pebiolc","seliqbio","bioftcrec","seel") = 0.108;
 p04_prodCoupleGlob("segabio","fegas","tdbiogas","seel")     = -0.05;
 p04_prodCoupleGlob("segafos","fegas","tdfosgas","seel")     = -0.05;
 p04_prodCoupleGlob("pegeo","sehe","geohe","seel")           = -0.3;
-p04_prodCoupleGlob("cco2","ico2","ccsinje","seel")          = -0.005;
+p04_prodCoupleGlob("cco2","ico2","ccsinjeon","seel")        = -0.005;
+p04_prodCoupleGlob("cco2","ico2","ccsinjeoff","seel")       = -0.005; !!DKX assumption correct?
 
 *** Co-Production based on Dorndorf et al (in review)
 p04_prodCoupleGlob("pebiolc","sebiochar","biopyronly","seel") = -0.04; !! 2% of biomass input (Fawzy et al., 2022, https://doi.org/10.1016/j.jclepro.2022.133660)

@@ -108,6 +108,9 @@ run <- function() {
   timeGAMSEnd  <- Sys.time()
   gams_runtime <- timeGAMSEnd - timeGAMSStart
   timeOutputStart <- Sys.time()
+  
+  # Record the time when the output starts in runtime.log
+  write(paste(Sys.time(), "output", 0, sep = ","), file = "runtime.log", append = TRUE)
 
   # If REMIND actually did run
   if (cfg$action == "ce" && cfg$gms$c_skip_output != "on") {
@@ -156,12 +159,9 @@ run <- function() {
 
   #====================== Subsequent runs ===========================
 
-  # Use the name to check whether it is a coupled run (TRUE if the name ends with "-rem-xx")
-  coupled_run <- grepl("-rem-[0-9]{1,2}$",cfg$title)
-  # Don't start subsequent runs form here if REMIND runs coupled. They are started in start_coupled.R instead.
   # Only if this run has been restarted manually cfg$restart_subsequent_runs is TRUE. If the run is resumed after
   # preemtion it is just NULL and isFALSE(NULL) is FALSE, so subsequent standalone runs will be started.
-  start_subsequent_runs <- ! isFALSE(cfg$restart_subsequent_runs) && ! coupled_run
+  start_subsequent_runs <- ! isFALSE(cfg$restart_subsequent_runs)
 
   if (start_subsequent_runs & (length(rownames(cfg$RunsUsingTHISgdxAsInput)) > 0)) {
     # track whether any subsequent run was actually started
@@ -252,27 +252,40 @@ run <- function() {
   source_include <- TRUE
 
   # Postprocessing / Output Generation
-  output    <- cfg$output
-  outputdir <- cfg$results_folder
 
   # make sure the renv used for the run is also used for generating output
   if (!is.null(renv::project())) {
-    if (normalizePath(renv::project()) != normalizePath(outputdir)) {
-      warning("loaded renv=", normalizePath(renv::project()), " and outputdir=", normalizePath(outputdir), " must be equal.")
+    if (normalizePath(renv::project()) != normalizePath(cfg$results_folder)) {
+      warning("loaded renv=", normalizePath(renv::project()), " and outputdir=", normalizePath(cfg$results_folder), " must be equal.")
     }
     message("Using ", normalizePath(renv::project()), " as renv project")
     argv <- c(get0("argv"), paste0("--renv=", renv::project()))
   }
 
+  # these arguments are read by output.R to replace the command line interface
+  # this is not more explicit yet due to renv doubts
+  passedArgs <- list(
+    outputdirs = cfg$results_folder,
+    output    = cfg$output,
+    comp      = "single",
+    test      = FALSE
+  )
   sys.source("output.R",envir=new.env())
   # get runtime for output
   timeOutputEnd <- Sys.time()
 
+  # Record the time when the run finishes in runtime.log
+  write(paste(Sys.time(), "end", 0, sep = ","), file = paste0(cfg$results_folder, "/runtime.log"), append = TRUE)
+  
+  # Add the runtime.log to runstatistics.rda
+  runtimeLog <- readr::read_csv(paste0(cfg$results_folder, "/runtime.log"), col_names = c("time","phase", "iteration")) |> suppressMessages()
+
   # Save run statistics to local file
   cat("\nSaving timeOutputStart and timeOutputEnd to runstatistics.rda\n")
-  lucode2::runstatistics(file           = paste0(cfg$results_folder, "/runstatistics.rda"),
+  lucode2::runstatistics(file          = paste0(cfg$results_folder, "/runstatistics.rda"),
                        timeOutputStart = timeOutputStart,
-                       timeOutputEnd   = timeOutputEnd)
+                       timeOutputEnd   = timeOutputEnd,
+                       runtimeLog      = runtimeLog)
 
   return(cfg$results_folder)
   # on.exit sets working directory back to results folder

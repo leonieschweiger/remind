@@ -36,6 +36,15 @@ p80_defic_sum_rel(iteration)                "Surplus monetary value over all tim
 p80_etaLT_correct(all_enty,iteration)       "long term price correction factor in percent"
 p80_etaST_correct(tall,all_enty,iteration)  "short term price correction factor in percent"
 
+*** RP parameters to track model results over iterations to help diagnose convergence problems
+*** Trade
+p80_Mport_iter(ttot,all_regi,all_enty,iteration)          "Imports over iterations"
+p80_Xport_iter(ttot,all_regi,all_enty,iteration)          "Exports over iterations"
+p80_prodPe_iter(ttot,all_regi,all_enty,iteration)         "PE production over iterations"
+p80_fuExtr_iter(ttot,all_regi,all_enty,rlf,iteration)     "Fuel extraction over iterations"
+
+
+
 p80_etaST_correct_safecopy(tall,all_enty,iteration)       "auxiliary parameter to remember short term price correction factor in percent, before new convergence adjustments"
 o80_counter_iteration_trade_ttot(ttot,all_enty,iteration) "auxiliary parameter to display in which iteration and for which item (ttot, trade) additional convergence measures were taken"
 o80_trackSurplusSign(ttot,all_enty,iteration)             "auxiliary parameter to track how long the surplus for an item (ttot, trade) had the same sign over iterations"
@@ -103,6 +112,7 @@ $ifthen.cm_implicitQttyTarget not "%cm_implicitQttyTarget%" == "off"
 p80_implicitQttyTarget_dev_iter(iteration,ttot,ext_regi,qttyTarget,qttyTargetGroup)      "deviation of current iteration quantity target from target per iteration - relative for total targets, absolute (= share points) for share targets"
 $endif.cm_implicitQttyTarget
 p80_globalBudget_absDev_iter(iteration)           "absolute deviation of global cumulated CO2 emissions budget from target budget"
+p80_regionalBudget_absDev_iter(iteration,all_regi) "absolute deviation of regional cumulated CO2 emissions target budgets"
 p80_sccConvergenceMaxDeviation_iter(iteration)    "max deviation of SCC from last iteration per iteration [percent]"
 p80_gmt_conv_iter(iteration)                      "global mean temperature convergence per iteration"
 ;

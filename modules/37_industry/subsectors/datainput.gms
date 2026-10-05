@@ -75,8 +75,8 @@ loop ((ttot,steps)$( ttot.val ge 2005 ),
 
   sm_tmp = steps.val * sm_dmac / sm_c_2_co2;   !! CO2 price at MAC step [$/tCO2]
 
-$ifthen NOT "%cm_Industry_CCS_markup%" == "off"
-  sm_tmp = sm_tmp / %cm_Industry_CCS_markup%;
+$ifthen NOT "%cm_co2captureIndMarkup%" == "off"
+  sm_tmp = sm_tmp / %cm_co2captureIndMarkup%;
 $endif
 
   !! short-term (until 2025)
@@ -124,8 +124,8 @@ $endif.cm_subsec_model_steel
 );
 
 
-if (cm_IndCCSscen eq 1,
-  if (cm_CCS_cement eq 1,
+if (cm_co2captureInd eq 1,
+  if (cm_co2captureCement eq 1,
 
     emiMac2mac("co2cement_process","co2cement") = YES;
      );
@@ -248,8 +248,8 @@ emiMacSector(emiInd37_fuel) = NO;
 pm_macSwitch(ttot,regi,emiInd37)      = NO;
 
 *** turn on CCS for industry emissions
-if (cm_IndCCSscen eq 1,
-  if (cm_CCS_cement eq 1,
+if (cm_co2captureInd eq 1,
+  if (cm_co2captureCement eq 1,
     emiMacSector("co2cement") = YES;
     pm_macSwitch(ttot,regi,"co2cement") = YES;
     pm_macSwitch(ttot,regi,"co2cement_process") = YES;
@@ -258,7 +258,7 @@ if (cm_IndCCSscen eq 1,
   );
 
 $ifthen.cm_subsec_model_chemicals "%cm_subsec_model_chemicals%" == "ces"
-  if (cm_CCS_chemicals eq 1,
+  if (cm_co2captureChemicals eq 1,
     emiMacSector("co2chemicals") = YES;
     pm_macSwitch(ttot,regi,"co2chemicals") = YES;
     emiMac2mac("co2chemicals","co2chemicals") = YES;
@@ -266,7 +266,7 @@ $ifthen.cm_subsec_model_chemicals "%cm_subsec_model_chemicals%" == "ces"
 $endif.cm_subsec_model_chemicals
 
 $ifthen.cm_subsec_model_steel "%cm_subsec_model_steel%" == "ces"
-  if (cm_CCS_steel eq 1,
+  if (cm_co2captureSteel eq 1,
     emiMacSector("co2steel") = YES;
     pm_macSwitch(ttot,regi,"co2steel") = YES;
     emiMac2mac("co2steel","co2steel") = YES;
@@ -282,7 +282,7 @@ emiMac2mac("co2otherInd","co2otherInd") = NO;
 *** data on maximum secondary steel production
 *** The steel recycling rate limit is assumed to increase from 90 to 99 %.
   p37_cesIO_up_steel_secondary(tall,all_regi,all_GDPpopScen)
-  = pm_fedemand(tall,all_regi,"ue_steel_secondary")
+  = pm_fedemandInd(tall,all_regi,"ue_steel_secondary")
   / 0.9
   * 0.99;
 
@@ -661,15 +661,6 @@ $offdelim
   /
 ;
 
-*' load baseline industry ETS solids demand
-if (cm_startyear ne 2005,   !! not a BAU scenario
-execute_load "input_ref.gdx", vm_demFeSector_afterTax;
-  p37_BAU_industry_ETS_solids(t,regi)
-  = sum(se2fe(entySe,"fesos",te),
-      vm_demFeSector_afterTax.l(t,regi,entySe,"fesos","indst","ETS")
-    );
-);
-
 * Define carbon capture and storage share in waste incineration emissions
 * capture rate increases linearly from zero in 2025 to the value set in the switch for the defined year, and it is kept constant for years afterwards
 p37_regionalWasteIncinerationCCSMaxShare(ttot,all_regi) = 0;
@@ -711,7 +702,7 @@ $ifthen.cm_subsec_model_steel "%cm_subsec_model_steel%" == "processes"
 p37_specMatDem("dripell","idr","ng")        = 1.44;                                           !! Source: POSTED / Average of Devlin2022, Otto2017, Volg2018, Rechberge2020
 p37_specMatDem("dripell","idr","h2")        = 1.44;                                           !! Source: POSTED / Copy from ng opMode
 
-p37_specMatDem("driron","eaf","pri")        = 1.065;                                          !! Source: POSTED / Average of Devlin et al 2022, Section 2.2.2 and Otto et al 2017, Figure 6
+p37_specMatDem("driron","eaf","prim")       = 1.065;                                          !! Source: POSTED / Average of Devlin et al 2022, Section 2.2.2 and Otto et al 2017, Figure 6
 p37_specMatDem("eafscrap","eaf","sec")      = 1.09;                                           !! Source: POSTED / Ecorys 2014, Table 3.1
 
 p37_specMatDem("ironore","bf","standard")   = 1.58;                                           !! Source: Sum of weighted average values for sinter, ore and pellets in JRC BAT, Table 6.1: 1.626 / tHM -> 1.58/tPI
@@ -838,7 +829,7 @@ p37_specFeDemTarget("feels","idr","ng")           = 0.08 / (sm_TWa_2_MWh/sm_giga
 !! Birat2010, p. 11: 0.97 MWh total, only 0.44 MWh of which is electrical
 !! EU JRC BAT says 0.404–0.748 (only EAF, elec) / Otto et al. say 0.92
 !! --> have declining curve?
-p37_specFeDemTarget("feels","eaf","pri")          = 0.67 / (sm_TWa_2_MWh/sm_giga_2_non);    !! Source: POSTED / Copy from secondary (Agora Energiewende, 2022 give similar values, between w and w/o reheating)
+p37_specFeDemTarget("feels","eaf","prim")         = 0.67 / (sm_TWa_2_MWh/sm_giga_2_non);    !! Source: POSTED / Copy from secondary (Agora Energiewende, 2022 give similar values, between w and w/o reheating)
 p37_specFeDemTarget("feels","eaf","sec")          = 0.67 / (sm_TWa_2_MWh/sm_giga_2_non);    !! Source: POSTED / Vogl et al 2018, Section 3.1
 
 !! Otto et al. Fig 3: 10.303 GJ coke (from 13.24 GJ coal, see Menendez2015 Fig 3) + 4.67 GJ coal dust -> 18 GJ
@@ -998,6 +989,45 @@ $ifthen.cm_subsec_model_chemicals "%cm_subsec_model_chemicals%" == "ces"
 p37_matFlowHist(tall,all_regi,mat) = 0.;
 $endif.cm_subsec_model_chemicals
 $ifthen.cm_subsec_model_chemicals "%cm_subsec_model_chemicals%" == "processes"
+!! HOT FIX
+!! AmmoniaFinal equals total ammonia minus fertilizer ammonia
+!! can this be deleted? (recalculated from mrindustry to avoid rounding errors)
+pm_outflowPrcHist("2020",regi,"amToFinal","standard")
+  = sum((tePrc2matOut(tePrc,opmoPrc,mat))$(sameas("ammonia",mat)),
+    pm_outflowPrcHist("2020",regi,tePrc,opmoPrc))
+  - (pm_outflowPrcHist("2020",regi,"fertProd","standard")
+  * p37_specMatDem("ammonia","fertProd","standard"))
+  ;
+!! same for methanol
+pm_outflowPrcHist("2020",regi,"meToFinal","standard")
+  = sum((tePrc2matOut(tePrc,opmoPrc,mat))$(sameas("methanol",mat)),
+    pm_outflowPrcHist("2020",regi,tePrc,opmoPrc))
+  - (pm_outflowPrcHist("2020",regi,"mtoMta","standard")
+  * p37_specMatDem("methanol","mtoMta","standard"))
+  ;
+
+!! 1. Correct pm_outflowPrcHist, such that sum is consistent with UE
+!! can this be deleted?
+p37_ueHistTmp("2020",regi)
+  = sum((tePrc2matOut(tePrc,opmoPrc,mat), mat2ue(mat,in))$(sameas("ue_chemicals",in)),
+         pm_outflowPrcHist("2020",regi,tePrc,opmoPrc)
+         * p37_mat2ue("2020",regi,mat,in)
+    );
+
+pm_outflowPrcHist("2020",regi,tePrc,opmoPrc)$(secInd37_tePrc("chemicals",tePrc))
+  = pm_outflowPrcHist("2020",regi,tePrc,opmoPrc)
+  * pm_fedemandInd("2020",regi,"ue_chemicals")
+  / p37_ueHistTmp("2020",regi);
+
+!! 2. scale 2005 to 2015 with ue_chemicals
+!! can this be deleted?
+loop(t$(t.val ge 2005 AND t.val le 2015),
+  pm_outflowPrcHist(t,regi,tePrc,opmoPrc)
+  = pm_outflowPrcHist("2020",regi,tePrc,opmoPrc)
+  * pm_fedemandInd(t,regi,"ue_chemicals")
+  / pm_fedemandInd("2020",regi,"ue_chemicals");
+);
+
 
 !! 3. Calc MatflowHist
 Parameter
@@ -1081,21 +1111,21 @@ $offdelim
 p37_demFePrcHist(t,regi,tePrc,opmoPrc,entyFe) = sm_EJ_2_TWa * p37_demFePrcHist(t,regi,tePrc,opmoPrc,entyFe);
 loop(t$(t.val ge 2005 AND t.val le 2020),
     p37_demFePrcHist(t,regi,"chemOld","standard","fesos")
-    = pm_fedemand(t,regi,"feso_chemicals") * sm_EJ_2_TWa
+    = pm_fedemandInd(t,regi,"feso_chemicals") * sm_EJ_2_TWa
     - sum((tePrc, opmoPrc)$(NOT sameas(tePrc,"chemOld")), p37_demFePrcHist(t,regi,tePrc,opmoPrc,"fesos"));
 
     p37_demFePrcHist(t,regi,"chemOld","standard","fehos")
-    = pm_fedemand(t,regi,"feli_chemicals") * sm_EJ_2_TWa
+    = pm_fedemandInd(t,regi,"feli_chemicals") * sm_EJ_2_TWa
     - sum((tePrc, opmoPrc)$(NOT sameas(tePrc,"chemOld")), p37_demFePrcHist(t,regi,tePrc,opmoPrc,"fehos"));
 
     p37_demFePrcHist(t,regi,"chemOld","standard","fegas")
-    = (pm_fedemand(t,regi,"fega_chemicals")
-    +  pm_fedemand(t,regi,"feh2_chemicals")) * sm_EJ_2_TWa
+    = (pm_fedemandInd(t,regi,"fega_chemicals")
+    +  pm_fedemandInd(t,regi,"feh2_chemicals")) * sm_EJ_2_TWa
     - sum((tePrc, opmoPrc)$(NOT sameas(tePrc,"chemOld")), p37_demFePrcHist(t,regi,tePrc,opmoPrc,"fegas"));
 
     p37_demFePrcHist(t,regi,"chemOld","standard","feels")
-    = (pm_fedemand(t,regi,"feelhth_chemicals")
-    +  pm_fedemand(t,regi,"feelwlth_chemicals")) * sm_EJ_2_TWa
+    = (pm_fedemandInd(t,regi,"feelhth_chemicals")
+    +  pm_fedemandInd(t,regi,"feelwlth_chemicals")) * sm_EJ_2_TWa
     - sum((tePrc, opmoPrc)$(NOT sameas(tePrc,"chemOld")), p37_demFePrcHist(t,regi,tePrc,opmoPrc,"feels"));
 );
 loop((t,regi,tePrc,opmoPrc)$(t.val ge 2005 AND t.val le 2020),
@@ -1118,7 +1148,7 @@ if (cm_startyear eq 2005,
 
     !! 2nd stage tech
     loop(mat2ue(mat,in)$(NOT sameas(in,"ue_chemicals")),
-      p37_matFlowHist(t,regi,mat) = pm_fedemand(t,regi,in) / p37_mat2ue(t,regi,mat,in) * p37_ue_share(t,regi,mat,in);
+      p37_matFlowHist(t,regi,mat) = pm_fedemandInd(t,regi,in) / p37_mat2ue(t,regi,mat,in) * p37_ue_share(t,regi,mat,in);
       loop(tePrc2matOut(tePrc,opmoPrc,mat),
         pm_outflowPrcHist(t,regi,tePrc,opmoPrc) = p37_matFlowHist(t,regi,mat) * p37_teMatShareHist(regi,tePrc,opmoPrc,mat);
       );
@@ -1139,7 +1169,7 @@ if (cm_startyear eq 2005,
 
     loop((entyFe,ppfUePrc)$(not sameas(ppfUePrc, "ue_chemicals")),
       p37_demFeTarget(t,regi,entyFe,ppfUePrc) = sum(tePrc2ue(tePrc,opmoPrc,ppfUePrc), pm_outflowPrcHist(t,regi,tePrc,opmoPrc) * p37_specFeDemTarget(entyFe,tePrc,opmoPrc));
-      p37_demFeActual(t,regi,entyFe,ppfUePrc) = sum((fe2ppfen_no_ces_use(entyFe,all_in),ue2ppfenPrc(ppfUePrc,all_in)), pm_fedemand(t,regi,all_in) * sm_EJ_2_TWa);
+      p37_demFeActual(t,regi,entyFe,ppfUePrc) = sum((fe2ppfen_no_ces_use(entyFe,all_in),ue2ppfenPrc(ppfUePrc,all_in)), pm_fedemandInd(t,regi,all_in) * sm_EJ_2_TWa);
     );
 
     p37_demFeRatio(t,regi,ppfUePrc)$(not sameas(ppfUePrc, "ue_chemicals")) = sum(entyFe,p37_demFeActual(t,regi,entyFe,ppfUePrc)) / sum(entyFe,p37_demFeTarget(t,regi,entyFe,ppfUePrc));
@@ -1244,7 +1274,7 @@ if (cm_startyear gt 2005,
 );
 
 if (cm_startyear gt 2005,
-  execute_load "input_ref.gdx" v37_plasticWaste.l = v37_plasticWaste.l;
+  Execute_Loadpoint "input_ref.gdx" v37_plasticWaste.l = v37_plasticWaste.l;
 );
 
 

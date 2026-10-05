@@ -19,10 +19,10 @@ checkFixCfg <- function(cfg, remindPath = ".", testmode = FALSE) {
   NC    <- "\033[0m"   # No Color
 
   refcfg <- gms::readDefaultConfig(remindPath)
-  remindextras <- c("backup", "remind_folder", "pathToMagpieReport", "cm_nash_autoconverge_lastrun", "var_luc",
+  remindextras <- c("backup", "remind_folder", "cm_nash_autoconverge_lastrun",
                                "gms$c_expname", "restart_subsequent_runs",
                                "gms$cm_CES_configuration", "gms$c_description", "model", "UseThisRenvLock",
-                               "gms$c_model_version", "gms$c_results_folder")
+                               "gms$c_model_version", "gms$c_results_folder", "path_magpie", "magpie_empty", "cfg_mag", "continueFromHere")
   fail <- tryCatch(gms::check_config(cfg, reference_file = refcfg, modulepath = file.path(remindPath, "modules"),
                      settings_config = file.path(remindPath, "config", "settings_config.csv"),
                      extras = remindextras),
@@ -88,6 +88,16 @@ checkFixCfg <- function(cfg, remindPath = ".", testmode = FALSE) {
       else stop(errorsfound, " errors found, see above.")
   }
 
+  # Check for compatibility with cm_implicitQttyTargetType and cm_implicitQttyTarget
+  if ((cfg$gms$regipol == "none") && !(cfg$gms$cm_implicitQttyTargetType == "config" && cfg$gms$cm_implicitQttyTarget == "off")) {
+    message(
+      "regipol='none' is only compatible with cm_implicitQttyTargetType='config' and cm_implicitQttyTarget='off'.
+      Switching cm_implicitQttyTargetType to 'config' and cm_implicitQttyTarget to 'off' now."
+    )
+    cfg$gms$cm_implicitQttyTargetType <- "config"
+    cfg$gms$cm_implicitQttyTarget <- "off"
+  }
+
   # Check for compatibility with subsidizeLearning
   if ((cfg$gms$optimization != "nash") && (cfg$gms$subsidizeLearning == "globallyOptimal") ) {
     message("Only optimization='nash' is compatible with subsidizeLearning='globallyOptimal'. Switching subsidizeLearning to 'off' now.")
@@ -104,13 +114,13 @@ checkFixCfg <- function(cfg, remindPath = ".", testmode = FALSE) {
     cfg$inputRevision <- sub("^rev", "", cfg$inputRevision)
     warning("cfg$inputRevision started with 'rev', but this will be added automatically. Removed it.")
   }
-  # check if RCP scenario other than (none), (rcp20), (rcp26), or (rcp45) is used
-  if (! isTRUE(cfg$gms$cm_rcp_scen %in% c("none","rcp20","rcp26","rcp45") )) {
+  # check if RCP scenario other than (none), (rcp20), (rcp26), (rcp37), or (rcp45) is used
+  if (! isTRUE(cfg$gms$cm_rcp_scen %in% c("none","rcp20","rcp26","rcp45", "rcp37") )) {
     warning("Chosen RCP scenario '", cfg$gms$cm_rcp_scen, "' might currently not be fully operational: test and verify before using it!")
   }
   # check if cm_iterative_target_adj 5, 7, or 9 is used without carbonprice being set to functionalForm
-  if (isTRUE(cfg$gms$cm_iterative_target_adj %in% c("5","7","9")) && ! isTRUE(cfg$gms$carbonprice == "functionalForm") ) {
-    warning("Chosen iterative target adjustment algorithm '", cfg$gms$cm_iterative_target_adj, "' will not be applied without using realization 45_carbonprice/functionalForm!")
+  if (isTRUE(cfg$gms$cm_iterative_target_adj %in% c("5","7","9")) && ! isTRUE(cfg$gms$carbonprice %in% c("functionalForm","functionalFormRegi")) ) {
+    warning("Chosen iterative target adjustment algorithm '", cfg$gms$cm_iterative_target_adj, "' will not be applied without using realization 45_carbonprice/functionalForm or functionalFormRegi!")
   }
   # Make sure that an input_bau.gdx has been specified if needed.
   isBauneeded <- isTRUE(length(unlist(lapply(names(needBau), function(x) intersect(cfg$gms[[x]], needBau[[x]])))) > 0)

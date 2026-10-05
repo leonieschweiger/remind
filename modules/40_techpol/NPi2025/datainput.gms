@@ -28,6 +28,24 @@ p40_TechBound(ttot,all_regi,te) = smax(ttot2$(ttot2.val le ttot.val) , f40_TechB
 p40_TechBound(ttot,all_regi,"wind") = f40_TechBound(ttot,all_regi,"%cm_NPi_version%","wind");
 p40_ElecBioBound("2030",regi) = p40_TechBound("2030",regi,"bioigcc");
 
+
+*** Follow technology pathways of a reference run, e.g., as in PRISMA WP6 Staying Alive
+$ifThen "%cm_ReferenceCapacities%" == "prisma_SA"
+
+*** PRISMA Staying Alive: 
+Parameter p40_RefCap(ttot, all_regi, all_te, rlf) "capacity pathways from reference run";
+
+Execute_Loadpoint "input_ref" p40_RefCap = vm_cap.l;
+
+p40_TechBound(t,all_regi,teVRE) = max(
+    p40_TechBound(t,all_regi,teVRE),
+    p40_RefCap(t,all_regi,teVRE, "1") * 1000
+);
+** end of PRISMA Staying Alive
+$ENDIF
+
+
+
 *** In scenarios with 2nd generation bioenergy technology phaseout,
 *** switch-off biomass capacity targets of NDC
 if (cm_phaseoutBiolc eq 1,
@@ -56,6 +74,37 @@ $offdelim
 loop( (ttot,all_regi,RenShareTargetType)$(f40_RenShareTargets(ttot,all_regi,RenShareTargetType)),
   p40_RenShareTargets(t,all_regi,RenShareTargetType)$(t.val ge ttot.val) = f40_RenShareTargets(ttot,all_regi,RenShareTargetType);
 );
+
+*** =========================
+*** Adjusted Renewable share target from congiguration file
+*** =========================
+*** In case of manual adjustment of renewable share targets from configuration file, overwrite input data with adjusted target if higher
+*--- Auxiliary sets & target year
+$ifThen.adTargetValue not "%cm_RenShareTargetValue%" == "off" 
+
+*--- Loop over input targets
+loop((ttot,all_regi,RenShareTargetType)
+     $ p40_NPiRenShareTarget(ttot,all_regi,RenShareTargetType),
+
+*** keep target constant for all years after target year 
+    loop(ttot2$(ttot2.val >= ttot.val),
+        p40_NPiRenShareTarget_path(ttot2,all_regi,RenShareTargetType)
+          = p40_NPiRenShareTarget(ttot,all_regi,RenShareTargetType);
+    );
+);
+
+*--- overwrite baseline with adjusted target if higher
+loop((ttot,all_regi,RenShareTargetType),
+
+    p40_RenShareTargets(ttot,all_regi,RenShareTargetType) =
+        max(
+            p40_RenShareTargets(ttot,all_regi,RenShareTargetType),
+            p40_NPiRenShareTarget_path(ttot,all_regi,RenShareTargetType)
+        );
+);
+display p40_NPiRenShareTarget;
+display p40_RenShareTargets;
+$ENDIF.adTargetValue
 
 
 *** EOF ./modules/40_techpol/NPi2025/datainput.gms
