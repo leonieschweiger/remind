@@ -233,17 +233,6 @@ $elseif.c_techAssumptScen "%c_techAssumptScen%" == "SSP5"
 
 $endif.c_techAssumptScen
 
-$ifthen.cm_DacCost "%cm_DacCost%" == "low"
-*** low Dac cost scenario
-    fm_dataglob("floorcost","dac") = 2400;
-    fm_dataglob("learn","dac") = 0.3;
-
-$elseif.cm_DacCost "%cm_DacCost%" == "high"
-*** high Dac cost scenario
-    fm_dataglob("floorcost","dac") = 7200;
-    fm_dataglob("learn","dac") = 0.075;
-
-$endif.cm_DacCost
 
 
 ***---------------------------------------------------------------------------
@@ -806,15 +795,6 @@ pm_cf(ttot,regi,"ngt")$(ttot.val ge 2040) = 0.6 * pm_cf(ttot,regi,"ngt");
 *RP* set H2 turbines to the same CF values
 pm_cf(ttot,regi,"h2turb")$(ttot.val ge 2025) = pm_cf(ttot,regi,"ngt");
 pm_cf(ttot,regi,"h2turbVRE")$(ttot.val ge 2025) = pm_cf(ttot,regi,"ngt");
-
-
-$ifthen.chaPOpolicy "%cm_chaPcCost%" == "on"
-p_inco0(t,"CHA","pc")$((t.val ge 2015) and (t.val le 2040)) = 500;
-p_inco0(t,"CHA","igccc")$((t.val ge 2015) and (t.val le 2060)) = 500 * 1.24;
-$endif.chaPOpolicy
-
-** CG: update on nuclear plant capacity factor in China (http://static.sse.com.cn/disclosure/listedinfo/announcement/c/new/2022-04-28/601985_20220428_5_yMPns6pY.pdf)
-f_cf(ttot,"CHA","tnrs") = 0.9227;
 
 *** FS: set CF of additional t&d H2 for buildings and industry to t&d H2 stationary value
 pm_cf(ttot,regi,"tdh2b") = pm_cf(ttot,regi,"tdh2s");
@@ -1395,15 +1375,6 @@ $ifthen.cm_subsec_model_steel "%cm_subsec_model_steel%" == "processes"
   p_adj_coeff(ttot,regi,"bfcc")         = 1.0;
   p_adj_coeff(ttot,regi,"idrcc")        = 1.0;
 $endif.cm_subsec_model_steel
-
-$ifthen.cm_DacCost "%cm_DacCost%" == "high"
-  p_adj_seed_te(ttot,regi,'dac')        = 0.1;
-  p_adj_coeff(ttot,regi,'dac')          = 2.0;
-
-$elseIf.cm_DacCost "%cm_DacCost%" == "low"
-  p_adj_seed_te(ttot,regi,'dac')        = 0.5;
-  p_adj_coeff(ttot,regi,'dac')          = 0.4;
-$endif.cm_DacCost
 
 );
 

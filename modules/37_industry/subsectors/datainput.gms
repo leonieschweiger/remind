@@ -905,12 +905,6 @@ p37_priceMat(ttot,all_regi,all_enty) = 0.;
 $ifthen.cm_subsec_model_chemicals "%cm_subsec_model_chemicals%" == "processes"
 !!Execute_Loadpoint "input" pm_FEPrice = pm_FEPrice;
 
-* loop(t$(t.val > 2020),
-*   loop(all_regi,
-* !!   p37_priceMat(t,all_regi,"naphtha") = -0.4 * pm_FEPrice(t,all_regi,"fehos","indst","ETS");
-*     p37_priceMat(t,all_regi,"co2fdummy") = c_CO2FeedstockPrice * 3 * 44/12 * 0.3048 * (t.val-2024) ** (-0.623) ; !! Mahdi Fasihi 2024
-*   );
-* );
 !! Source: Geetanjali Yadav 2023 Table S12 → 0.6 $/kg
 !! Source: Taylor Uekert 2023 Table Table S23 → 0.2-0.4 $/kg
 !! Source: Shaik Afzal 2023 Table Table S6 → 0.4-0.8 $/kg
