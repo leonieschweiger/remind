@@ -689,8 +689,6 @@ p37_specMatDem("ammoniaH2","amToFinal","greenh2")        = 1;
 p37_specMatDem("methanol","meToFinal","standard")        = 1;
 p37_specMatDem("methanolH2","meToFinal","greenh2")        = 1;
 
-!! p37_specMatDem("naphtha","stCrLiq","standard")        =  18.3 / (sm_TWa_2_MWh/sm_giga_2_non); !! should not be needed any more
-
 p37_specMatDem("plasticWaste","mechRe","standard")        = 1/0.79; !! Source: Taylor Uekert 2023 Table S1-S4.
 p37_specMatDem("plasticWaste","meSyChemRe","standard")        = 1/1.47; !! Source: Shaik Afzal 2023 Table 3. 
 p37_specMatDem("plasticWaste","stCrChemRe","standard")        = 1/0.62; !! Source: Geetanjali Yadav 2023 Table S9.
@@ -942,7 +940,7 @@ Parameter
   pm_outflowPrcHist(tall,all_regi,all_te,opmoPrc) "material flows per production route in 2020 [Gt or GtN for fertilizer]"
   /
 $ondelim
-$include "./modules/37_industry/subsectors/input/p37_AllChem_Routes_Value_2005_2020noCCS.cs4r";
+$include "./modules/37_industry/subsectors/input/pm_outflowPrcHist_chemicals.cs4r";
 $offdelim
   /
 ;
@@ -956,11 +954,11 @@ Parameter
   p37_mat2ue(tall,all_regi,all_enty,all_in) "conversion factors [2017$/kg or 2017$/kgN] for 2020-2050 to convert material [Gt or GtN] into UE [trn$2017]"
   /
 $ondelim
-$include "./modules/37_industry/subsectors/input/p37_AllChemical_Mat2Ue.cs4r";
+$include "./modules/37_industry/subsectors/input/p37_mat2ue_chemicals.cs4r";
 $offdelim
   /
 ;
-!! constant before and after IEA report temporal scope
+!! constant before IEA report temporal scope
 p37_mat2ue(t,regi,mat,in)$(t.val lt 2020) = p37_mat2ue("2020",regi,mat,in);
 
 !! ue_chemicals is measured in value_added (trn$2017), whilst material is measured in Gt
@@ -1030,14 +1028,12 @@ loop(t$(t.val ge 2005 AND t.val le 2015),
 
 
 !! 3. Calc MatflowHist
-Parameter
-  p37_matFlowHist(tall,all_regi,all_enty) "TODO"
-  /
-$ondelim
-$include "./modules/37_industry/subsectors/input/p37_AllChem_Flow_Value_2005_2020.cs4r";
-$offdelim
-  /
-;
+!! can this be deleted?
+p37_matFlowHist(t,regi,mat) =
+sum(tePrc2matOut(tePrc,opmoPrc,mat),
+      pm_outflowPrcHist(t,regi,tePrc,opmoPrc)
+    );
+
 
 !! 4. Calc ue_share
 !! can this be deleted?
@@ -1057,6 +1053,12 @@ if (cm_startyear gt 2005,
   Execute_Loadpoint "input_ref" p37_ue_share = p37_ue_share;
 );
 
+loop((t,regi,ppfUePrc(in)),
+  if(abs(sum(mat,p37_ue_share(t,regi,mat,in))-1.) gt sm_eps,
+    display p37_ue_share;
+    abort "p37_ue_share must add to one for each ue";
+  );
+);
 
 *** --------------------------------
 p37_teMatShareHist(all_regi,tePrc,opmoPrc,mat) = 0.;
@@ -1101,7 +1103,7 @@ Parameter
   p37_demFePrcHist(tall,all_regi,all_te,opmoPrc,all_enty) "total FE demand [EJ] per process in 2005-2020 (calculated from specific FE demand and production volume)"
   /
 $ondelim
-$include "./modules/37_industry/subsectors/input/p37_AllChem_Energy_Value_2005_2020noCCS.cs4r";
+$include "./modules/37_industry/subsectors/input/p37_demFePrcHist_chemicals.cs4r";
 $offdelim
   /
 ;

@@ -728,7 +728,6 @@ q_emiCdrNovel(t,regi)..
       !! multiply with ccs share 
       * v_ccsShare(t,regi) 
   !! 5. biochar CDR 
-  !! TOCHECK: QIANZHI
   -  sum(emiBiochar2te(enty,enty2,te,enty3),vm_emiTeDetail(t,regi,enty,enty2,te,enty3)) !! negative value
 
   !! ---- gross industry CDR
