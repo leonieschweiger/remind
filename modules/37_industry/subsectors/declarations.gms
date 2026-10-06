@@ -43,8 +43,7 @@ Parameters
   p37_priceMat(tall,all_regi,all_enty)                                                  "Prices of external material input [US$/kg] = [trn$US/Gt]"
   p37_matCarbonContent(mat)                                                    "Carbon content of final materials [GtC/Gt]"
   p37_plascticsShareInHVC(tall,all_regi)                                       "Share of plastics in high value chemicals. To be multiplied by carbon content, so this is share of total mass / all elements [0-1]"
-  p37_carbonaceousSeFeShare(tall,all_regi,all_enty,all_enty)                   "Share of SE/FE combinations among all carbonaceous fuels input to the "
-
+  
   p37_chemicals_feedstock_share(ttot,all_regi)               "minimum share of feso/feli/fega in total chemicals FE input [0-1]"
   p37_FeedstockCarbonContent(ttot,all_regi,all_enty)         "carbon content of feedstocks [GtC/TWa]"
   p37_FE_noNonEn(ttot,all_regi,all_enty,all_enty2,emiMkt)    "testing parameter for FE without non-energy use"
