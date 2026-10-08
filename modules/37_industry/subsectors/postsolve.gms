@@ -199,6 +199,18 @@ loop((tePrc,opmoPrc,teCCPrc,opmoCCPrc,route)$(
   );
 );
 
+!! CC techs (e.g. meSySol_cc) map to several CC routes but produce no material
+!! that a second-stage process uses, so the first-stage loop never splits them and
+!! o37_shareRoute stays 1 on each route. That counts their FE demand once per route.
+!! Fix: split each CC tech over its routes in proportion to the base tech's
+!! share on those CC routes.
+loop((tePrc,opmoPrc,teCCPrc,opmoCCPrc)$tePrc2teCCPrc(tePrc,opmoPrc,teCCPrc,opmoCCPrc),
+  o37_shareRoute(ttot,regi,teCCPrc,opmoCCPrc,route)$tePrc2route(teCCPrc,opmoCCPrc,route)
+  = o37_shareRoute(ttot,regi,tePrc,opmoPrc,route)
+  / max(sum(route2$tePrc2route(teCCPrc,opmoCCPrc,route2),
+            o37_shareRoute(ttot,regi,tePrc,opmoPrc,route2)), sm_eps);
+);
+
 !! second stage
 loop((tePrc1,opmoPrc1,tePrc2,opmoPrc2,mat,route)$(
                 tePrc2matIn(tePrc2,opmoPrc2,mat)
