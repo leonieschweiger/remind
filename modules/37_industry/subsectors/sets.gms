@@ -879,8 +879,8 @@ $ifthen.cm_subsec_model_chemicals "%cm_subsec_model_chemicals%" == "processes"
    chemElec . standard . otherChem_elec
    chemH2   . standard . otherChem_h2
 
-   stCrNg    . standard . hvc_stCrLiq
-   stCrLiq   . standard . hvc_stCrNg
+   stCrNg    . standard . hvc_stCrNg
+   stCrLiq   . standard . hvc_stCrLiq
    stCrChemRe. standard . hvc_stCrChemRe
 
    mechRe    . standard . mech_recycle
@@ -907,14 +907,15 @@ $ifthen.cm_subsec_model_chemicals "%cm_subsec_model_chemicals%" == "processes"
    amSyH2     . standard . (fertilizer_amh2,     amFinal_h2)
 
    mtoMta     . standard . (hvc_meSol, hvc_meSol_gh2, hvc_meNg, hvc_meLiq,
-                            hvc_meSol_cc, hvc_meNg_cc, hvc_meLiq_cc)
-   mtoMtaH2   . standard . hvc_meh2
+                            hvc_meSol_cc, hvc_meNg_cc, hvc_meLiq_cc)  
+   mtoMtaH2   . standard . (hvc_meh2, hvc_meBio, hvc_meBio_gh2, hvc_meBio_cc, hvc_mechemRe)
+
    fertProd   . standard . (fertilizer_amSol, fertilizer_amNg, fertilizer_amLiq,
                             fertilizer_amSol_cc, fertilizer_amNg_cc, fertilizer_amLiq_cc)
    fertProdH2 . standard . fertilizer_amh2
    meToFinal  . standard . (meFinal_sol, meFinal_sol_gh2, meFinal_ng, meFinal_liq,
                             meFinal_sol_cc, meFinal_ng_cc, meFinal_liq_cc)
-   meToFinal  . greenh2  . meFinal_h2
+   meToFinal  . greenh2  . (meFinal_h2, meFinal_bio, meFinal_bio_gh2, meFinal_bio_cc, meFinal_chemRe)
    amToFinal  . standard . (amFinal_sol, amFinal_ng, amFinal_liq,
                             amFinal_sol_cc, amFinal_ng_cc, amFinal_liq_cc)
    amToFinal  . greenh2  . amFinal_h2
@@ -942,12 +943,14 @@ routeCC(route)  "TODO"
   /
 $ifthen.cm_subsec_model_chemicals "%cm_subsec_model_chemicals%" == "processes"
     hvc_meSol_cc
+    hvc_meBio_cc
     hvc_meNg_cc
     hvc_meLiq_cc
     fertilizer_amLiq_cc
     fertilizer_amNg_cc
     fertilizer_amSol_cc
     meFinal_sol_cc
+    meFinal_bio_cc
     meFinal_ng_cc
     meFinal_liq_cc
     amFinal_sol_cc
@@ -965,12 +968,14 @@ routeCC2baseRoute(route,route) "TODO"
   /
 $ifthen.cm_subsec_model_chemicals "%cm_subsec_model_chemicals%" == "processes"
     hvc_meSol_cc         . hvc_meSol
+    hvc_meBio_cc         . hvc_meBio
     hvc_meNg_cc          . hvc_meNg
     hvc_meLiq_cc         . hvc_meLiq
     fertilizer_amLiq_cc  . fertilizer_amLiq
     fertilizer_amNg_cc   . fertilizer_amNg
     fertilizer_amSol_cc  . fertilizer_amSol
     meFinal_sol_cc       . meFinal_sol
+    meFinal_bio_cc       . meFinal_bio
     meFinal_ng_cc        . meFinal_ng
     meFinal_liq_cc       . meFinal_liq
     amFinal_sol_cc       . amFinal_sol
