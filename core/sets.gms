@@ -308,9 +308,11 @@ all_te          "all energy technologies, including from modules"
     mechRe
 
     meSySol
+    meSyBio
     meSyNg
     meSyLiq
     meSySol_cc
+    meSyBio_cc
     meSyNg_cc
     meSyLiq_cc
     meSyH2
@@ -341,10 +343,13 @@ all_te          "all energy technologies, including from modules"
     hvc_stCrNg
     hvc_stCrChemRe
     hvc_meSol
+    hvc_meBio
     hvc_meNg
     hvc_meLiq
     hvc_meSol_gh2
+    hvc_meBio_gh2
     hvc_meSol_cc
+    hvc_meBio_cc
     hvc_meNg_cc
     hvc_meLiq_cc
     hvc_meh2
@@ -359,10 +364,13 @@ all_te          "all energy technologies, including from modules"
     fertilizer_amh2
 
     meFinal_sol
+    meFinal_bio
     meFinal_ng
     meFinal_liq
     meFinal_sol_gh2
+    meFinal_bio_gh2
     meFinal_sol_cc
+    meFinal_bio_cc
     meFinal_ng_cc
     meFinal_liq_cc
     meFinal_h2
@@ -1284,9 +1292,11 @@ $ifthen.cm_subsec_model_chemicals "%cm_subsec_model_chemicals%" == "processes"
     mechRe          "mechanical recycling of plastic waste"
     
     meSySol         "methanol synthesis from coal/biomass"
+    meSyBio         "methanol synthesis from biomass"
     meSyNg          "methanol synthesis from NG"
     meSyLiq         "methanol synthesis from oil"
     meSySol_cc      "CC for methanol synthesis from coal/biomass"
+    meSyBio_cc      "CC for methanol synthesis from biomass"
     meSyNg_cc       "CC for methanol synthesis from NG"
     meSyLiq_cc      "CC for methanol synthesis from oil"
     meSyH2          "methanol synthesis from hydrogen"
@@ -1397,10 +1407,12 @@ teAdj(all_te)           "technologies with adjustment costs on capacity addition
 $ifthen.cm_subsec_model_chemicals "%cm_subsec_model_chemicals%" == "processes"
     chemElec        "Other chemicals by Electricity"
     chemH2          "Other chemicals by Hydrogen"
-    meSySol         "Methanol by Soilds" 
+    meSySol         "Methanol by Soilds"
+    meSyBio         "Methanol by Biomass"
     meSyNg          "Methanol by Gas"
     meSyLiq         "Methanol by Liquids"
-    meSySol_cc      "Methanol by Soilds CCS" 
+    meSySol_cc      "Methanol by Soilds CCS"
+    meSyBio_cc      "Methanol by Biomass CCS"
     meSyNg_cc       "Methanol by Gas CCS"
     meSyLiq_cc      "Methanol by Liquids CCS"
     meSyH2          "Methanol by Hydrogen"
