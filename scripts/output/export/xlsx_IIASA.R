@@ -30,72 +30,107 @@ mapping <- NULL                                # file obtained from piamInterfac
 iiasatemplate <- NULL                          # provided for each project, can be yaml or xlsx with a column 'Variable'
 checkSummation <- TRUE                         # if TRUE, tries to use the one from mapping. Or specify here
 
-# note: you can also pass all these options to output.R, so 'Rscript output.R logFile=mylogfile.txt' works.
+# note: you can also pass all these options to output.R, so 'Rscript output.R --logFile=mylogfile.txt' works.
 lucode2::readArgs("project")
 
+
 projects <- list(
-  ELEVATE    = list(mapping = c("NAVIGATE", "ELEVATE"),
-                    iiasatemplate = "https://files.ece.iiasa.ac.at/elevate/elevate-template.xlsx",
-                    removeFromScen = "C_|eoc"),
-  ELEVATE_coupled = list(model = "REMIND-MAgPIE 3.5-4.10",
-                    mapping = c("NAVIGATE", "NAVIGATE_coupled", "ELEVATE"),
-                    iiasatemplate = "https://files.ece.iiasa.ac.at/elevate/elevate-template.xlsx",
-                    removeFromScen = "C_|eoc"),
-  ENGAGE_4p5 = list(mapping = c("AR6", "AR6_NGFS"),
-                    iiasatemplate = "ENGAGE_CD-LINKS_template_2019-08-22.xlsx",
-                    removeFromScen = "_diff|_expoLinear|-all_regi"),
+  IKEA = list(
+    model = "REMIND 3.5",
+    mapping = "ScenarioMIP",
+    iiasatemplate = "https://files.ece.iiasa.ac.at/common-definitions/common-definitions-template.xlsx",
+    checkSummation = "ScenarioMIP"), 
+  ELEVATE = list(
+    mapping = c("NAVIGATE", "ELEVATE"),
+    iiasatemplate = "https://files.ece.iiasa.ac.at/elevate/elevate-template.xlsx",
+    removeFromScen = "C_|eoc"),
+  ELEVATE_coupled = list(
+    model = "REMIND-MAgPIE 3.5-4.10",
+    mapping = c("NAVIGATE", "NAVIGATE_coupled", "ELEVATE"),
+    iiasatemplate = "https://files.ece.iiasa.ac.at/elevate/elevate-template.xlsx",
+    removeFromScen = "C_|eoc"),
+  ENGAGE_4p5 = list(
+    mapping = c("AR6", "AR6_NGFS"),
+    iiasatemplate = "ENGAGE_CD-LINKS_template_2019-08-22.xlsx",
+    removeFromScen = "_diff|_expoLinear|-all_regi"),
+  NGFS = list(
+    model = "REMIND-MAgPIE 3.3-4.8",
+    mapping = c("AR6", "AR6_NGFS"),
+    iiasatemplate = "https://files.ece.iiasa.ac.at/ngfs-phase-5/ngfs-phase-5-template.xlsx",
+    removeFromScen = "C_|_bIT|_bit|_bIt|_KLW"),
+  NGFS6 = list(
+    model = "REMIND-MAgPIE 3.7-4.14",
+    mapping = c("ScenarioMIP", "NGFS6"),
+    iiasatemplate = "https://files.ece.iiasa.ac.at/ngfs-phase-6/ngfs-phase-6-template.xlsx",
+    removeFromScen = "C_|_Pk[0-9]+",
+    checkSummation = "ScenarioMIP"),
+  RIKEN = list(
+    model = "REMIND-MAgPIE 3.4-4.8",
+    mapping = c("ScenarioMIP", "MAGICC7_AR6"),
+    checkSummation = "ScenarioMIP"),
+  ScenarioMIP = list(
+    model = "REMIND-MAgPIE 3.5-4.11",
+    mapping = "ScenarioMIP",
+    iiasatemplate = "https://files.ece.iiasa.ac.at/ssp-submission/ssp-submission-template.xlsx",
+    renameScen = c(
+      "SMIPv08-H-SSP2-rollBack-def" = "SSP2 - High Emissions",
+      "SMIPv08-H-SSP3-rollBack-def" = "SSP3 - High Emissions",
+      "SMIPv08-M-SSP1-NPi2025-def" = "SSP1 - Medium Emissions",
+      "SMIPv08-M-SSP2-NPi2025-def" = "SSP2 - Medium Emissions",
+      "SMIPv08-M-SSP3-NPi2025-def" = "SSP3 - Medium Emissions",
+      "SMIPv08-ML-SSP1-EcPrice190-def" = "SSP1 - Medium-Low Emissions",
+      "SMIPv08-ML-SSP2-EcPrice300-def" = "SSP2 - Medium-Low Emissions",
+      "SMIPv08-ML-SSP3-EcPrice325-def" = "SSP3 - Medium-Low Emissions",
+      "SMIPv08-L-SSP1-EcPrice300-def" = "SSP1 - Low Emissions",
+      "SMIPv08-L-SSP2-EcPrice400-def" = "SSP2 - Low Emissions",
+      "SMIPv08-L-SSP1-EcPrice300-var_yr2035" = "SSP1 - Low Emissions_c",
+      "SMIPv08-L-SSP2-EcPrice400-var_yr2035" = "SSP2 - Low Emissions_c",
+      "SMIPv08-L-SSP1-EcPrice300-var_yr2050" = "SSP1 - Low Emissions_d",
+      "SMIPv08-L-SSP2-EcPrice400-var_yr2050" = "SSP2 - Low Emissions_d",
+      "SMIPv08-VLHO-SSP2-EcPrice1300-def" = "SSP2 - Low Overshoot",
+      "SMIPv08-VLHO-SSP2-EcPrice1300-var_yr2035" = "SSP2 - Low Overshoot_c",
+      "SMIPv08-VLHO-SSP2-EcPrice1300-var_yr2050" = "SSP2 - Low Overshoot_d",
+      "SMIPv08-VLLO-SSP1-PkPrice500-def" = "SSP1 - Very Low Emissions",
+      "SMIPv08-VLLO-SSP2-PkPrice500-def" = "SSP2 - Very Low Emissions",
+      "SMIPv08-VLLO-SSP1-PkPrice500-var_yr2035" = "SSP1 - Very Low Emissions_c",
+      "SMIPv08-VLLO-SSP2-PkPrice500-var_yr2035" = "SSP2 - Very Low Emissions_c",
+      NULL),
+      checkSummation = "ScenarioMIP",
+      timesteps = seq(2005, 2100)),
+    JustMIP = list(
+      model = "REMIND-MAgPIE 3.5-4.10",
+      mapping = "ScenarioMIP",
+      iiasatemplate = "https://files.ece.iiasa.ac.at/justmip/justmip-template.xlsx",
+      removeFromScen = "C_|eoc",
+      renameScen = c("Reference_SSP1_800f" = "SSP1_800f", "Reference_SSP2_800f" = "SSP2_800f"),
+      checkSummation = "ScenarioMIP",
+      timesteps = seq(2005, 2100)),
+  PRISMA = list(
+    model = "REMIND-MAgPIE 3.4-4.8",
+    mapping = c("ScenarioMIP", "PRISMA"),
+    iiasatemplate = "https://files.ece.iiasa.ac.at/prisma/prisma-template.xlsx",  
+    renameScen = c("SMIPv04-M-SSP2-NPi2025-def" = "SSP2 - Medium Emissions", "SMIPv04-L-SSP2-PkBudg1000-def" = "SSP2 - Low Emissions"),
+    checkSummation = "NAVIGATE"),
+  PRISMA_WP6 = list(
+    model = "REMIND-MAgPIE 3.7-4.14",
+    mapping = c("ScenarioMIP", "PRISMA"),
+    iiasatemplate = "https://files.ece.iiasa.ac.at/prisma/prisma-template.xlsx",  
+    removeFromScen = "C_",
+    renameScen = c(
+      "SSP2-MeetAspirations" = "SSP2 - Meet Aspirations",
+      "SSP2-AsymmetricRoll-Back" = "SSP2 - Asymmetric Roll-Back",
+      "SSP2-LateReawakening" = "SSP2 - Late Reawakening",
+      "SSP2-StayingAlive" = "SSP2 - Staying Alive"),
+    checkSummation = "ScenarioMIP"),
   NAVIGATE_coupled = list(mapping = c("NAVIGATE", "NAVIGATE_coupled")),
-  NGFS       = list(model = "REMIND-MAgPIE 3.3-4.8",
-                    mapping = c("AR6", "AR6_NGFS"),
-                    iiasatemplate = "https://files.ece.iiasa.ac.at/ngfs-phase-5/ngfs-phase-5-template.xlsx",
-                    removeFromScen = "C_|_bIT|_bit|_bIt|_KLW"),
-  RIKEN = list(model = "REMIND-MAgPIE 3.4-4.8",
-               mapping = c("ScenarioMIP", "MAGICC7_AR6"),
-               checkSummation = "ScenarioMIP"),
-  ScenarioMIP = list(model = "REMIND-MAgPIE 3.5-4.11",
-                     mapping = "ScenarioMIP",
-                     iiasatemplate = "https://files.ece.iiasa.ac.at/ssp-submission/ssp-submission-template.xlsx",
-                     renameScen = c(
-                      "SMIPv08-H-SSP2-rollBack-def" = "SSP2 - High Emissions",
-                      "SMIPv08-H-SSP3-rollBack-def" = "SSP3 - High Emissions",
-                      "SMIPv08-M-SSP1-NPi2025-def" = "SSP1 - Medium Emissions",
-                      "SMIPv08-M-SSP2-NPi2025-def" = "SSP2 - Medium Emissions",
-                      "SMIPv08-M-SSP3-NPi2025-def" = "SSP3 - Medium Emissions",
-                      "SMIPv08-ML-SSP1-EcPrice190-def" = "SSP1 - Medium-Low Emissions",
-                      "SMIPv08-ML-SSP2-EcPrice300-def" = "SSP2 - Medium-Low Emissions",
-                      "SMIPv08-ML-SSP3-EcPrice325-def" = "SSP3 - Medium-Low Emissions",
-                      "SMIPv08-L-SSP1-EcPrice300-def" = "SSP1 - Low Emissions",
-                      "SMIPv08-L-SSP2-EcPrice600-def" = "SSP2 - Low Emissions",
-                      "SMIPv08-L-SSP1-EcPrice300-var_yr2035" = "SSP1 - Low Emissions_c",
-                      "SMIPv08-L-SSP2-EcPrice600-var_yr2035" = "SSP2 - Low Emissions_c",
-                      "SMIPv08-L-SSP1-EcPrice300-var_yr2050" = "SSP1 - Low Emissions_d",
-                      "SMIPv08-L-SSP2-EcPrice600-var_yr2050" = "SSP2 - Low Emissions_d",
-                      "SMIPv08-VLHO-SSP2-EcPrice1300-def" = "SSP2 - Low Overshoot",
-                      "SMIPv08-VLHO-SSP2-EcPrice1300-var_yr2035" = "SSP2 - Low Overshoot_c",
-                      "SMIPv08-VLHO-SSP2-EcPrice1300-var_yr2050" = "SSP2 - Low Overshoot_d",
-                      "SMIPv08-VLLO-SSP1-PkPrice500-def" = "SSP1 - Very Low Emissions",
-                      "SMIPv08-VLLO-SSP2-PkPrice500-def" = "SSP2 - Very Low Emissions",
-                      "SMIPv08-VLLO-SSP1-PkPrice500-var_yr2035" = "SSP1 - Very Low Emissions_c",
-                      "SMIPv08-VLLO-SSP2-PkPrice500-var_yr2035" = "SSP2 - Very Low Emissions_c",
-                      NULL
-                      ),
-                     checkSummation = "ScenarioMIP",
-                     timesteps = seq(2005, 2100)),
-  JustMIP = list(model = "REMIND-MAgPIE 3.5-4.10",
-                    mapping = "ScenarioMIP",
-                    iiasatemplate = "https://files.ece.iiasa.ac.at/justmip/justmip-template.xlsx",
-                    removeFromScen = "C_|eoc",
-                    renameScen = c("Reference_SSP1_800f" = "SSP1_800f", "Reference_SSP2_800f" = "SSP2_800f"),
-                    checkSummation = "ScenarioMIP",
-                    timesteps = seq(2005, 2100)),
-  PRISMA = list(model = "REMIND-MAgPIE 3.4-4.8",
-                mapping = c("ScenarioMIP", "PRISMA"),
-                iiasatemplate = "https://files.ece.iiasa.ac.at/prisma/prisma-template.xlsx",  
-                renameScen = c("SMIPv04-M-SSP2-NPi2025-def" = "SSP2 - Medium Emissions", "SMIPv04-L-SSP2-PkBudg1000-def" = "SSP2 - Low Emissions"),
-                checkSummation = "NAVIGATE"),
-  SHAPE      = list(mapping = c("NAVIGATE", "NAVIGATE_coupled", "SHAPE")),
-  TESTTHAT   = list(mapping = "AR6")
+  SHAPE            = list(mapping = c("NAVIGATE", "NAVIGATE_coupled", "SHAPE")),
+  TESTTHAT         = list(mapping = "AR6")
 )
+# EarthCommission uses the ScenarioMIP scenarios with a different mapping and template:
+projects$EC <- modifyList(projects$ScenarioMIP, list(
+  mapping = c("ScenarioMIP", "EC"),
+  iiasatemplate = "https://files.ece.iiasa.ac.at/earthcommission/earthcommission-template.xlsx"))
+  
 
 # add pure mapping from piamInterfaces
 mappings <- setdiff(names(piamInterfaces::mappingNames()), c(names(projects), "AR6_NGFS"))
@@ -173,15 +208,9 @@ withCallingHandlers({ # piping messages to logFile
 
   filename_remind2_mif <- paste0(outputFilename, "_remind2.mif")
 
-  message("\n### Read mif files and bind them together...")
-
-  mifdata <- NULL
-  for (mif in mif_path) {
-    thismifdata <- read.quitte(mif, factors = FALSE)
-    # remove -rem-xx and mag-xx from scenario names
-    thismifdata$scenario <- gsub("^C_|-(rem|mag)-[0-9]{1,2}$", "", thismifdata$scenario)
-    mifdata <- rbind(mifdata, thismifdata)
-  }
+  message("\n### Load mif files...")
+  mifdata <- bind_rows(lapply(mif_path, read.quitte, factors = FALSE)) # combine all scenarios into one data frame
+  mifdata$scenario <- gsub("^C_|-(rem|mag)-[0-9]{1,2}$", "", mifdata$scenario) # remove C_, -rem-xx, mag-xx from scenario names
 
   # rename scenarios
   if (! is.null(renameScen)) {

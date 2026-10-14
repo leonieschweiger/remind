@@ -24,7 +24,6 @@ Parameters
   p37_CESMkup(ttot,all_regi,all_in)                                            "parameter for those CES markup cost accounted as investment cost in the budget [trUSD/CES input]"
   p37_cesIO_up_steel_secondary(tall,all_regi,all_GDPpopScen)                   "upper limit to secondary steel production based on scrap availability"
   p37_steel_secondary_max_share(tall,all_regi)                                 "maximum share of secondary steel production"
-  p37_BAU_industry_ETS_solids(tall,all_regi)                                   "industry solids demand in baseline scenario"
   p37_cesIO_baseline(tall,all_regi,all_in)                                     "vm_cesIO from the baseline scenario"
   !! process-based implementation
   p37_specMatDem(mat,all_te,opmoPrc)                                           "Specific materials demand of a production technology and operation mode [t_input/t_output]"
@@ -104,8 +103,8 @@ $ifthen.cm_subsec_model_chemicals "%cm_subsec_model_chemicals%" == "ces"
   v37_plasticWaste(ttot,all_regi,all_enty,all_enty,all_emiMkt)              "Carbon flow: carbon contained in plastic waste [GtC]"
   vm_wasteIncinerationEmiBalance(tall,all_regi,all_enty,all_emiMkt)         "Sum of plastics waste incineration related emissions (positive and negative) [GtC]"
   vm_nonFosPlastic_incinCC(ttot,all_regi,all_emiMkt)                        "Carbon from non-fossil origin in plastics that gets incinerated with carbon capture [GtC]"
-  vm_nonFosNonPlasticNonEmitted(ttot,all_regi)                              "Carbon from non-fossil origin in non-plastic materials that does not get emitted to the atmosphere [GtC]"
-  v37_emiChemicalsProcess(ttot,all_regi,all_enty,all_emiMkt)                "Chemical process emissions, so far only CO2 emissions [GtC]"
+  vm_nonFosNonPlasticNonEmitted(ttot,all_regi)                                 "Carbon from non-fossil origin in non-plastic materials that does not get emitted to the atmosphere [GtC]"
+  vm_demFeNonEnergySector(ttot,all_regi,all_enty,all_enty,emi_sectors,all_emiMkt) "final energy demand used for material feedstocks in the industry sector [TWa]"
 $endif.cm_subsec_model_chemicals
 $ifthen.cm_subsec_model_chemicals "%cm_subsec_model_chemicals%" == "processes"
   vm_incinerationCCS(ttot,all_regi)                                         "CCS from incineration of plastic waste [GtC]"
@@ -126,16 +125,17 @@ $endif.cm_subsec_model_chemicals
   vm_costMatPrc(tall,all_regi)                                              "Cost of external material inputs such as iron ore in process-based industry [trn $2017/a]"
   v37_matShareChange(tall,all_regi,all_te,opmoPrc,all_enty)                 "Change of share of processes with rectricted relative share change"
   v37_chemFlow(tall,all_regi,all_enty)                                      "Summed material outflow of historic processes with future restricted shares; Needed as auxiliary for calculating material outflows of historic processes from the restricted shares"
-
+  
+  v37_shSolidsIndst(tall,all_regi)                                          "upper share on biosolids"
 ;
 
 $ifthen.cm_subsec_model_chemicals "%cm_subsec_model_chemicals%" == "ces"
 Variables
 !! feedstocks
+v37_emiChemicalsProcess(ttot,all_regi,all_enty,all_emiMkt)                "Chemical process emissions, so far only CO2 emissions [GtC]"
 vm_emiFeedstockNoEnergy(ttot,all_regi,all_enty,all_emiMkt)                "Emissions from feedstocks that are not accounted as energy-related emissions, so far only CO2 emissions [GtC]"
 vm_emiNonFosNonIncineratedPlastics(ttot,all_regi,all_enty,all_emiMkt)     "Negative CO2 emissions from non-fossil carbon in non-incinerated plastics [GtC]"
 v37_emiNonPlasticWaste(ttot,all_regi,all_enty,all_emiMkt)                 "Emissions from non-plastic waste, so far only CO2 emissions [GtC]"
-vm_demFeNonEnergySector(ttot,all_regi,all_enty,all_enty,emi_sectors,all_emiMkt) "final energy demand used for material feedstocks in the industry sector [TWa]"
 ;
 $endif.cm_subsec_model_chemicals
 
@@ -186,13 +186,17 @@ $endif.cm_subsec_model_chemicals
   q37_mat2ue(tall,all_regi,mat,all_in)                                              "Connect materials production to ue ces tree nodes"
   q37_restrictMatShareChange(tall,all_regi,all_te,opmoPrc,all_enty)                 "Low Constraining the share of chemical fossil fuel technologies based on historical data"
   q37_chemFlow(tall,all_regi,all_enty)                                              "Restrict future share of processes where several historical processes exist for same material, e.g. Coal-MeOH-HVC vs steam cracker"
+  q37_limitMeSySolFeDemIndst(ttot,all_regi)                                         "limit industry solid fuel demand to not exceed baseline levels"
+  q37_limitMeSyBioFeDemIndst(ttot,all_regi)                                         "limit industry biofuel demand to not exceed baseline levels"
 
+  q37_limitCapMatHist(tall,all_regi,all_te)                                         "Material-flow conversion is limited by capacities (historical)"
   q37_limitCapMat(tall,all_regi,all_te)                                             "Material-flow conversion is limited by capacities"
   q37_limitCapMatHist(tall,all_regi,all_te)                                         "Material-flow conversion is limited by capacities"
   q37_emiPrc(ttot,all_regi,all_enty,all_te,opmoPrc)                                 "Local industry emissions pre-capture; Only used as baseline for CCS [GtC/a]"
   q37_emiCCPrc(tall,all_regi,emiInd37)                                              "Captured emissions from CCS"
   q37_limitOutflowCCPrc(tall,all_regi,all_te)                                       "Carbon capture processes can only capture as much co2 as the base process emits"
   q37_costMat(tall,all_regi)                                                        "External material cost (non-energy)"
+  q37_limitBioSolidsIndst(tall,all_regi,all_enty)                                    "Upper limit on biosolids share"
 ;
 
 *** EOF ./modules/37_industry/subsectors/declarations.gms

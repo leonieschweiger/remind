@@ -11,3 +11,5 @@ vm_capEarlyReti,input,questionnaire
 pm_regiEarlyRetiRate,input,questionnaire
 pm_pop,input,not needed
 pm_gdp,input,not needed
+cm_RenShareTargets,input,not needed
+vm_cesIO,input,not needed

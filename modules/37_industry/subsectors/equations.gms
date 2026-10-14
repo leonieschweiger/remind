@@ -255,7 +255,7 @@ q37_feedstocksShares(t,regi,entySe,entyFe,emiMkt)$(
   * sum(se2fe(entySe2,entyFe,te),
       vm_demFeNonEnergySector(t,regi,entySe2,entyFe,"indst",emiMkt)
     )
-  =l=
+  =e=
     vm_demFeNonEnergySector(t,regi,entySe,entyFe,"indst",emiMkt)
   * sum(se2fe2(entySe2,entyFe,te),
       vm_demFeSector_afterTax(t,regi,entySe2,entyFe,"indst",emiMkt)
@@ -538,6 +538,18 @@ q37_restrictMatShareChange(t,regi,tePrc,opmoPrc,mat)$(t.val gt 2020
   * v37_chemFlow(t,regi,mat) !! Try to use different opmoPrc
 ;
 
+q37_limitMeSySolFeDemIndst(t,regi) ..
+  sum(opmoPrc,vm_outflowPrc(t,regi,"meSySol",opmoPrc) * pm_specFeDem(t,regi,"fesos","meSySol",opmoPrc) )
+  + sum(opmoPrc,vm_outflowPrc(t,regi,"amSyCoal",opmoPrc) * pm_specFeDem(t,regi,"fesos","amSyCoal",opmoPrc) )
+=l=
+  vm_demFeSector_afterTax(t,regi,"sesofos","fesos","indst","ETS")
+;
+
+q37_limitMeSyBioFeDemIndst(t,regi) ..
+  sum(opmoPrc,vm_outflowPrc(t,regi,"meSyBio",opmoPrc) * pm_specFeDem(t,regi,"fesos","meSyBio",opmoPrc) )
+=l=
+  vm_demFeSector_afterTax(t,regi,"sesobio","fesos","indst","ETS")
+;
 ***------------------------------------------------------
 *' Hand-over to CES
 ***------------------------------------------------------
@@ -555,29 +567,36 @@ q37_mat2ue(t,regi,mat,in)$( ppfUePrc(in) ) ..
 
 
 ***------------------------------------------------------
-*' Definition of capacity constraints
+*' Definition of capacity constraints (historical and current)
 ***------------------------------------------------------
+*' historical capacity constraint allows for free adjustment of
+*' the capacity factor, as historical input data sometimes
+*' displays low capacity factors (below 0.8).
 q37_limitCapMatHist(t,regi,tePrc)$(t.val le 2020) ..
-     sum(tePrc2opmoPrc(tePrc,opmoPrc),
-       vm_outflowPrc(t,regi,tePrc,opmoPrc)
-     )
-     =l=
-     sum(teMat2rlf(tePrc,rlf),
-       vm_capFac(t,regi,tePrc)
-     * vm_cap(t,regi,tePrc,rlf)
-     )
- ;
+    sum(tePrc2opmoPrc(tePrc,opmoPrc),
+      vm_outflowPrc(t,regi,tePrc,opmoPrc)
+    )
+    =l=
+    sum(teMat2rlf(tePrc,rlf),
+      vm_capFac(t,regi,tePrc)
+    * vm_cap(t,regi,tePrc,rlf)
+    )
+;
 
- q37_limitCapMat(t,regi,tePrc)$(t.val gt 2020) ..
-     sum(tePrc2opmoPrc(tePrc,opmoPrc),
-       vm_outflowPrc(t,regi,tePrc,opmoPrc)
-     )
-     =e=
-     sum(teMat2rlf(tePrc,rlf),
-       vm_capFac(t,regi,tePrc)
-     * vm_cap(t,regi,tePrc,rlf)
-     )
- ;
+*' from 2025 onwards, the constraint is binding,
+*' fixing the capacity factor to 0.8.
+*' this prevents the model from idling capacity at zero cost,
+*' which otherwise leads to unrealistically low utilizations
+q37_limitCapMat(t,regi,tePrc)$(t.val gt 2020) ..
+    sum(tePrc2opmoPrc(tePrc,opmoPrc),
+      vm_outflowPrc(t,regi,tePrc,opmoPrc)
+    )
+    =e=
+    sum(teMat2rlf(tePrc,rlf),
+      vm_capFac(t,regi,tePrc)
+    * vm_cap(t,regi,tePrc,rlf)
+    )
+;
 
 ***------------------------------------------------------
 *' Emission from process based industry sector (pre CC)
@@ -628,6 +647,19 @@ q37_emiCCPrc(t,regi,emiInd37)$(
          tePrc2teCCPrc(tePrc,opmoPrc,teCCPrc,opmoCCPrc)),
       vm_outflowPrc(t,regi,teCCPrc,opmoCCPrc)
     )
+;
+
+***------------------------------------------------------
+*' Limit biosolids in industry (only for ETS - all sectors except otherInd)
+***------------------------------------------------------
+q37_limitBioSolidsIndst(t,regi,entyFe)$(sameas(entyFe,"fesos"))..
+  v37_shSolidsIndst(t,regi)
+  *
+  sum((entySe,te)$se2fe(entySe,entyFe,te),
+    vm_demFeSector_afterTax(t,regi,entySe,entyFe,"indst","ETS"))
+  =g=
+  sum((entySeBio,te)$se2fe(entySeBio,entyFe,te),
+    vm_demFeSector_afterTax(t,regi,entySeBio,entyFe,"indst","ETS"))
 ;
 
 *' @stop
