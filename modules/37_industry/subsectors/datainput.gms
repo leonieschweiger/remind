@@ -758,6 +758,13 @@ p37_specFeDemTarget("fesos","meSySol","greenh2")  = 4.6 / (sm_TWa_2_MWh/sm_giga_
 p37_specFeDemTarget("feh2s","meSySol","greenh2")  = 3.3 / (sm_TWa_2_MWh/sm_giga_2_non); !! Source: Dongliang, Wang, et al Energy 2021 Table 9
 p37_specFeDemTarget("feels","meSySol","greenh2")  = 0.14 / (sm_TWa_2_MWh/sm_giga_2_non); !! Source: Dongliang, Wang, et al Energy 2021 Table 9
 
+p37_specFeDemTarget("fesos","meSyBio","standard")  = 8.44 / (sm_TWa_2_MWh/sm_giga_2_non);  !! Source: Poluzzi, Alessandro, et al. "Flexible power and biomass-to-methanol plants with different gasification technologies." Frontiers in Energy Research 9 (2022): 795673.
+p37_specFeDemTarget("feels","meSyBio","standard")  = 0.34 / (sm_TWa_2_MWh/sm_giga_2_non);  !! Source: Poluzzi, Alessandro, et al. "Flexible power and biomass-to-methanol plants with different gasification technologies." Frontiers in Energy Research 9 (2022): 795673.
+
+p37_specFeDemTarget("fesos","meSyBio","greenh2")  = 3.97 / (sm_TWa_2_MWh/sm_giga_2_non); !! Source: Poluzzi, Alessandro, et al. "Flexible power and biomass-to-methanol plants with different gasification technologies." Frontiers in Energy Research 9 (2022): 795673.
+p37_specFeDemTarget("feh2s","meSyBio","greenh2")  = 3.56 / (sm_TWa_2_MWh/sm_giga_2_non); !! Source: Poluzzi, Alessandro, et al. "Flexible power and biomass-to-methanol plants with different gasification technologies." Frontiers in Energy Research 9 (2022): 795673.
+p37_specFeDemTarget("feels","meSyBio","greenh2")  = 0.34 / (sm_TWa_2_MWh/sm_giga_2_non); !! Source: Poluzzi, Alessandro, et al. "Flexible power and biomass-to-methanol plants with different gasification technologies." Frontiers in Energy Research 9 (2022): 795673.
+
 p37_specFeDemTarget("fegas","meSyNg","standard")    = 8.8 / (sm_TWa_2_MWh/sm_giga_2_non); !! Source: IEA, The Future of Hydrogen. Seizing today’s opportunities, Assumptions Annex, Paris, 2019. PAGE | 5
 p37_specFeDemTarget("feels","meSyNg","standard")    = 0.083 / (sm_TWa_2_MWh/sm_giga_2_non); !! Source: IEA, The Future of Hydrogen. Seizing today’s opportunities, Assumptions Annex, Paris, 2019. PAGE | 5
 
@@ -766,6 +773,9 @@ p37_specFeDemTarget("feels","meSyLiq","standard")  = 0.56 / (sm_TWa_2_MWh/sm_gig
 
 p37_specFeDemTarget("fesos","meSySol_cc","standard")  = 2.8 / (sm_TWa_2_MWh/sm_giga_2_non); !! TODO：Source: IEA, The Future of Hydrogen. Seizing today’s opportunities, Assumptions Annex, Paris, 2019. PAGE | 5  Mwh/tC
 p37_specFeDemTarget("feels","meSySol_cc","standard")    = 0.065 / (sm_TWa_2_MWh/sm_giga_2_non); !! Source: IEA, The Future of Hydrogen. Seizing today’s opportunities, Assumptions Annex, Paris, 2019. PAGE | 5  Mwh/tC
+
+p37_specFeDemTarget("fesos","meSyBio_cc","standard")  = 2.8 / (sm_TWa_2_MWh/sm_giga_2_non); !! TODO：Source: IEA, The Future of Hydrogen. Seizing today’s opportunities, Assumptions Annex, Paris, 2019. PAGE | 5  Mwh/tC
+p37_specFeDemTarget("feels","meSyBio_cc","standard")    = 0.065 / (sm_TWa_2_MWh/sm_giga_2_non); !! Source: IEA, The Future of Hydrogen. Seizing today’s opportunities, Assumptions Annex, Paris, 2019. PAGE | 5  Mwh/tC
 
 p37_specFeDemTarget("feels","meSyNg_cc","standard")  = 0.54 / (sm_TWa_2_MWh/sm_giga_2_non); !! Source: IEA, The Future of Hydrogen. Seizing today’s opportunities, Assumptions Annex, Paris, 2019. PAGE | 5   Mwh/tC
 
@@ -855,9 +865,11 @@ $ifthen.cm_subsec_model_chemicals "%cm_subsec_model_chemicals%" == "processes"
 !! ==> feedstock share is 0.375/1.29 = 0.29 ==> energy share is 0.71
 
 p37_captureRate("meSySol_cc")  = 0.95 * 0.71; 
+p37_captureRate("meSyBio_cc")  = 0.95 * 0.71; 
 p37_captureRate("meSyNg_cc") = 0.95 * 0.22; 
 p37_captureRate("meSyLiq_cc")  = 0.95 * 0.5;
 p37_selfCaptureRate("meSySol_cc")  = 0.95;
+p37_selfCaptureRate("meSyBio_cc")  = 0.95;
 p37_selfCaptureRate("meSyNg_cc") = 0.95;
 p37_selfCaptureRate("meSyLiq_cc")  = 0.95;
 
@@ -880,6 +892,7 @@ $endif.cm_subsec_model_steel
 !!can be deleted in the long run
 p37_priceMat(ttot,all_regi,all_enty) = 0.;
 $ifthen.cm_subsec_model_chemicals "%cm_subsec_model_chemicals%" == "processes"
+<<<<<<< HEAD
 !!Execute_Loadpoint "input" pm_FEPrice = pm_FEPrice;
 
 !! Source: Geetanjali Yadav 2023 Table S12 → 0.6 $/kg
@@ -887,6 +900,12 @@ $ifthen.cm_subsec_model_chemicals "%cm_subsec_model_chemicals%" == "processes"
 !! Source: Shaik Afzal 2023 Table Table S6 → 0.4-0.8 $/kg
 p37_priceMat(t,all_regi,"plasticWaste") = 0.1;
 
+=======
+!! Source: Geetanjali Yadav 2023 Table S12 → 0.6 $/kg
+!! Source: Taylor Uekert 2023 Table Table S23 → 0.2-0.4 $/kg
+!! Source: Shaik Afzal 2023 Table Table S6 → 0.4-0.8 $/kg
+p37_priceMat(t,all_regi,"plasticWaste") = 0.1; 
+>>>>>>> chemicals_bioTech
 $endif.cm_subsec_model_chemicals
 
 $ifthen.cm_subsec_model_steel "%cm_subsec_model_steel%" == "processes"
@@ -939,16 +958,18 @@ p37_mat2ue(tall,all_regi,all_enty,all_in) = 0.;
 $endif.cm_subsec_model_chemicals
 $ifthen.cm_subsec_model_chemicals "%cm_subsec_model_chemicals%" == "processes"
 Parameter
-  p37_mat2ue(tall,all_regi,all_enty,all_in) "conversion factors [2017$/kg or 2017$/kgN] for 2020-2050 to convert material [Gt or GtN] into UE [trn$2017]"
+  p37_mat2ueLookup(tall,all_regi,all_enty,all_in, all_LU_emi_scen, all_rcp_scen) "conversion factors [2017$/kg or 2017$/kgN] for 2020-2050 to convert material [Gt or GtN] into UE [trn$2017]"
   /
 $ondelim
 $include "./modules/37_industry/subsectors/input/p37_mat2ue_chemicals.cs4r";
 $offdelim
   /
 ;
-!! constant before and after IEA report temporal scope
+!! select mat2ue conversion fators from look-up table according to SSP and RCP (fertilizer demand projections from MagPie vary with SSP and RCP)
+p37_mat2ue(t,regi,mat,in) = p37_mat2ueLookup(t,regi,mat,in,"%cm_LU_emi_scen%","%cm_rcp_scen%");
+
+!! constant before IEA report temporal scope
 p37_mat2ue(t,regi,mat,in)$(t.val lt 2020) = p37_mat2ue("2020",regi,mat,in);
-p37_mat2ue(t,regi,mat,in)$(t.val gt 2050) = p37_mat2ue("2050",regi,mat,in);
 
 !! ue_chemicals is measured in value_added (trn$2017), whilst material is measured in Gt
 !! So this is the price of material in trn$2017/Gt = $2017/kg

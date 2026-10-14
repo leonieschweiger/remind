@@ -395,9 +395,11 @@ $ifthen.cm_subsec_model_chemicals "%cm_subsec_model_chemicals%" == "processes"
     mechRe        "mechanical recycling of plastic waste"
 
     meSySol       "methanol synthesis from coal/biomass"
+    meSyBio       "methanol synthesis from biomass"
     meSyNg        "methanol synthesis from NG"
     meSyLiq       "methanol synthesis from oil"
     meSySol_cc    "CC for methanol synthesis from coal/biomass"
+    meSyBio_cc    "CC for methanol synthesis from biomass"
     meSyNg_cc     "CC for methanol synthesis from NG"
     meSyLiq_cc    "CC for methanol synthesis from oil"
     meSyH2        "methanol synthesis from hydrogen"
@@ -442,9 +444,10 @@ $endif.cm_subsec_model_steel
 
 $ifthen.cm_subsec_model_chemicals "%cm_subsec_model_chemicals%" == "processes"
     !! maybe add cc for heat generation part of steam cracker, but may not be worth it because we switch to H2 or electricity for heat generation
-    meSySol_cc    
-    meSyNg_cc     
-    meSyLiq_cc    
+    meSySol_cc
+    meSyBio_cc
+    meSyNg_cc
+    meSyLiq_cc
 
     amSyCoal_cc   
     amSyNG_cc     
@@ -455,8 +458,8 @@ $endif.cm_subsec_model_chemicals
 teCUPrc(all_te)   "Technologies using CO2 as a feedstock"
   /
 $ifthen.cm_subsec_model_chemicals "%cm_subsec_model_chemicals%" == "processes"
-  meSyH2
-  fertProdH2
+    meSyH2
+    fertProdH2
 $endif.cm_subsec_model_chemicals
   /
 
@@ -474,8 +477,7 @@ $ifthen.cm_subsec_model_chemicals "%cm_subsec_model_chemicals%" == "processes"
     ammoFinal     "Ammonia; final product"
     !! REMINDER: once we co2f from the CCU module, make sure that it isn't subtracted twice (once by taking it from CCU, once by subtracting feedstock carbon)
     co2f
-
-    plasticWaste  "Plastic waste, mixed"
+    plasticWaste  "Plastic waste used for chemical recycling (pyrolysis or gasification) or mechanical recycling"
 $endif.cm_subsec_model_chemicals
 $ifthen.cm_subsec_model_steel "%cm_subsec_model_steel%" == "processes"
     prsteel
@@ -586,10 +588,13 @@ $ifthen.cm_subsec_model_chemicals "%cm_subsec_model_chemicals%" == "processes"
      hvc_stCrNg
      hvc_stCrChemRe
      hvc_meSol
+     hvc_meBio
      hvc_meNg
      hvc_meLiq
      hvc_meSol_gh2
+     hvc_meBio_gh2
      hvc_meSol_cc
+     hvc_meBio_cc
      hvc_meNg_cc
      hvc_meLiq_cc
      hvc_meh2
@@ -604,10 +609,13 @@ $ifthen.cm_subsec_model_chemicals "%cm_subsec_model_chemicals%" == "processes"
      fertilizer_amh2
 
      meFinal_sol
+     meFinal_bio
      meFinal_ng
      meFinal_liq
      meFinal_sol_gh2
+     meFinal_bio_gh2
      meFinal_sol_cc
+     meFinal_bio_cc
      meFinal_ng_cc
      meFinal_liq_cc
      meFinal_h2
@@ -669,9 +677,11 @@ $ifthen.cm_subsec_model_chemicals "%cm_subsec_model_chemicals%" == "processes"
     mechRe . standard
 
     meSySol . (standard,greenh2) !! methanol synthesis needs hydrogen apart from coal, can be from green hydrogen or coal gasification
+    meSyBio . (standard,greenh2) !! methanol synthesis from biomass needs hydrogen apart from biomass, can be from green hydrogen or biomass gasification
     meSyNg . standard
     meSyLiq . standard
     meSySol_cc . standard
+    meSyBio_cc . standard
     meSyNg_cc . standard
     meSyLiq_cc . standard
     meSyH2 . standard
@@ -743,7 +753,10 @@ $ifthen.cm_subsec_model_chemicals "%cm_subsec_model_chemicals%" == "processes"
    stCrChemRe . standard . hvc
    mechRe . standard . hvc
 
-   meSySol   . (standard,greenh2) . methanol
+   meSySol   . standard     . methanol
+   meSySol   . greenh2      . methanol
+   meSyBio   . standard     . methanolH2
+   meSyBio   . greenh2      . methanolH2
    meSyNg    . standard     . methanol
    meSyLiq   . standard     . methanol
    meSyH2    . standard     . methanolH2
@@ -812,6 +825,8 @@ $ifthen.cm_subsec_model_chemicals "%cm_subsec_model_chemicals%" == "processes"
 
    meSySol             . (standard,greenh2)     . ue_chemicals
    meSySol_cc           . standard           . ue_chemicals
+   meSyBio             . (standard,greenh2)     . ue_chemicals
+   meSyBio_cc           . standard           . ue_chemicals
    meSyNg   . standard         . ue_chemicals
    (meSyLiq,meSyLiq_cc) . standard        . ue_chemicals
    meSyH2               . standard        . ue_chemicals
@@ -844,6 +859,7 @@ tePrc2teCCPrc(all_te,opmoPrc,all_te,opmoPrc)  "Mapping of base technologies to C
   /
 $ifthen.cm_subsec_model_chemicals "%cm_subsec_model_chemicals%" == "processes"
     meSySol   . standard . meSySol_cc  . standard
+    meSyBio   . standard . meSyBio_cc  . standard
     meSyNg    . standard . meSyNg_cc   . standard
     meSyLiq   . standard . meSyLiq_cc  . standard
 
@@ -865,17 +881,20 @@ $ifthen.cm_subsec_model_chemicals "%cm_subsec_model_chemicals%" == "processes"
    chemElec . standard . otherChem_elec
    chemH2   . standard . otherChem_h2
 
-   stCrNg    . standard . hvc_stCrLiq
-   stCrLiq   . standard . hvc_stCrNg
+   stCrNg    . standard . hvc_stCrNg
+   stCrLiq   . standard . hvc_stCrLiq
    stCrChemRe. standard . hvc_stCrChemRe
 
    mechRe    . standard . mech_recycle
 
    meSySol   . standard . (hvc_meSol,     meFinal_sol, hvc_meSol_cc,  meFinal_sol_cc)
+   meSyBio   . standard . (hvc_meBio,     meFinal_bio, hvc_meBio_cc,  meFinal_bio_cc)
    meSyNg    . standard . (hvc_meNg,      meFinal_ng,  hvc_meNg_cc,   meFinal_ng_cc)
    meSyLiq   . standard . (hvc_meLiq,     meFinal_liq, hvc_meLiq_cc,  meFinal_liq_cc)
    meSySol   . greenh2  . (hvc_meSol_gh2, meFinal_sol_gh2)
+   meSyBio   . greenh2  . (hvc_meBio_gh2, meFinal_bio_gh2)
    meSySol_cc . standard . (hvc_meSol_cc,  meFinal_sol_cc)
+   meSyBio_cc  . standard . (hvc_meBio_cc,   meFinal_bio_cc)
    meSyNg_cc  . standard . (hvc_meNg_cc,   meFinal_ng_cc)
    meSyLiq_cc . standard . (hvc_meLiq_cc,  meFinal_liq_cc)
    meSyH2    . standard . (hvc_meh2,      meFinal_h2)
@@ -890,14 +909,15 @@ $ifthen.cm_subsec_model_chemicals "%cm_subsec_model_chemicals%" == "processes"
    amSyH2     . standard . (fertilizer_amh2,     amFinal_h2)
 
    mtoMta     . standard . (hvc_meSol, hvc_meSol_gh2, hvc_meNg, hvc_meLiq,
-                            hvc_meSol_cc, hvc_meNg_cc, hvc_meLiq_cc)
-   mtoMtaH2   . standard . hvc_meh2
+                            hvc_meSol_cc, hvc_meNg_cc, hvc_meLiq_cc)  
+   mtoMtaH2   . standard . (hvc_meh2, hvc_meBio, hvc_meBio_gh2, hvc_meBio_cc, hvc_mechemRe)
+
    fertProd   . standard . (fertilizer_amSol, fertilizer_amNg, fertilizer_amLiq,
                             fertilizer_amSol_cc, fertilizer_amNg_cc, fertilizer_amLiq_cc)
    fertProdH2 . standard . fertilizer_amh2
    meToFinal  . standard . (meFinal_sol, meFinal_sol_gh2, meFinal_ng, meFinal_liq,
                             meFinal_sol_cc, meFinal_ng_cc, meFinal_liq_cc)
-   meToFinal  . greenh2  . meFinal_h2
+   meToFinal  . greenh2  . (meFinal_h2, meFinal_bio, meFinal_bio_gh2, meFinal_bio_cc, meFinal_chemRe)
    amToFinal  . standard . (amFinal_sol, amFinal_ng, amFinal_liq,
                             amFinal_sol_cc, amFinal_ng_cc, amFinal_liq_cc)
    amToFinal  . greenh2  . amFinal_h2
@@ -925,12 +945,14 @@ routeCC(route)  "TODO"
   /
 $ifthen.cm_subsec_model_chemicals "%cm_subsec_model_chemicals%" == "processes"
     hvc_meSol_cc
+    hvc_meBio_cc
     hvc_meNg_cc
     hvc_meLiq_cc
     fertilizer_amLiq_cc
     fertilizer_amNg_cc
     fertilizer_amSol_cc
     meFinal_sol_cc
+    meFinal_bio_cc
     meFinal_ng_cc
     meFinal_liq_cc
     amFinal_sol_cc
@@ -948,12 +970,14 @@ routeCC2baseRoute(route,route) "TODO"
   /
 $ifthen.cm_subsec_model_chemicals "%cm_subsec_model_chemicals%" == "processes"
     hvc_meSol_cc         . hvc_meSol
+    hvc_meBio_cc         . hvc_meBio
     hvc_meNg_cc          . hvc_meNg
     hvc_meLiq_cc         . hvc_meLiq
     fertilizer_amLiq_cc  . fertilizer_amLiq
     fertilizer_amNg_cc   . fertilizer_amNg
     fertilizer_amSol_cc  . fertilizer_amSol
     meFinal_sol_cc       . meFinal_sol
+    meFinal_bio_cc       . meFinal_bio
     meFinal_ng_cc        . meFinal_ng
     meFinal_liq_cc       . meFinal_liq
     amFinal_sol_cc       . amFinal_sol
@@ -995,9 +1019,11 @@ $ifthen.cm_subsec_model_chemicals "%cm_subsec_model_chemicals%" == "processes"
     entydummy.entydummy.mechRe
 
     entydummy.entydummy.meSySol
+    entydummy.entydummy.meSyBio
     entydummy.entydummy.meSyNg
     entydummy.entydummy.meSyLiq
     entydummy.entydummy.meSySol_cc
+    entydummy.entydummy.meSyBio_cc
     entydummy.entydummy.meSyNg_cc
     entydummy.entydummy.meSyLiq_cc
     entydummy.entydummy.meSyH2
@@ -1043,9 +1069,11 @@ $ifthen.cm_subsec_model_chemicals "%cm_subsec_model_chemicals%" == "processes"
     chemicals . mechRe
 
     chemicals . meSySol
+    chemicals . meSyBio
     chemicals . meSyNg
     chemicals . meSyLiq
     chemicals . meSySol_cc
+    chemicals . meSyBio_cc
     chemicals . meSyNg_cc
     chemicals . meSyLiq_cc
     chemicals . meSyH2
