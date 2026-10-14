@@ -892,20 +892,10 @@ $endif.cm_subsec_model_steel
 !!can be deleted in the long run
 p37_priceMat(ttot,all_regi,all_enty) = 0.;
 $ifthen.cm_subsec_model_chemicals "%cm_subsec_model_chemicals%" == "processes"
-<<<<<<< HEAD
-!!Execute_Loadpoint "input" pm_FEPrice = pm_FEPrice;
-
-!! Source: Geetanjali Yadav 2023 Table S12 → 0.6 $/kg
-!! Source: Taylor Uekert 2023 Table Table S23 → 0.2-0.4 $/kg
-!! Source: Shaik Afzal 2023 Table Table S6 → 0.4-0.8 $/kg
-p37_priceMat(t,all_regi,"plasticWaste") = 0.1;
-
-=======
 !! Source: Geetanjali Yadav 2023 Table S12 → 0.6 $/kg
 !! Source: Taylor Uekert 2023 Table Table S23 → 0.2-0.4 $/kg
 !! Source: Shaik Afzal 2023 Table Table S6 → 0.4-0.8 $/kg
 p37_priceMat(t,all_regi,"plasticWaste") = 0.1; 
->>>>>>> chemicals_bioTech
 $endif.cm_subsec_model_chemicals
 
 $ifthen.cm_subsec_model_steel "%cm_subsec_model_steel%" == "processes"
@@ -954,7 +944,7 @@ $offdelim
 $endif.cm_subsec_model_chemicals
 
 $ifthen.cm_subsec_model_chemicals "%cm_subsec_model_chemicals%" == "ces"
-p37_mat2ue(tall,all_regi,all_enty,all_in) = 0.;
+p37_mat2ue(tall,all_regi,all_enty,all_in, all_LU_emi_scen,all_rcp_scen) = 0.;
 $endif.cm_subsec_model_chemicals
 $ifthen.cm_subsec_model_chemicals "%cm_subsec_model_chemicals%" == "processes"
 Parameter
@@ -1074,8 +1064,8 @@ $ifthen.cm_subsec_model_chemicals "%cm_subsec_model_chemicals%" == "processes"
 loop(all_regi(regi),
   loop(tePrc2matOut(tePrc, opmoPrc, mat),
         if (p37_matFlowHist("2020", regi, mat) gt 0,
-          p37_teMatShareHist(regi, tePrc, opmoPrc, mat) =
-            pm_outflowPrcHist("2020", regi, tePrc, opmoPrc)
+          p37_teMatShareHist(regi, tePrc, opmoPrc, mat) = 
+            pm_outflowPrcHist("2020", regi, tePrc, opmoPrc) 
             / p37_matFlowHist("2020", regi, mat);
         else
           p37_teMatShareHist(regi, tePrc, opmoPrc, mat) = 0;
@@ -1263,7 +1253,7 @@ $ifthen.cm_subsec_model_chemicals "%cm_subsec_model_chemicals%" == "processes"
         !! see above
         pm_specFeDem(t, regi, "feels", "chemH2", "standard") =
             pm_specFeDem("2020", regi, "feels", "chemOld", "standard");
-
+ 
         !! Calc feh2s for chemH2
         !! see above but without efficiency improvement, assumption: hydrogen and gas have the same efficiency
         pm_specFeDem(t, regi, "feh2s", "chemH2", "standard") =
