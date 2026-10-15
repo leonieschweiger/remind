@@ -944,7 +944,7 @@ $offdelim
 $endif.cm_subsec_model_chemicals
 
 $ifthen.cm_subsec_model_chemicals "%cm_subsec_model_chemicals%" == "ces"
-p37_mat2ue(tall,all_regi,all_enty,all_in, all_LU_emi_scen,all_rcp_scen) = 0.;
+p37_mat2ue(tall,all_regi,all_enty,all_in) = 0.;
 $endif.cm_subsec_model_chemicals
 $ifthen.cm_subsec_model_chemicals "%cm_subsec_model_chemicals%" == "processes"
 Parameter
