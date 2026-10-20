@@ -147,8 +147,6 @@ if (cm_co2captureChemicals ne 1 OR cm_co2captureInd ne 1,
   );
 );
 
-v37_shareWithCC.lo(t,regi,tePrc,opmoPrc) = 0.;
-v37_shareWithCC.up(t,regi,tePrc,opmoPrc) = 1.;
 
 $ifthen.fixedUE_scenario "%cm_fxIndUe%" == "on"
 
