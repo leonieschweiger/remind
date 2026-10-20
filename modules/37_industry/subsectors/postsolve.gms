@@ -182,6 +182,12 @@ o37_shareRoute(ttot,regi,tePrc,opmoPrc,route)$tePrc2route(tePrc,opmoPrc,route) =
  );
 
 
+!! share of process emissions routed to CC
+o37_shareWithCC(ttot,regi,tePrc,opmoPrc) = 0.;
+o37_shareWithCC(ttot,regi,tePrc,opmoPrc)$(sum(entyFe,v37_emiPrc.l(ttot,regi,entyFe,tePrc,opmoPrc)) gt 0.)
+  = v37_emiToCC.l(ttot,regi,tePrc,opmoPrc)
+  / sum(entyFe,v37_emiPrc.l(ttot,regi,entyFe,tePrc,opmoPrc));
+
 loop((tePrc,opmoPrc,teCCPrc,opmoCCPrc,route)$(
                           tePrc2teCCPrc(tePrc,opmoPrc,teCCPrc,opmoCCPrc)
                       AND tePrc2route(teCCPrc,opmoCCPrc,route)),
@@ -189,13 +195,13 @@ loop((tePrc,opmoPrc,teCCPrc,opmoCCPrc,route)$(
   !! share of first-stage tech with CCS
   o37_shareRoute(ttot,regi,tePrc,opmoPrc,route)$(sum(entyFe,v37_emiPrc.l(ttot,regi,entyFe,tePrc,opmoPrc)) gt 0.)
     =   o37_shareRoute(ttot,regi,tePrc,opmoPrc,route)
-      * v37_shareWithCC.l(ttot,regi,tePrc,opmoPrc);
+      * o37_shareWithCC(ttot,regi,tePrc,opmoPrc);
 
   !! share of first-stage tech without CCS
   loop(routeCC2baseRoute(route,route2),
     o37_shareRoute(ttot,regi,tePrc,opmoPrc,route2)
     = o37_shareRoute(ttot,regi,tePrc,opmoPrc,route2)
-     * (1. - v37_shareWithCC.l(ttot,regi,tePrc,opmoPrc));
+     * (1. - o37_shareWithCC(ttot,regi,tePrc,opmoPrc));
   );
 );
 
