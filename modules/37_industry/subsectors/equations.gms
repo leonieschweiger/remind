@@ -614,6 +614,20 @@ q37_emiPrc(t,regi,entyFe,tePrc,opmoPrc) ..
 
 
 ***------------------------------------------------------
+*' Emissions of a base process routed to carbon capture cannot exceed its emissions.
+*' (linear formulation of share * emissions with share in [0,1]; avoids a degenerate
+*' bilinear term with zero gradient if both share and emissions are zero)
+***------------------------------------------------------
+q37_emiToCC(t,regi,tePrc,opmoPrc)$(
+            sum(tePrc2teCCPrc(tePrc,opmoPrc,teCCPrc,opmoCCPrc), 1) ) ..
+    v37_emiToCC(t,regi,tePrc,opmoPrc)
+  =l=
+    sum(entyFe,
+      v37_emiPrc(t,regi,entyFe,tePrc,opmoPrc)
+    )
+;
+
+***------------------------------------------------------
 *' Carbon capture processes can only capture as much co2 as the base process and the CCS process combined emit
 ***------------------------------------------------------
 q37_limitOutflowCCPrc(t,regi,teCCPrc) ..
@@ -623,10 +637,8 @@ q37_limitOutflowCCPrc(t,regi,teCCPrc) ..
   =e=
     p37_captureRate(teCCPrc)
     *
-    sum((entyFe,tePrc2teCCPrc(tePrc,opmoPrc,teCCPrc,opmoCCPrc)),
-      v37_shareWithCC(t,regi,tePrc,opmoPrc)
-      *
-      v37_emiPrc(t,regi,entyFe,tePrc,opmoPrc)
+    sum(tePrc2teCCPrc(tePrc,opmoPrc,teCCPrc,opmoCCPrc),
+      v37_emiToCC(t,regi,tePrc,opmoPrc)
     )
     +
     p37_selfCaptureRate(teCCPrc)

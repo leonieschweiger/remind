@@ -986,60 +986,63 @@ pm_specFeDem(tall,all_regi,all_enty,all_te,opmoPrc) = 0.;
 p37_matFlowHist(tall,all_regi,mat) = 0.;
 
 $ifthen.cm_subsec_model_chemicals "%cm_subsec_model_chemicals%" == "processes"
-!! HOT FIX
-!! AmmoniaFinal equals total ammonia minus fertilizer ammonia
-!! can this be deleted? (recalculated from mrindustry to avoid rounding errors)
-pm_outflowPrcHist("2020",regi,"amToFinal","standard")
-  = sum((tePrc2matOut(tePrc,opmoPrc,mat))$(sameas("ammonia",mat)),
-    pm_outflowPrcHist("2020",regi,tePrc,opmoPrc))
-  - (pm_outflowPrcHist("2020",regi,"fertProd","standard")
-  * p37_specMatDem("ammonia","fertProd","standard"))
+!! historical chemicals flows are only needed if the historical period is optimised;
+!! for cm_startyear > 2005, p37_ue_share, p37_teMatShareHist and pm_specFeDem are loaded from input_ref
+if (cm_startyear eq 2005,
+  !! HOT FIX
+  !! AmmoniaFinal equals total ammonia minus fertilizer ammonia
+  !! can this be deleted? (recalculated from mrindustry to avoid rounding errors)
+  pm_outflowPrcHist("2020",regi,"amToFinal","standard")
+    = sum((tePrc2matOut(tePrc,opmoPrc,mat))$(sameas("ammonia",mat)),
+      pm_outflowPrcHist("2020",regi,tePrc,opmoPrc))
+    - (pm_outflowPrcHist("2020",regi,"fertProd","standard")
+    * p37_specMatDem("ammonia","fertProd","standard"))
+    ;
+  !! same for methanol
+  pm_outflowPrcHist("2020",regi,"meToFinal","standard")
+    = sum((tePrc2matOut(tePrc,opmoPrc,mat))$(sameas("methanol",mat)),
+      pm_outflowPrcHist("2020",regi,tePrc,opmoPrc))
+    - (pm_outflowPrcHist("2020",regi,"mtoMta","standard")
+    * p37_specMatDem("methanol","mtoMta","standard"))
+    ;
+
+  !! 1. Correct pm_outflowPrcHist, such that sum is consistent with UE
+  !! can this be deleted?
+  p37_ueHistTmp("2020",regi)
+    = sum((tePrc2matOut(tePrc,opmoPrc,mat), mat2ue(mat,in))$(sameas("ue_chemicals",in)),
+           pm_outflowPrcHist("2020",regi,tePrc,opmoPrc)
+           * p37_mat2ue("2020",regi,mat,in)
+      );
+
+  pm_outflowPrcHist("2020",regi,tePrc,opmoPrc)$(secInd37_tePrc("chemicals",tePrc))
+    = pm_outflowPrcHist("2020",regi,tePrc,opmoPrc)
+    * pm_fedemandInd("2020",regi,"ue_chemicals")
+    / p37_ueHistTmp("2020",regi);
+
+  !! 2. scale 2005 to 2015 with ue_chemicals
+  !! can this be deleted?
+  loop(t$(t.val ge 2005 AND t.val le 2015),
+    pm_outflowPrcHist(t,regi,tePrc,opmoPrc)
+    = pm_outflowPrcHist("2020",regi,tePrc,opmoPrc)
+    * pm_fedemandInd(t,regi,"ue_chemicals")
+    / pm_fedemandInd("2020",regi,"ue_chemicals");
+  );
+
+
+  !! 3. Calc MatflowHist
+  !! can this be deleted?
+  p37_matFlowHist(t,regi,mat) =
+  sum(tePrc2matOut(tePrc,opmoPrc,mat),
+        pm_outflowPrcHist(t,regi,tePrc,opmoPrc)
+      )
   ;
-!! same for methanol
-pm_outflowPrcHist("2020",regi,"meToFinal","standard")
-  = sum((tePrc2matOut(tePrc,opmoPrc,mat))$(sameas("methanol",mat)),
-    pm_outflowPrcHist("2020",regi,tePrc,opmoPrc))
-  - (pm_outflowPrcHist("2020",regi,"mtoMta","standard")
-  * p37_specMatDem("methanol","mtoMta","standard"))
-  ;
-
-!! 1. Correct pm_outflowPrcHist, such that sum is consistent with UE
-!! can this be deleted?
-p37_ueHistTmp("2020",regi)
-  = sum((tePrc2matOut(tePrc,opmoPrc,mat), mat2ue(mat,in))$(sameas("ue_chemicals",in)),
-         pm_outflowPrcHist("2020",regi,tePrc,opmoPrc)
-         * p37_mat2ue("2020",regi,mat,in)
-    );
-
-pm_outflowPrcHist("2020",regi,tePrc,opmoPrc)$(secInd37_tePrc("chemicals",tePrc))
-  = pm_outflowPrcHist("2020",regi,tePrc,opmoPrc)
-  * pm_fedemandInd("2020",regi,"ue_chemicals")
-  / p37_ueHistTmp("2020",regi);
-
-!! 2. scale 2005 to 2015 with ue_chemicals
-!! can this be deleted?
-loop(t$(t.val ge 2005 AND t.val le 2015),
-  pm_outflowPrcHist(t,regi,tePrc,opmoPrc)
-  = pm_outflowPrcHist("2020",regi,tePrc,opmoPrc)
-  * pm_fedemandInd(t,regi,"ue_chemicals")
-  / pm_fedemandInd("2020",regi,"ue_chemicals");
+  !! 4. Calc ue_share
+  !! can this be deleted?
+  p37_ue_share(t,regi,mat,in)$(mat2ue(mat,in) AND sameas(in,"ue_chemicals") AND t.val le 2020) =
+    (p37_mat2ue(t,regi,mat,in) * p37_matFlowHist(t,regi,mat))
+    / pm_cesdata(t,regi,in,"quantity");
+  p37_ue_share(t,regi,mat,in)$(t.val gt 2020) = p37_ue_share("2020",regi,mat,in);
 );
-
-
-!! 3. Calc MatflowHist
-!! can this be deleted?
-p37_matFlowHist(t,regi,mat) =
-sum(tePrc2matOut(tePrc,opmoPrc,mat),
-      pm_outflowPrcHist(t,regi,tePrc,opmoPrc)
-    )
-;
-!! 4. Calc ue_share
-!! can this be deleted?
-p37_ue_share(t,regi,mat,in)$(mat2ue(mat,in) AND sameas(in,"ue_chemicals") AND t.val le 2020) =
-  (p37_mat2ue(t,regi,mat,in) * p37_matFlowHist(t,regi,mat))
-  / pm_cesdata(t,regi,in,"quantity");
-;
-p37_ue_share(t,regi,mat,in)$(t.val gt 2020) = p37_ue_share("2020",regi,mat,in);
 $endif.cm_subsec_model_chemicals
 
 $ifthen.cm_subsec_model_steel "%cm_subsec_model_steel%" == "processes"
@@ -1062,17 +1065,20 @@ loop((t,regi,ppfUePrc(in)),
 p37_teMatShareHist(all_regi,tePrc,opmoPrc,mat) = 0.;
 !! this can be deleted in the future
 $ifthen.cm_subsec_model_chemicals "%cm_subsec_model_chemicals%" == "processes"
-loop(all_regi(regi),
-  loop(tePrc2matOut(tePrc, opmoPrc, mat),
-        if (p37_matFlowHist("2020", regi, mat) gt 0,
-          p37_teMatShareHist(regi, tePrc, opmoPrc, mat) =
-            pm_outflowPrcHist("2020", regi, tePrc, opmoPrc)
-            / p37_matFlowHist("2020", regi, mat);
-        else
-          p37_teMatShareHist(regi, tePrc, opmoPrc, mat) = 0;
+!! for cm_startyear > 2005, p37_teMatShareHist is loaded from input_ref below
+if (cm_startyear eq 2005,
+  loop(all_regi(regi),
+    loop(tePrc2matOut(tePrc, opmoPrc, mat),
+          if (p37_matFlowHist("2020", regi, mat) gt 0,
+            p37_teMatShareHist(regi, tePrc, opmoPrc, mat) =
+              pm_outflowPrcHist("2020", regi, tePrc, opmoPrc)
+              / p37_matFlowHist("2020", regi, mat);
+          else
+            p37_teMatShareHist(regi, tePrc, opmoPrc, mat) = 0;
+          );
         );
       );
-    );
+);
 
 $endif.cm_subsec_model_chemicals
 

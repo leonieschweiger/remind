@@ -65,6 +65,7 @@ Parameters
   o37_ProdIndRoute(ttot,all_regi,mat,route)                              "production volume of a material via each process route [Gt]"
   o37_demFeIndRoute(ttot,all_regi,all_enty,all_te,route,secInd37)        "FE demand by FE type, process route and tech"
   o37_specificEmi(ttot,all_regi,all_te,opmoPrc)                          "Specific emissions of a technology; Needed as auxiliary for relative outflow calculation of CC tech"
+  o37_shareWithCC(ttot,all_regi,all_te,opmoPrc)                          "Share of process emissions routed to carbon capture technology"
   !! TODO: make route specific; So far, this only works because the relative outflow of each tech/opmo is the same for all routes.
   o37_relativeOutflow(ttot,all_regi,all_te,opmoPrc)                      "Outflow of a process relative to the outflow of the route, i.e. the final product of that route; Needed for LCOP calculation"
 
@@ -121,7 +122,7 @@ $endif.cm_subsec_model_chemicals
   v37_matFlow(tall,all_regi,all_enty)                                       "Production of materials [Gt/a]"
   v37_matFlowPrim(tall,all_regi,all_enty)                                   "Production of Primary materials [Gt/a]"
   v37_emiPrc(tall,all_regi,all_enty,all_te,opmoPrc)                         "Emissions per process and operation mode [GtC/a]"
-  v37_shareWithCC(tall,all_regi,all_te,opmoPrc)                             "Share of process and operation mode equipped with carbon capture technology"
+  v37_emiToCC(tall,all_regi,all_te,opmoPrc)                                 "Emissions per process and operation mode routed to carbon capture technology [GtC/a]"
   vm_costMatPrc(tall,all_regi)                                              "Cost of external material inputs such as iron ore in process-based industry [trn $2017/a]"
   v37_matShareChange(tall,all_regi,all_te,opmoPrc,all_enty)                 "Change of share of processes with rectricted relative share change"
   v37_chemFlow(tall,all_regi,all_enty)                                      "Summed material outflow of historic processes with future restricted shares; Needed as auxiliary for calculating material outflows of historic processes from the restricted shares"
@@ -194,6 +195,7 @@ $endif.cm_subsec_model_chemicals
   q37_limitCapMatHist(tall,all_regi,all_te)                                         "Material-flow conversion is limited by capacities"
   q37_emiPrc(ttot,all_regi,all_enty,all_te,opmoPrc)                                 "Local industry emissions pre-capture; Only used as baseline for CCS [GtC/a]"
   q37_emiCCPrc(tall,all_regi,emiInd37)                                              "Captured emissions from CCS"
+  q37_emiToCC(tall,all_regi,all_te,opmoPrc)                                         "Emissions routed to carbon capture cannot exceed the emissions of the base process"
   q37_limitOutflowCCPrc(tall,all_regi,all_te)                                       "Carbon capture processes can only capture as much co2 as the base process emits"
   q37_costMat(tall,all_regi)                                                        "External material cost (non-energy)"
   q37_limitBioSolidsIndst(tall,all_regi,all_enty)                                    "Upper limit on biosolids share"
