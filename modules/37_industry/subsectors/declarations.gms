@@ -68,8 +68,8 @@ Parameters
   o37_shareWithCC(ttot,all_regi,all_te,opmoPrc)                          "Share of process emissions routed to carbon capture technology"
   !! TODO: make route specific; So far, this only works because the relative outflow of each tech/opmo is the same for all routes.
   o37_relativeOutflow(ttot,all_regi,all_te,opmoPrc)                      "Outflow of a process relative to the outflow of the route, i.e. the final product of that route; Needed for LCOP calculation"
-  p37_demFeChemPrc(ttot,all_regi,all_enty)                               "FE demand of chemicals processes per FE type [TWa]"
-  p37_feedstockShareChemPrc(ttot,all_regi)                               "share of chemicals process FE used as feedstock, derived from carbon in chemical products [0-1]"
+  o37_demFeChemPrc(ttot,all_regi,all_enty)                               "FE demand of chemicals processes per FE type [TWa]"
+  o37_feedstockShareChemPrc(ttot,all_regi)                               "share of chemicals process FE used as feedstock, derived from carbon in chemical products [0-1]"
 
   p37_CESMkup_input(all_in)  "markup cost parameter read in from config for CES levels in industry to influence demand-side cost and efficiencies in CES tree [trUSD/CES input]"
   /

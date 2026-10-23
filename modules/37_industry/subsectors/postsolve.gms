@@ -262,7 +262,7 @@ $ifthen.cm_subsec_model_chemicals "%cm_subsec_model_chemicals%" == "processes"
 *** e.g. for FE targets excluding non-energy use in 47_regipol
 *** ---------------------------------------------------------------------------
 !! FE demand of chemicals processes per FE type
-p37_demFeChemPrc(ttot,regi,entyFe)
+o37_demFeChemPrc(ttot,regi,entyFe)
   = sum((secInd37_tePrc("chemicals",tePrc),tePrc2opmoPrc(tePrc,opmoPrc)),
       o37_demFePrc(ttot,regi,entyFe,tePrc,opmoPrc)
     );
@@ -270,13 +270,13 @@ p37_demFeChemPrc(ttot,regi,entyFe)
 !! feedstock share of this FE demand, derived from the carbon contained in
 !! chemical products, so that it is consistent with the feedstock emissions
 !! accounting (v37_feedstocksCarbon); the same share applies to all FE types
-p37_feedstockShareChemPrc(ttot,regi) = 0.;
-p37_feedstockShareChemPrc(ttot,regi)$(
-          sum(entyFe, p37_demFeChemPrc(ttot,regi,entyFe)
+o37_feedstockShareChemPrc(ttot,regi) = 0.;
+o37_feedstockShareChemPrc(ttot,regi)$(
+          sum(entyFe, o37_demFeChemPrc(ttot,regi,entyFe)
                     * p37_FeedstockCarbonContent(ttot,regi,entyFe)) )
   = min(1,
       v37_feedstocksCarbon.l(ttot,regi)
-    / sum(entyFe, p37_demFeChemPrc(ttot,regi,entyFe)
+    / sum(entyFe, o37_demFeChemPrc(ttot,regi,entyFe)
                 * p37_FeedstockCarbonContent(ttot,regi,entyFe))
     );
 
@@ -287,8 +287,8 @@ vm_demFeNonEnergySector.l(ttot,regi,sefe(entySe,entyFe),"indst",emiMkt)$(
                     entyFE2sector2emiMkt_NonEn(entyFe,"indst",emiMkt)
                 AND sum(entySe2$sefe(entySe2,entyFe),
                       vm_demFeSector_afterTax.l(ttot,regi,entySe2,entyFe,"indst",emiMkt)) )
-  = p37_demFeChemPrc(ttot,regi,entyFe)
-  * p37_feedstockShareChemPrc(ttot,regi)
+  = o37_demFeChemPrc(ttot,regi,entyFe)
+  * o37_feedstockShareChemPrc(ttot,regi)
   * vm_demFeSector_afterTax.l(ttot,regi,entySe,entyFe,"indst",emiMkt)
   / sum(entySe2$sefe(entySe2,entyFe),
       vm_demFeSector_afterTax.l(ttot,regi,entySe2,entyFe,"indst",emiMkt))
