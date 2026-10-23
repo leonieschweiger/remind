@@ -68,6 +68,8 @@ Parameters
   o37_shareWithCC(ttot,all_regi,all_te,opmoPrc)                          "Share of process emissions routed to carbon capture technology"
   !! TODO: make route specific; So far, this only works because the relative outflow of each tech/opmo is the same for all routes.
   o37_relativeOutflow(ttot,all_regi,all_te,opmoPrc)                      "Outflow of a process relative to the outflow of the route, i.e. the final product of that route; Needed for LCOP calculation"
+  p37_demFeChemPrc(ttot,all_regi,all_enty)                               "FE demand of chemicals processes per FE type [TWa]"
+  p37_feedstockShareChemPrc(ttot,all_regi)                               "share of chemicals process FE used as feedstock, derived from carbon in chemical products [0-1]"
 
   p37_CESMkup_input(all_in)  "markup cost parameter read in from config for CES levels in industry to influence demand-side cost and efficiencies in CES tree [trUSD/CES input]"
   /
@@ -95,6 +97,7 @@ Positive Variables
   v37_emiIndCCSmax(ttot,all_regi,emiInd37)                                  "maximum abatable industry emissions"
 
   !! feedstocks
+  vm_demFeNonEnergySector(ttot,all_regi,all_enty,all_enty,emi_sectors,all_emiMkt) "final energy demand used for material feedstocks in the industry sector [TWa]"
 $ifthen.cm_subsec_model_chemicals "%cm_subsec_model_chemicals%" == "ces"
   v37_incinerationEmi(ttot,all_regi,all_enty,all_enty,all_emiMkt)           "Emissions from incineration of plastic waste, only carbon that is not captured [GtC]"
   vm_incinerationCCS(ttot,all_regi,all_enty,all_enty,all_emiMkt)            "CCS from incineration of plastic waste [GtC]"
@@ -105,7 +108,6 @@ $ifthen.cm_subsec_model_chemicals "%cm_subsec_model_chemicals%" == "ces"
   vm_wasteIncinerationEmiBalance(tall,all_regi,all_enty,all_emiMkt)         "Sum of plastics waste incineration related emissions (positive and negative) [GtC]"
   vm_nonFosPlastic_incinCC(ttot,all_regi,all_emiMkt)                        "Carbon from non-fossil origin in plastics that gets incinerated with carbon capture [GtC]"
   vm_nonFosNonPlasticNonEmitted(ttot,all_regi)                                 "Carbon from non-fossil origin in non-plastic materials that does not get emitted to the atmosphere [GtC]"
-  vm_demFeNonEnergySector(ttot,all_regi,all_enty,all_enty,emi_sectors,all_emiMkt) "final energy demand used for material feedstocks in the industry sector [TWa]"
 $endif.cm_subsec_model_chemicals
 $ifthen.cm_subsec_model_chemicals "%cm_subsec_model_chemicals%" == "processes"
   vm_incinerationCCS(ttot,all_regi)                                         "CCS from incineration of plastic waste [GtC]"

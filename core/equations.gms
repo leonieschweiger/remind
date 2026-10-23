@@ -757,6 +757,7 @@ $ifthen.cm_subsec_model_chemicals "%cm_subsec_model_chemicals%" == "ces"
   !! 2a) plastics CDR -- incinerated  waste that is captured + stored from  non-fossil feedstocks
   + sum(emiMkt,
       vm_nonFosPlastic_incinCC(t,regi,emiMkt)  * v_ccsShare(t,regi)) !! positive value
+$endif.cm_subsec_model_chemicals
 ;
 
 q_emiCdrAll(t,regi)..
@@ -766,6 +767,7 @@ q_emiCdrAll(t,regi)..
   !! ---- net LUC CDR
   !! 0.  net negative emissions from co2luc
   - p_macBaseMagpieNegCo2(t,regi) !! negative value
+$ifthen.cm_subsec_model_chemicals "%cm_subsec_model_chemicals%" == "ces"
   !! 2. Feedstocks
    !! 2b) plastics CDR -- landfilled waste from non-fossil feedstocks
   - sum((emi,emiMkt), 
