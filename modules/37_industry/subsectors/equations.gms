@@ -464,11 +464,13 @@ q37_incinerationCCS(t,regi) ..
   * v37_regionalWasteIncinerationCCSshare(t,regi)
 ;
 
+*' emissions from non-plastic waste; non-plastic carbon is the remainder of
+*' feedstock carbon after plastics, so that both add up to total feedstock carbon
 q37_emiNonPlasticWaste(t,regi) ..
   v37_emiNonPlasticWaste(t,regi)
   =e=
-  v37_feedstocksCarbon(t,regi)
-  * (1 - s37_plasticsShare)
+  ( v37_feedstocksCarbon(t,regi)
+  - v37_plasticsCarbon(t,regi) )
   * cm_nonPlasticFeedstockEmiShare
 ;
 $endif.cm_subsec_model_chemicals
